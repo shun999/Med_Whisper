@@ -1,0 +1,3145 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## éŸ³å£°èªè­˜ãƒ¢ãƒ‡ãƒ«"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import IPython\n",
+    "\n",
+    "app = IPython.Application.instance()\n",
+    "app.kernel.do_shutdown(True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import whisper\n",
+    "model = whisper.load_model(\"large-v3\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def transcribe_check_for_words(wave_path, initial_prompt, correct_words):\n",
+    "    # ãƒ¢ãƒ‡ãƒ«ã‚’ä½¿ã£ã¦éŸ³å£°ã‚’è»¢å†™\n",
+    "    transcription_result = model.transcribe(\n",
+    "        wave_path,\n",
+    "        verbose=True,\n",
+    "        language='japanese',\n",
+    "        fp16=True,\n",
+    "        without_timestamps=True,\n",
+    "        beam_size=3,\n",
+    "        initial_prompt=initial_prompt,\n",
+    "    )\n",
+    "    # è»¢å†™çµæœã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—\n",
+    "    transcribed_text = transcription_result['text']  \n",
+    "\n",
+    "    def word_present(transcribed_text, word):\n",
+    "        return word in transcribed_text\n",
+    "\n",
+    "\n",
+    "    # æ­£ã—ã„å˜èªãŒå«ã¾ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®š\n",
+    "    for word in correct_words:\n",
+    "        if word_present(transcribed_text, word):\n",
+    "            print(f\"'{word}' OK\")\n",
+    "        else:\n",
+    "            print(f\"'{word}' NG\")\n",
+    "\n",
+    "wave_path ='/app/whisper/220data/å³å‰_1å›ç›®.mov'#ArithmeticError\n",
+    "initial_prompt ='å‘¨å›² æ„ŸæŸ“é˜²å¾¡ ã ã„ã˜ã‚‡ã†ã¶ã§ã™ã‹ 1 2 3 é ¸å‹•è„ˆ å‘¼å¸ã®ç¢ºèª è„ˆã®ç¢ºèª è˜‡ç”Ÿ'\n",
+    "correct_words = ['å‚·ç—…è€…', 'å‘¨å›²', 'æ„ŸæŸ“é˜²å¾¡', 'å¤§ä¸ˆå¤«ã§ã™ã‹', 'èª°ã‹æ¥ã¦ãã ã•ã„', '1 2 3','119ç•ª', 'AEDã‚’æŒã£ã¦ãã¦ãã ã•ã„', 'å‘¼å¸ã®ç¢ºèª', 'è„ˆã®ç¢ºèª', 'è·ç‰©']\n",
+    "\n",
+    "transcribe_check_for_words(wave_path,initial_prompt,correct_words)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from whisper.decoding import BeamSearchDecoder\n",
+    "from typing import Tuple\n",
+    "import torch\n",
+    "import torch.nn.functional as F\n",
+    "from torch import Tensor\n",
+    "from whisper.tokenizer import get_tokenizer\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## gennzyouno betuo"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/usr/local/lib/python3.8/dist-packages/whisper/__init__.py:150: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.\n",
+      "  checkpoint = torch.load(fp, map_location=device)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import whisper\n",
+    "model = whisper.load_model(\"large-v3\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import whisper\n",
+    "from whisper.decoding import BeamSearchDecoder\n",
+    "from typing import Tuple\n",
+    "import torch\n",
+    "import torch.nn.functional as F\n",
+    "from torch import Tensor\n",
+    "from whisper.tokenizer import get_tokenizer\n",
+    "import pandas as pd\n",
+    "\n",
+    "# ãƒˆãƒ¼ã‚¯ãƒŠã‚¤ã‚¶ãƒ¼ã®å–å¾—\n",
+    "tokenizer = get_tokenizer(multilingual=True, language=\"ja\", task=\"transcribe\")\n",
+    "\n",
+    "candidates = []\n",
+    "\n",
+    "# å‚·ç—…è€…ã«å„ªå…ˆé †ä½ã‚’ã¤ã‘ãŸã‚«ã‚¹ã‚¿ãƒ ãƒ“ãƒ¼ãƒ æ›´æ–°æ©Ÿèƒ½\n",
+    "def beam_update(self, tokens: Tensor, logits: Tensor, sum_logprobs: Tensor) -> Tuple[Tensor, bool]:\n",
+    "    if tokens.shape[0] % self.beam_size != 0:\n",
+    "        raise ValueError(f\"{tokens.shape}[0] % {self.beam_size} != 0\")\n",
+    "\n",
+    "    n_audio = tokens.shape[0] // self.beam_size\n",
+    "    if self.finished_sequences is None:  \n",
+    "        self.finished_sequences = [{} for _ in range(n_audio)]\n",
+    "\n",
+    "    logprobs = F.log_softmax(logits.float(), dim=-1)\n",
+    "    next_tokens, source_indices, finished_sequences = [], [], []\n",
+    "    for i in range(n_audio):\n",
+    "        scores, sources, finished = {}, {}, {}\n",
+    "\n",
+    "        # å¯èƒ½æ€§ã®ã‚ã‚‹å€™è£œã®ç´¯ç©å¯¾æ•°ç¢ºç‡ã‚’è¨ˆç®—\n",
+    "        for j in range(self.beam_size):\n",
+    "            idx = i * self.beam_size + j\n",
+    "            prefix = tokens[idx].tolist()\n",
+    "            for logprob, token in zip(*logprobs[idx].topk(self.beam_size + 1)):\n",
+    "                new_logprob = (sum_logprobs[idx] + logprob).item()\n",
+    "                sequence = tuple(prefix + [token.item()])\n",
+    "                candidates.append(sequence)\n",
+    "                scores[sequence] = new_logprob\n",
+    "                sources[sequence] = idx\n",
+    "\n",
+    "\n",
+    "        # å€™è£œã‚’ãƒ©ãƒ³ã‚¯ä»˜ã‘ã—ã€å„ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªã®ãƒ“ãƒ¼ãƒ ãƒ»ã‚µã‚¤ã‚ºãƒ»ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã®ä¸Šä½ã‚’ã‚­ãƒ¼ãƒ—\n",
+    "        saved = 0\n",
+    "        for sequence in sorted(scores, key=scores.get, reverse=True):\n",
+    "            candidate_text = tokenizer.decode(list(sequence))\n",
+    "            \n",
+    "            # # å‚·ç—…è€…ã®ç¢ºç‡\n",
+    "            # if \"å‚·ç—…è€…\" in candidate_text:\n",
+    "            #     scores[sequence]  += 10\n",
+    "            \n",
+    "            # if \"å‘¨å›²\" in candidate_text:\n",
+    "            #     scores[sequence]  += 10\n",
+    "            \n",
+    "\n",
+    "                \n",
+    "            if sequence[-1] == self.eot:\n",
+    "                finished[sequence] = scores[sequence]\n",
+    "            else:\n",
+    "                sum_logprobs[len(next_tokens)] = scores[sequence]\n",
+    "                next_tokens.append(sequence)\n",
+    "                source_indices.append(sources[sequence])\n",
+    "\n",
+    "                saved += 1\n",
+    "                if saved == self.beam_size:\n",
+    "                    break\n",
+    "\n",
+    "        finished_sequences.append(finished)\n",
+    "\n",
+    "    tokens = torch.tensor(next_tokens, device=tokens.device)\n",
+    "    self.inference.rearrange_kv_cache(source_indices)\n",
+    "\n",
+    "    # add newly finished sequences to self.finished_sequences\n",
+    "    assert len(self.finished_sequences) == len(finished_sequences)\n",
+    "    for previously_finished, newly_finished in zip(\n",
+    "        self.finished_sequences, finished_sequences\n",
+    "    ):\n",
+    "        for seq in sorted(newly_finished, key=newly_finished.get, reverse=True):\n",
+    "            if len(previously_finished) >= self.max_candidates:\n",
+    "                break  # the candidate list is full\n",
+    "            previously_finished[seq] = newly_finished[seq]\n",
+    "\n",
+    "    # mark as completed if all audio has enough number of samples\n",
+    "    completed = all(\n",
+    "        len(sequences) >= self.max_candidates\n",
+    "        for sequences in self.finished_sequences\n",
+    "    )\n",
+    "    return tokens, completed\n",
+    "\n",
+    "# Replace the original update method with the custom one\n",
+    "BeamSearchDecoder.update = beam_update\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/tmp/ipykernel_13315/2446636116.py:16: UserWarning: PySoundFile failed. Trying audioread instead.\n",
+      "  audio, sr = librosa.load(file_path, sr=None)\n",
+      "/usr/local/lib/python3.8/dist-packages/librosa/core/audio.py:184: FutureWarning: librosa.core.audio.__audioread_load\n",
+      "\tDeprecated as of librosa version 0.10.0.\n",
+      "\tIt will be removed in librosa version 1.0.\n",
+      "  y, sr_native = __audioread_load(path, offset, duration, dtype)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import librosa\n",
+    "import numpy as np\n",
+    "import soundfile as sf\n",
+    "import whisper\n",
+    "from scipy.signal import butter, filtfilt\n",
+    "\n",
+    "def high_pass_filter(audio, sr, cutoff=100, order=5):\n",
+    "    nyquist = 0.5 * sr\n",
+    "    normal_cutoff = cutoff / nyquist\n",
+    "    b, a = butter(order, normal_cutoff, btype='high', analog=False)\n",
+    "    filtered_audio = filtfilt(b, a, audio)\n",
+    "    return filtered_audio\n",
+    "\n",
+    "def preprocess_audio(file_path, target_sr=16000):\n",
+    "    # éŸ³å£°ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ï¼ˆMOVãƒ•ã‚¡ã‚¤ãƒ«ã‚‚ ffmpeg ãŒã‚ã‚Œã°å¯¾å¿œå¯èƒ½ï¼‰\n",
+    "    audio, sr = librosa.load(file_path, sr=None)\n",
+    "    \n",
+    "    # ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆã®èª¿æ•´ï¼ˆã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰å¼•æ•°ã§æ¸¡ã™ï¼‰\n",
+    "    if sr != target_sr:\n",
+    "        audio = librosa.resample(audio, orig_sr=sr, target_sr=target_sr)\n",
+    "        sr = target_sr\n",
+    "    \n",
+    "    # ãƒã‚¤ã‚ºé™¤å»ï¼ˆãƒã‚¤ãƒ‘ã‚¹ãƒ•ã‚£ãƒ«ã‚¿ã®é©ç”¨ï¼‰\n",
+    "    audio = high_pass_filter(audio, sr, cutoff=100)\n",
+    "    \n",
+    "    # éŸ³é‡ã®æ­£è¦åŒ–\n",
+    "    audio = librosa.util.normalize(audio)\n",
+    "    \n",
+    "    # å‡¦ç†æ¸ˆã¿éŸ³å£°ã®ä¿å­˜\n",
+    "    output_file = \"preprocessed_audio.wav\"\n",
+    "    sf.write(output_file, audio, sr)\n",
+    "    \n",
+    "    return output_file\n",
+    "\n",
+    "# å¯¾è±¡ã®éŸ³å£°ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ï¼ˆMOVãƒ•ã‚¡ã‚¤ãƒ«ï¼‰\n",
+    "original_file = \"/app/whisper/220data/å³å¾Œã‚_1å›ç›®.MOV\"\n",
+    "\n",
+    "# éŸ³å£°ãƒ•ã‚¡ã‚¤ãƒ«ã®å‰å‡¦ç†\n",
+    "preprocessed_file = preprocess_audio(original_file)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "result_beam = model.transcribe(preprocessed_file)#\"/app/whisper/220data/å³å¾Œã‚_1å›ç›®.MOV\", beam_size=3)#,initial_prompt=\"å‚· ç—… è€… AED\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'text': '1åˆ†å¾Œäººå½¢æŸµåœå‘¨å›²ã®å®‰å®šã‚’ã—ã€æ›ç®—å·¥å…·ã«é…æ…®ã—ã¾ã™ã€‚å¤§ä¸ˆå¤«ã§ã™ã‹?å¤§ä¸ˆå¤«ã§ã™ã‹?å¤§ä¸ˆå¤«ã§ã™ã‹?å¤§ä¸ˆå¤«ã§ã™ã‹?èª°ã‹èª°ã‹ã€èª°ã‹æ¥ã¦ãã ã•ã„ã€‚ã‚ãªãŸã€119ç•ªé€šå ±ã—ã¦ãã ã•ã„ã€‚ã‚‚ã†ä¸€äººã®ã‚ãªãŸã€ã‚ãªãŸã€AEDã‚’æŒã£ã¦ãã¦ãã ã•ã„ã€‚å¿…ãšã“ã“ã«æˆ»ã£ã¦ãã¦ãã ã•ã„ã€‚èƒ¸ã¨ãŠè…¹ã‚’è¦‹ã¦å‘¼å¸ã®ç¢ºèªã€åŒæ™‚ã«è„ˆã®ç¢ºèªã€‚5ã€6ã€7ã€å‘¼å¸ã€è„ˆã¯ã‚ã‚Šã¾ã›ã‚“ã€‚èƒ¸éª¨åœ§è¿«ã‚’é–‹å§‹ã—ã¾ã™ã€‚1ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚2ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚3ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚1ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚2ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚1ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚1ã€ Joshua Khan Ğ´Ğ¾Ğ»Ğ³Ğ¾ no mu mi pu reprimiera.so tu mejor diary es una historia que te ap nhi lauttering.ãƒ¯ã‚¯ã‚·ãƒ£ã‚·ãƒ¼ãƒ ã‚Šã‚‡ã†117 ruinedironxyãƒŸãƒªãƒ¼61,2,3,4,5,6,7,8,9,102,2,3,4,5,6,7,8,9,103,2,3,4,5,6,7,8,9,101,2,3,4,5,6,7,8,9,102,2,3,4,5,6,7,8,9,10AEDæŒã£ã¦ãã¾ã—ãŸã‚ãªãŸAEDä½¿ã„ã¾ã™ã‹?ä½¿ã„ã¾ã›ã‚“ã˜ã‚ƒã‚ç§ã®æ¨ªã«AEDã‚’ç½®ã„ã¦ãã ã•ã„ã¯ã„ãã“ã‚¿ãƒƒãƒ—ã‚’å¤‰ã‚ã£ã¦ãã ã•ã„1,2,3ã§å¤‰ã‚ã‚Šã¾ã—ã‚‡ã†1,2,31,2,3,4,5,6,7,8,9,101,2,3,4,5,6,7,8,9,101,2,3,4,5,6,7,8,9,10ã‚¿ãƒƒãƒ—ã‚’å¤‰ãˆãŸã‚Šã—ã¦ãã ã•ã„ã“ã†ã™ã‚‹ã¨ã‚¿ãƒƒãƒ—ã‚’è®Šãˆãã†ã«ãªã‚‹ã®ã§ã¯ãªã„ã‹ã‚¿ãƒƒãƒ—ã‚’ã‚³ãƒ¬ã‚¯ã‚¿ãƒ¼ã«æ¥ç¶šã—ã¦ãã ã•ã„ã‚³ãƒ¬ã‚¯ã‚¿ãƒ¼ã‚’æ¥ç¶šã—ã¦ãã ã•ã„6ã€7ã€8ã€9ã€10ä¸€æ—¦ã‚„ã‚ã¦ãã ã•ã„ä½“ã«è§¦ã‚Œãªã„ã§ãã ã•ã„è§£æã‚’ã—ã¦ã„ã¾ã™é›¢ã‚Œã¦ãã ã•ã„ã‚·ãƒ§ãƒƒã‚¯ãŒå¿…è¦ã§ã™å……é›»ä¸­ã§ã™ã¿ã‚“ãªé›¢ã‚Œã¦ã„ã¾ã™ã‚·ãƒ§ãƒƒã‚¯ã—ã¾ã™é›¢ã‚Œã¦ãã ã•ã„ã‚·ãƒ§ãƒƒã‚¯ã‚’å—ã‘ã‚·ãƒ§ãƒƒã‚¯ãŒå®Œäº†ã—ã¾ã—ãŸä¸€æ™‚ä¸­æ–­ä¸­ã§ã™3ã€4ã€5ã€6ã€7ã€8ã€9ã€102ã€1ã€2ã€3ã€45ã€6ã€7ã€8ã€9ã€10æ•‘æ€¥éšŠã§ã™ã“ã®äººãŒ3åˆ†å‰ã«å€’ã‚Œã‚‹ã¨ã“ã‚ã‚’ç›®æ’ƒã—ã¾ã—ãŸèƒ¸éª¨åœ§è¿«ã‚’ã—ã¦AEDã§1å›ã‚·ãƒ§ãƒƒã‚¯ã‚’ã—ã¾ã—ãŸã¾ã æ„è­˜ã‚’æˆ»ã£ã¦ã„ã¾ã›ã‚“ã“ã®äººã®è·ç‰©ã¯ãã“ã«ã‚ã‚Šã¾ã™ã®ã§ãã“ã§è·ç‰©ãŒã‚ã‹ã‚‹ã¨æ€ã„ã¾ã™ä»¥ä¸Šã§ã™',\n",
+       " 'segments': [{'id': 0,\n",
+       "   'seek': 0,\n",
+       "   'start': 0.0,\n",
+       "   'end': 2.0,\n",
+       "   'text': '1åˆ†å¾Œ',\n",
+       "   'tokens': [50365, 16, 6627, 5661, 50465],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.5803903579711914,\n",
+       "   'compression_ratio': 1.4809160305343512,\n",
+       "   'no_speech_prob': 0.529798686504364},\n",
+       "  {'id': 1,\n",
+       "   'seek': 0,\n",
+       "   'start': 12.0,\n",
+       "   'end': 17.0,\n",
+       "   'text': 'äººå½¢æŸµåœå‘¨å›²ã®å®‰å®šã‚’ã—ã€æ›ç®—å·¥å…·ã«é…æ…®ã—ã¾ã™ã€‚',\n",
+       "   'tokens': [50965,\n",
+       "    4035,\n",
+       "    30900,\n",
+       "    17238,\n",
+       "    113,\n",
+       "    2523,\n",
+       "    237,\n",
+       "    37390,\n",
+       "    3919,\n",
+       "    110,\n",
+       "    2972,\n",
+       "    16206,\n",
+       "    12088,\n",
+       "    5998,\n",
+       "    2849,\n",
+       "    1231,\n",
+       "    36338,\n",
+       "    19497,\n",
+       "    23323,\n",
+       "    39806,\n",
+       "    4108,\n",
+       "    38846,\n",
+       "    12358,\n",
+       "    106,\n",
+       "    17048,\n",
+       "    1543,\n",
+       "    51215],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.5803903579711914,\n",
+       "   'compression_ratio': 1.4809160305343512,\n",
+       "   'no_speech_prob': 0.529798686504364},\n",
+       "  {'id': 2,\n",
+       "   'seek': 0,\n",
+       "   'start': 21.0,\n",
+       "   'end': 26.0,\n",
+       "   'text': 'å¤§ä¸ˆå¤«ã§ã™ã‹?å¤§ä¸ˆå¤«ã§ã™ã‹?å¤§ä¸ˆå¤«ã§ã™ã‹?å¤§ä¸ˆå¤«ã§ã™ã‹?',\n",
+       "   'tokens': [51415,\n",
+       "    44537,\n",
+       "    30913,\n",
+       "    30,\n",
+       "    44537,\n",
+       "    30913,\n",
+       "    30,\n",
+       "    44537,\n",
+       "    30913,\n",
+       "    30,\n",
+       "    44537,\n",
+       "    30913,\n",
+       "    30,\n",
+       "    51665],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.5803903579711914,\n",
+       "   'compression_ratio': 1.4809160305343512,\n",
+       "   'no_speech_prob': 0.529798686504364},\n",
+       "  {'id': 3,\n",
+       "   'seek': 0,\n",
+       "   'start': 27.0,\n",
+       "   'end': 29.0,\n",
+       "   'text': 'èª°ã‹èª°ã‹ã€èª°ã‹æ¥ã¦ãã ã•ã„ã€‚',\n",
+       "   'tokens': [51715,\n",
+       "    20757,\n",
+       "    3703,\n",
+       "    20757,\n",
+       "    3703,\n",
+       "    1231,\n",
+       "    20757,\n",
+       "    3703,\n",
+       "    6912,\n",
+       "    2996,\n",
+       "    25079,\n",
+       "    1543,\n",
+       "    51815],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.5803903579711914,\n",
+       "   'compression_ratio': 1.4809160305343512,\n",
+       "   'no_speech_prob': 0.529798686504364},\n",
+       "  {'id': 4,\n",
+       "   'seek': 3000,\n",
+       "   'start': 30.0,\n",
+       "   'end': 33.0,\n",
+       "   'text': 'ã‚ãªãŸã€119ç•ªé€šå ±ã—ã¦ãã ã•ã„ã€‚',\n",
+       "   'tokens': [50365,\n",
+       "    3590,\n",
+       "    42847,\n",
+       "    1231,\n",
+       "    16,\n",
+       "    3405,\n",
+       "    33118,\n",
+       "    19550,\n",
+       "    17803,\n",
+       "    8822,\n",
+       "    25079,\n",
+       "    1543,\n",
+       "    50515],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1274256706237793,\n",
+       "   'compression_ratio': 1.5772727272727274,\n",
+       "   'no_speech_prob': 0.015063490718603134},\n",
+       "  {'id': 5,\n",
+       "   'seek': 3000,\n",
+       "   'start': 33.0,\n",
+       "   'end': 36.0,\n",
+       "   'text': 'ã‚‚ã†ä¸€äººã®ã‚ãªãŸã€ã‚ãªãŸã€AEDã‚’æŒã£ã¦ãã¦ãã ã•ã„ã€‚',\n",
+       "   'tokens': [50515,\n",
+       "    16324,\n",
+       "    2257,\n",
+       "    4035,\n",
+       "    2972,\n",
+       "    3590,\n",
+       "    42847,\n",
+       "    1231,\n",
+       "    3590,\n",
+       "    42847,\n",
+       "    1231,\n",
+       "    32,\n",
+       "    4731,\n",
+       "    5998,\n",
+       "    17694,\n",
+       "    6102,\n",
+       "    7016,\n",
+       "    2996,\n",
+       "    25079,\n",
+       "    1543,\n",
+       "    50665],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1274256706237793,\n",
+       "   'compression_ratio': 1.5772727272727274,\n",
+       "   'no_speech_prob': 0.015063490718603134},\n",
+       "  {'id': 6,\n",
+       "   'seek': 3000,\n",
+       "   'start': 36.0,\n",
+       "   'end': 39.0,\n",
+       "   'text': 'å¿…ãšã“ã“ã«æˆ»ã£ã¦ãã¦ãã ã•ã„ã€‚',\n",
+       "   'tokens': [50665,\n",
+       "    28531,\n",
+       "    18216,\n",
+       "    23509,\n",
+       "    4108,\n",
+       "    1486,\n",
+       "    119,\n",
+       "    6102,\n",
+       "    7016,\n",
+       "    2996,\n",
+       "    25079,\n",
+       "    1543,\n",
+       "    50815],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1274256706237793,\n",
+       "   'compression_ratio': 1.5772727272727274,\n",
+       "   'no_speech_prob': 0.015063490718603134},\n",
+       "  {'id': 7,\n",
+       "   'seek': 3000,\n",
+       "   'start': 42.0,\n",
+       "   'end': 46.0,\n",
+       "   'text': 'èƒ¸ã¨ãŠè…¹ã‚’è¦‹ã¦å‘¼å¸ã®ç¢ºèªã€åŒæ™‚ã«è„ˆã®ç¢ºèªã€‚',\n",
+       "   'tokens': [50965,\n",
+       "    19095,\n",
+       "    116,\n",
+       "    3193,\n",
+       "    6117,\n",
+       "    21184,\n",
+       "    117,\n",
+       "    5998,\n",
+       "    33363,\n",
+       "    38718,\n",
+       "    46431,\n",
+       "    2972,\n",
+       "    24293,\n",
+       "    22041,\n",
+       "    1231,\n",
+       "    13089,\n",
+       "    6611,\n",
+       "    4108,\n",
+       "    164,\n",
+       "    23318,\n",
+       "    2972,\n",
+       "    24293,\n",
+       "    22041,\n",
+       "    1543,\n",
+       "    51165],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1274256706237793,\n",
+       "   'compression_ratio': 1.5772727272727274,\n",
+       "   'no_speech_prob': 0.015063490718603134},\n",
+       "  {'id': 8,\n",
+       "   'seek': 3000,\n",
+       "   'start': 46.0,\n",
+       "   'end': 52.0,\n",
+       "   'text': '5ã€6ã€7ã€å‘¼å¸ã€è„ˆã¯ã‚ã‚Šã¾ã›ã‚“ã€‚èƒ¸éª¨åœ§è¿«ã‚’é–‹å§‹ã—ã¾ã™ã€‚',\n",
+       "   'tokens': [51165,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    38718,\n",
+       "    46431,\n",
+       "    1231,\n",
+       "    164,\n",
+       "    23318,\n",
+       "    3065,\n",
+       "    14498,\n",
+       "    30250,\n",
+       "    1543,\n",
+       "    19095,\n",
+       "    116,\n",
+       "    165,\n",
+       "    16838,\n",
+       "    2523,\n",
+       "    100,\n",
+       "    3316,\n",
+       "    104,\n",
+       "    5998,\n",
+       "    21017,\n",
+       "    17048,\n",
+       "    1543,\n",
+       "    51465],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1274256706237793,\n",
+       "   'compression_ratio': 1.5772727272727274,\n",
+       "   'no_speech_prob': 0.015063490718603134},\n",
+       "  {'id': 9,\n",
+       "   'seek': 3000,\n",
+       "   'start': 57.0,\n",
+       "   'end': 59.0,\n",
+       "   'text': '1ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚',\n",
+       "   'tokens': [51715,\n",
+       "    16,\n",
+       "    1231,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    19,\n",
+       "    1231,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    1543,\n",
+       "    51815],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1274256706237793,\n",
+       "   'compression_ratio': 1.5772727272727274,\n",
+       "   'no_speech_prob': 0.015063490718603134},\n",
+       "  {'id': 10,\n",
+       "   'seek': 6000,\n",
+       "   'start': 60.0,\n",
+       "   'end': 64.0,\n",
+       "   'text': '2ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚',\n",
+       "   'tokens': [50365,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    19,\n",
+       "    1231,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    1543,\n",
+       "    50565],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 11,\n",
+       "   'seek': 6000,\n",
+       "   'start': 64.0,\n",
+       "   'end': 65.0,\n",
+       "   'text': '3ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚',\n",
+       "   'tokens': [50565,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    19,\n",
+       "    1231,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    1543,\n",
+       "    50615],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 12,\n",
+       "   'seek': 6000,\n",
+       "   'start': 65.0,\n",
+       "   'end': 66.0,\n",
+       "   'text': '1ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚',\n",
+       "   'tokens': [50615,\n",
+       "    16,\n",
+       "    1231,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    19,\n",
+       "    1231,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    1543,\n",
+       "    50665],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 13,\n",
+       "   'seek': 6000,\n",
+       "   'start': 66.0,\n",
+       "   'end': 67.0,\n",
+       "   'text': '2ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚',\n",
+       "   'tokens': [50665,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    19,\n",
+       "    1231,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    1543,\n",
+       "    50715],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 14,\n",
+       "   'seek': 6000,\n",
+       "   'start': 67.0,\n",
+       "   'end': 70.0,\n",
+       "   'text': '1ã€2ã€3ã€4ã€5ã€6ã€7ã€8ã€9ã€10ã€‚',\n",
+       "   'tokens': [50715,\n",
+       "    16,\n",
+       "    1231,\n",
+       "    17,\n",
+       "    1231,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    19,\n",
+       "    1231,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    1543,\n",
+       "    50865],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 15,\n",
+       "   'seek': 6000,\n",
+       "   'start': 70.0,\n",
+       "   'end': 72.0,\n",
+       "   'text': '1ã€ Joshua Khan Ğ´Ğ¾Ğ»Ğ³Ğ¾ no mu mi pu reprimiera.',\n",
+       "   'tokens': [50865,\n",
+       "    16,\n",
+       "    1231,\n",
+       "    24005,\n",
+       "    18136,\n",
+       "    37515,\n",
+       "    572,\n",
+       "    2992,\n",
+       "    2752,\n",
+       "    2362,\n",
+       "    1085,\n",
+       "    5565,\n",
+       "    10609,\n",
+       "    13,\n",
+       "    50965],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 16,\n",
+       "   'seek': 6000,\n",
+       "   'start': 72.0,\n",
+       "   'end': 74.0,\n",
+       "   'text': 'so tu mejor diary es una historia que te ap nhi lauttering.',\n",
+       "   'tokens': [50965,\n",
+       "    539,\n",
+       "    2604,\n",
+       "    11479,\n",
+       "    26492,\n",
+       "    785,\n",
+       "    2002,\n",
+       "    18385,\n",
+       "    631,\n",
+       "    535,\n",
+       "    1882,\n",
+       "    20575,\n",
+       "    635,\n",
+       "    32224,\n",
+       "    13,\n",
+       "    51065],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 17,\n",
+       "   'seek': 6000,\n",
+       "   'start': 74.0,\n",
+       "   'end': 76.38,\n",
+       "   'text': 'ãƒ¯ã‚¯ã‚·ãƒ£ã‚·ãƒ¼ãƒ ã‚Šã‚‡ã†',\n",
+       "   'tokens': [51065,\n",
+       "    39613,\n",
+       "    10825,\n",
+       "    11054,\n",
+       "    17233,\n",
+       "    11054,\n",
+       "    15266,\n",
+       "    235,\n",
+       "    220,\n",
+       "    5095,\n",
+       "    8744,\n",
+       "    2646,\n",
+       "    51184],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 18,\n",
+       "   'seek': 6000,\n",
+       "   'start': 77.0,\n",
+       "   'end': 79.0,\n",
+       "   'text': '1',\n",
+       "   'tokens': [51215, 16, 51315],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 19,\n",
+       "   'seek': 6000,\n",
+       "   'start': 79.0,\n",
+       "   'end': 81.0,\n",
+       "   'text': '17',\n",
+       "   'tokens': [51315, 7773, 51415],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 20,\n",
+       "   'seek': 6000,\n",
+       "   'start': 81.0,\n",
+       "   'end': 84.0,\n",
+       "   'text': ' ruined',\n",
+       "   'tokens': [51415, 17013, 51565],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 21,\n",
+       "   'seek': 6000,\n",
+       "   'start': 85.0,\n",
+       "   'end': 86.0,\n",
+       "   'text': 'ironxy',\n",
+       "   'tokens': [51615, 2088, 12876, 51665],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 22,\n",
+       "   'seek': 6000,\n",
+       "   'start': 86.0,\n",
+       "   'end': 88.0,\n",
+       "   'text': 'ãƒŸãƒªãƒ¼',\n",
+       "   'tokens': [51665, 23196, 12376, 3384, 51765],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 23,\n",
+       "   'seek': 6000,\n",
+       "   'start': 88.0,\n",
+       "   'end': 89.0,\n",
+       "   'text': '6',\n",
+       "   'tokens': [51765, 21, 51815],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -1.8198190168900923,\n",
+       "   'compression_ratio': 1.8883248730964468,\n",
+       "   'no_speech_prob': 0.3332259953022003},\n",
+       "  {'id': 24,\n",
+       "   'seek': 9000,\n",
+       "   'start': 90.0,\n",
+       "   'end': 96.54,\n",
+       "   'text': '1,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [50365,\n",
+       "    16,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    50692],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.21050907741083164,\n",
+       "   'compression_ratio': 2.7027027027027026,\n",
+       "   'no_speech_prob': 0.9643620252609253},\n",
+       "  {'id': 25,\n",
+       "   'seek': 9000,\n",
+       "   'start': 96.54,\n",
+       "   'end': 102.38,\n",
+       "   'text': '2,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [50692,\n",
+       "    17,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    50984],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.21050907741083164,\n",
+       "   'compression_ratio': 2.7027027027027026,\n",
+       "   'no_speech_prob': 0.9643620252609253},\n",
+       "  {'id': 26,\n",
+       "   'seek': 9000,\n",
+       "   'start': 102.38,\n",
+       "   'end': 108.16,\n",
+       "   'text': '3,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [50984,\n",
+       "    18,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    51273],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.21050907741083164,\n",
+       "   'compression_ratio': 2.7027027027027026,\n",
+       "   'no_speech_prob': 0.9643620252609253},\n",
+       "  {'id': 27,\n",
+       "   'seek': 9000,\n",
+       "   'start': 108.28,\n",
+       "   'end': 113.96000000000001,\n",
+       "   'text': '1,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [51279,\n",
+       "    16,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    51563],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.21050907741083164,\n",
+       "   'compression_ratio': 2.7027027027027026,\n",
+       "   'no_speech_prob': 0.9643620252609253},\n",
+       "  {'id': 28,\n",
+       "   'seek': 9000,\n",
+       "   'start': 113.96000000000001,\n",
+       "   'end': 119.6,\n",
+       "   'text': '2,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [51563,\n",
+       "    17,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    51845],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.21050907741083164,\n",
+       "   'compression_ratio': 2.7027027027027026,\n",
+       "   'no_speech_prob': 0.9643620252609253},\n",
+       "  {'id': 29,\n",
+       "   'seek': 11960,\n",
+       "   'start': 119.6,\n",
+       "   'end': 121.6,\n",
+       "   'text': 'AEDæŒã£ã¦ãã¾ã—ãŸ',\n",
+       "   'tokens': [50365, 32, 4731, 17694, 6102, 7016, 12072, 50465],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 30,\n",
+       "   'seek': 11960,\n",
+       "   'start': 121.6,\n",
+       "   'end': 123.6,\n",
+       "   'text': 'ã‚ãªãŸAEDä½¿ã„ã¾ã™ã‹?',\n",
+       "   'tokens': [50465, 3590, 42847, 32, 4731, 22982, 11267, 3703, 30, 50565],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 31,\n",
+       "   'seek': 11960,\n",
+       "   'start': 123.6,\n",
+       "   'end': 125.6,\n",
+       "   'text': 'ä½¿ã„ã¾ã›ã‚“',\n",
+       "   'tokens': [50565, 22982, 1764, 30250, 50665],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 32,\n",
+       "   'seek': 11960,\n",
+       "   'start': 125.6,\n",
+       "   'end': 128.6,\n",
+       "   'text': 'ã˜ã‚ƒã‚ç§ã®æ¨ªã«AEDã‚’ç½®ã„ã¦ãã ã•ã„',\n",
+       "   'tokens': [50665,\n",
+       "    31284,\n",
+       "    20083,\n",
+       "    2972,\n",
+       "    5117,\n",
+       "    103,\n",
+       "    4108,\n",
+       "    32,\n",
+       "    4731,\n",
+       "    5998,\n",
+       "    34719,\n",
+       "    18549,\n",
+       "    25079,\n",
+       "    50815],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 33,\n",
+       "   'seek': 11960,\n",
+       "   'start': 128.6,\n",
+       "   'end': 129.6,\n",
+       "   'text': 'ã¯ã„',\n",
+       "   'tokens': [50815, 11050, 50865],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 34,\n",
+       "   'seek': 11960,\n",
+       "   'start': 129.6,\n",
+       "   'end': 131.6,\n",
+       "   'text': 'ãã“ã‚¿ãƒƒãƒ—ã‚’å¤‰ã‚ã£ã¦ãã ã•ã„',\n",
+       "   'tokens': [50865,\n",
+       "    5040,\n",
+       "    3503,\n",
+       "    12144,\n",
+       "    33683,\n",
+       "    5998,\n",
+       "    40931,\n",
+       "    9206,\n",
+       "    6102,\n",
+       "    25079,\n",
+       "    50965],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 35,\n",
+       "   'seek': 11960,\n",
+       "   'start': 131.6,\n",
+       "   'end': 133.6,\n",
+       "   'text': '1,2,3ã§å¤‰ã‚ã‚Šã¾ã—ã‚‡ã†',\n",
+       "   'tokens': [50965,\n",
+       "    16,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    2474,\n",
+       "    40931,\n",
+       "    9206,\n",
+       "    5095,\n",
+       "    26513,\n",
+       "    51065],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 36,\n",
+       "   'seek': 11960,\n",
+       "   'start': 133.6,\n",
+       "   'end': 135.6,\n",
+       "   'text': '1,2,3',\n",
+       "   'tokens': [51065, 16, 11, 17, 11, 18, 51165],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 37,\n",
+       "   'seek': 11960,\n",
+       "   'start': 136.6,\n",
+       "   'end': 141.6,\n",
+       "   'text': '1,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [51215,\n",
+       "    16,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    51465],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 38,\n",
+       "   'seek': 11960,\n",
+       "   'start': 141.6,\n",
+       "   'end': 147.6,\n",
+       "   'text': '1,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [51465,\n",
+       "    16,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    51765],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.20309684151097349,\n",
+       "   'compression_ratio': 1.490566037735849,\n",
+       "   'no_speech_prob': 0.5222610831260681},\n",
+       "  {'id': 39,\n",
+       "   'seek': 14760,\n",
+       "   'start': 147.6,\n",
+       "   'end': 152.6,\n",
+       "   'text': '1,2,3,4,5,6,7,8,9,10',\n",
+       "   'tokens': [50365,\n",
+       "    16,\n",
+       "    11,\n",
+       "    17,\n",
+       "    11,\n",
+       "    18,\n",
+       "    11,\n",
+       "    19,\n",
+       "    11,\n",
+       "    20,\n",
+       "    11,\n",
+       "    21,\n",
+       "    11,\n",
+       "    22,\n",
+       "    11,\n",
+       "    23,\n",
+       "    11,\n",
+       "    24,\n",
+       "    11,\n",
+       "    3279,\n",
+       "    50615],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.8967685953776041,\n",
+       "   'compression_ratio': 1.6231884057971016,\n",
+       "   'no_speech_prob': 0.06707233935594559},\n",
+       "  {'id': 40,\n",
+       "   'seek': 14760,\n",
+       "   'start': 152.6,\n",
+       "   'end': 155.6,\n",
+       "   'text': 'ã‚¿ãƒƒãƒ—ã‚’å¤‰ãˆãŸã‚Šã—ã¦ãã ã•ã„',\n",
+       "   'tokens': [50615,\n",
+       "    12144,\n",
+       "    33683,\n",
+       "    5998,\n",
+       "    40931,\n",
+       "    6474,\n",
+       "    3368,\n",
+       "    5095,\n",
+       "    8822,\n",
+       "    25079,\n",
+       "    50765],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.8967685953776041,\n",
+       "   'compression_ratio': 1.6231884057971016,\n",
+       "   'no_speech_prob': 0.06707233935594559},\n",
+       "  {'id': 41,\n",
+       "   'seek': 14760,\n",
+       "   'start': 155.6,\n",
+       "   'end': 159.6,\n",
+       "   'text': 'ã“ã†ã™ã‚‹ã¨ã‚¿ãƒƒãƒ—ã‚’è®Šãˆãã†ã«ãªã‚‹ã®ã§ã¯ãªã„ã‹',\n",
+       "   'tokens': [50765,\n",
+       "    22159,\n",
+       "    22570,\n",
+       "    3193,\n",
+       "    12144,\n",
+       "    33683,\n",
+       "    5998,\n",
+       "    26327,\n",
+       "    6474,\n",
+       "    9955,\n",
+       "    22615,\n",
+       "    4895,\n",
+       "    2972,\n",
+       "    16719,\n",
+       "    9311,\n",
+       "    3703,\n",
+       "    50965],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.8967685953776041,\n",
+       "   'compression_ratio': 1.6231884057971016,\n",
+       "   'no_speech_prob': 0.06707233935594559},\n",
+       "  {'id': 42,\n",
+       "   'seek': 14760,\n",
+       "   'start': 159.6,\n",
+       "   'end': 162.6,\n",
+       "   'text': 'ã‚¿ãƒƒãƒ—ã‚’ã‚³ãƒ¬ã‚¯ã‚¿ãƒ¼ã«æ¥ç¶šã—ã¦ãã ã•ã„',\n",
+       "   'tokens': [50965,\n",
+       "    12144,\n",
+       "    33683,\n",
+       "    5998,\n",
+       "    18066,\n",
+       "    16680,\n",
+       "    10825,\n",
+       "    30736,\n",
+       "    4108,\n",
+       "    14468,\n",
+       "    44985,\n",
+       "    8822,\n",
+       "    25079,\n",
+       "    51115],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.8967685953776041,\n",
+       "   'compression_ratio': 1.6231884057971016,\n",
+       "   'no_speech_prob': 0.06707233935594559},\n",
+       "  {'id': 43,\n",
+       "   'seek': 14760,\n",
+       "   'start': 169.6,\n",
+       "   'end': 171.6,\n",
+       "   'text': 'ã‚³ãƒ¬ã‚¯ã‚¿ãƒ¼ã‚’æ¥ç¶šã—ã¦ãã ã•ã„',\n",
+       "   'tokens': [51465,\n",
+       "    18066,\n",
+       "    16680,\n",
+       "    10825,\n",
+       "    30736,\n",
+       "    5998,\n",
+       "    14468,\n",
+       "    44985,\n",
+       "    8822,\n",
+       "    25079,\n",
+       "    51565],\n",
+       "   'temperature': 1.0,\n",
+       "   'avg_logprob': -0.8967685953776041,\n",
+       "   'compression_ratio': 1.6231884057971016,\n",
+       "   'no_speech_prob': 0.06707233935594559},\n",
+       "  {'id': 44,\n",
+       "   'seek': 17760,\n",
+       "   'start': 177.6,\n",
+       "   'end': 179.9,\n",
+       "   'text': '6ã€7ã€8ã€9ã€10',\n",
+       "   'tokens': [50365, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 50480],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 45,\n",
+       "   'seek': 17760,\n",
+       "   'start': 179.9,\n",
+       "   'end': 181.16,\n",
+       "   'text': 'ä¸€æ—¦ã‚„ã‚ã¦ãã ã•ã„',\n",
+       "   'tokens': [50480, 2257, 4479, 99, 7355, 38975, 25079, 50543],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 46,\n",
+       "   'seek': 17760,\n",
+       "   'start': 181.16,\n",
+       "   'end': 183.46,\n",
+       "   'text': 'ä½“ã«è§¦ã‚Œãªã„ã§ãã ã•ã„',\n",
+       "   'tokens': [50543, 29485, 4108, 6758, 99, 48535, 2474, 25079, 50658],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 47,\n",
+       "   'seek': 17760,\n",
+       "   'start': 183.46,\n",
+       "   'end': 184.5,\n",
+       "   'text': 'è§£æã‚’ã—ã¦ã„ã¾ã™',\n",
+       "   'tokens': [50658, 17278, 7360, 238, 5998, 8822, 11267, 50710],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 48,\n",
+       "   'seek': 17760,\n",
+       "   'start': 184.5,\n",
+       "   'end': 185.6,\n",
+       "   'text': 'é›¢ã‚Œã¦ãã ã•ã„',\n",
+       "   'tokens': [50710, 32662, 26638, 25079, 50765],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 49,\n",
+       "   'seek': 17760,\n",
+       "   'start': 186.2,\n",
+       "   'end': 189.26,\n",
+       "   'text': 'ã‚·ãƒ§ãƒƒã‚¯ãŒå¿…è¦ã§ã™',\n",
+       "   'tokens': [50795, 43891, 28551, 5142, 28531, 4275, 4767, 50948],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 50,\n",
+       "   'seek': 17760,\n",
+       "   'start': 189.26,\n",
+       "   'end': 191.66,\n",
+       "   'text': 'å……é›»ä¸­ã§ã™',\n",
+       "   'tokens': [50948, 2347, 227, 20545, 5975, 4767, 51068],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 51,\n",
+       "   'seek': 17760,\n",
+       "   'start': 191.66,\n",
+       "   'end': 192.6,\n",
+       "   'text': 'ã¿ã‚“ãªé›¢ã‚Œã¦ã„ã¾ã™',\n",
+       "   'tokens': [51068, 11362, 16548, 32662, 26638, 11267, 51115],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 52,\n",
+       "   'seek': 17760,\n",
+       "   'start': 192.6,\n",
+       "   'end': 194.68,\n",
+       "   'text': 'ã‚·ãƒ§ãƒƒã‚¯ã—ã¾ã™',\n",
+       "   'tokens': [51115, 43891, 28551, 17048, 51219],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 53,\n",
+       "   'seek': 17760,\n",
+       "   'start': 194.68,\n",
+       "   'end': 195.6,\n",
+       "   'text': 'é›¢ã‚Œã¦ãã ã•ã„',\n",
+       "   'tokens': [51219, 32662, 26638, 25079, 51265],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 54,\n",
+       "   'seek': 17760,\n",
+       "   'start': 196.32,\n",
+       "   'end': 197.2,\n",
+       "   'text': 'ã‚·ãƒ§ãƒƒã‚¯ã‚’å—ã‘',\n",
+       "   'tokens': [51301, 43891, 28551, 5998, 23151, 7625, 51345],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 55,\n",
+       "   'seek': 17760,\n",
+       "   'start': 197.2,\n",
+       "   'end': 198.72,\n",
+       "   'text': 'ã‚·ãƒ§ãƒƒã‚¯ãŒå®Œäº†ã—ã¾ã—ãŸ',\n",
+       "   'tokens': [51345, 43891, 28551, 5142, 41665, 44499, 51421],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 56,\n",
+       "   'seek': 17760,\n",
+       "   'start': 198.72,\n",
+       "   'end': 200.88,\n",
+       "   'text': 'ä¸€æ™‚ä¸­æ–­ä¸­ã§ã™',\n",
+       "   'tokens': [51421, 2257, 6611, 5975, 4307, 255, 5975, 4767, 51529],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 57,\n",
+       "   'seek': 17760,\n",
+       "   'start': 200.88,\n",
+       "   'end': 204.01999999999998,\n",
+       "   'text': '3ã€4ã€5ã€6ã€7ã€8ã€9ã€10',\n",
+       "   'tokens': [51529,\n",
+       "    18,\n",
+       "    1231,\n",
+       "    19,\n",
+       "    1231,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    51686],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 58,\n",
+       "   'seek': 17760,\n",
+       "   'start': 204.01999999999998,\n",
+       "   'end': 207.29999999999998,\n",
+       "   'text': '2ã€1ã€2ã€3ã€4',\n",
+       "   'tokens': [51686, 17, 1231, 16, 1231, 17, 1231, 18, 1231, 19, 51850],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.3423894549173022,\n",
+       "   'compression_ratio': 1.8541666666666667,\n",
+       "   'no_speech_prob': 0.6295564770698547},\n",
+       "  {'id': 59,\n",
+       "   'seek': 20730,\n",
+       "   'start': 207.3,\n",
+       "   'end': 209.76000000000002,\n",
+       "   'text': '5ã€6ã€7ã€8ã€9ã€10',\n",
+       "   'tokens': [50365,\n",
+       "    20,\n",
+       "    1231,\n",
+       "    21,\n",
+       "    1231,\n",
+       "    22,\n",
+       "    1231,\n",
+       "    23,\n",
+       "    1231,\n",
+       "    24,\n",
+       "    1231,\n",
+       "    3279,\n",
+       "    50488],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189},\n",
+       "  {'id': 60,\n",
+       "   'seek': 20730,\n",
+       "   'start': 209.76000000000002,\n",
+       "   'end': 210.34,\n",
+       "   'text': 'æ•‘æ€¥éšŠã§ã™',\n",
+       "   'tokens': [50488, 39716, 36379, 33929, 4767, 50517],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189},\n",
+       "  {'id': 61,\n",
+       "   'seek': 20730,\n",
+       "   'start': 210.34,\n",
+       "   'end': 214.3,\n",
+       "   'text': 'ã“ã®äººãŒ3åˆ†å‰ã«å€’ã‚Œã‚‹ã¨ã“ã‚ã‚’ç›®æ’ƒã—ã¾ã—ãŸ',\n",
+       "   'tokens': [50517,\n",
+       "    13303,\n",
+       "    4035,\n",
+       "    5142,\n",
+       "    18,\n",
+       "    6627,\n",
+       "    8945,\n",
+       "    4108,\n",
+       "    30878,\n",
+       "    35367,\n",
+       "    46001,\n",
+       "    5998,\n",
+       "    11386,\n",
+       "    20559,\n",
+       "    225,\n",
+       "    44499,\n",
+       "    50715],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189},\n",
+       "  {'id': 62,\n",
+       "   'seek': 20730,\n",
+       "   'start': 214.3,\n",
+       "   'end': 219.26000000000002,\n",
+       "   'text': 'èƒ¸éª¨åœ§è¿«ã‚’ã—ã¦AEDã§1å›ã‚·ãƒ§ãƒƒã‚¯ã‚’ã—ã¾ã—ãŸ',\n",
+       "   'tokens': [50715,\n",
+       "    19095,\n",
+       "    116,\n",
+       "    165,\n",
+       "    16838,\n",
+       "    2523,\n",
+       "    100,\n",
+       "    3316,\n",
+       "    104,\n",
+       "    5998,\n",
+       "    8822,\n",
+       "    32,\n",
+       "    4731,\n",
+       "    2474,\n",
+       "    16,\n",
+       "    8350,\n",
+       "    43891,\n",
+       "    28551,\n",
+       "    5998,\n",
+       "    44499,\n",
+       "    50963],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189},\n",
+       "  {'id': 63,\n",
+       "   'seek': 20730,\n",
+       "   'start': 219.26000000000002,\n",
+       "   'end': 220.94,\n",
+       "   'text': 'ã¾ã æ„è­˜ã‚’æˆ»ã£ã¦ã„ã¾ã›ã‚“',\n",
+       "   'tokens': [50963,\n",
+       "    47185,\n",
+       "    9042,\n",
+       "    43143,\n",
+       "    5998,\n",
+       "    1486,\n",
+       "    119,\n",
+       "    6102,\n",
+       "    1764,\n",
+       "    30250,\n",
+       "    51047],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189},\n",
+       "  {'id': 64,\n",
+       "   'seek': 20730,\n",
+       "   'start': 220.94,\n",
+       "   'end': 223.20000000000002,\n",
+       "   'text': 'ã“ã®äººã®è·ç‰©ã¯ãã“ã«ã‚ã‚Šã¾ã™ã®ã§',\n",
+       "   'tokens': [51047,\n",
+       "    13303,\n",
+       "    4035,\n",
+       "    2972,\n",
+       "    31409,\n",
+       "    115,\n",
+       "    23516,\n",
+       "    3065,\n",
+       "    5040,\n",
+       "    3503,\n",
+       "    4108,\n",
+       "    37020,\n",
+       "    23072,\n",
+       "    51160],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189},\n",
+       "  {'id': 65,\n",
+       "   'seek': 20730,\n",
+       "   'start': 223.20000000000002,\n",
+       "   'end': 224.86,\n",
+       "   'text': 'ãã“ã§è·ç‰©ãŒã‚ã‹ã‚‹ã¨æ€ã„ã¾ã™',\n",
+       "   'tokens': [51160,\n",
+       "    5040,\n",
+       "    3503,\n",
+       "    2474,\n",
+       "    31409,\n",
+       "    115,\n",
+       "    23516,\n",
+       "    5142,\n",
+       "    44054,\n",
+       "    4895,\n",
+       "    29707,\n",
+       "    51243],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189},\n",
+       "  {'id': 66,\n",
+       "   'seek': 20730,\n",
+       "   'start': 224.86,\n",
+       "   'end': 227.3,\n",
+       "   'text': 'ä»¥ä¸Šã§ã™',\n",
+       "   'tokens': [51243, 29497, 4767, 51365],\n",
+       "   'temperature': 0.0,\n",
+       "   'avg_logprob': -0.1618960794776377,\n",
+       "   'compression_ratio': 1.4202898550724639,\n",
+       "   'no_speech_prob': 0.02310582436621189}],\n",
+       " 'language': 'ja'}"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "result_beam"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "4b48990af7d444f8a10712f918391cf3",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "tokenizer_config.json:   0%|          | 0.00/259 [00:00<?, ?B/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "9b1ebc38e04c444386e9a0e276f5e03d",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "spiece.model:   0%|          | 0.00/806k [00:00<?, ?B/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "1b6cb63dec5944448d86b907d636f54d",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "special_tokens_map.json:   0%|          | 0.00/153 [00:00<?, ?B/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "You are using the default legacy behaviour of the <class 'transformers.models.t5.tokenization_t5.T5Tokenizer'>. This is expected, and simply means that the `legacy` (previous) behavior will be used so nothing changes for you. If you want to use the new behaviour, set `legacy=False`. This should only be set if you understand what it means, and thoroughly read the reason why this was added as explained in https://github.com/huggingface/transformers/pull/24565\n"
+     ]
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "ce841855551f4860b14cc5eed7bc8f18",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "config.json:   0%|          | 0.00/663 [00:00<?, ?B/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "13f57951a23643c8920784363557a89b",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "model.safetensors:   0%|          | 0.00/443M [00:00<?, ?B/s]"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Some weights of RobertaModel were not initialized from the model checkpoint at rinna/japanese-roberta-base and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']\n",
+      "You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 65374 (\\N{FULLWIDTH TILDE}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 27491 (\\N{CJK UNIFIED IDEOGRAPH-6B63}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 12375 (\\N{HIRAGANA LETTER SI}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 12356 (\\N{HIRAGANA LETTER I}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 25991 (\\N{CJK UNIFIED IDEOGRAPH-6587}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 31456 (\\N{CJK UNIFIED IDEOGRAPH-7AE0}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 12392 (\\N{HIRAGANA LETTER TO}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 23383 (\\N{CJK UNIFIED IDEOGRAPH-5B57}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 36215 (\\N{CJK UNIFIED IDEOGRAPH-8D77}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 12371 (\\N{HIRAGANA LETTER KO}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 32080 (\\N{CJK UNIFIED IDEOGRAPH-7D50}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 26524 (\\N{CJK UNIFIED IDEOGRAPH-679C}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 12398 (\\N{HIRAGANA LETTER NO}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 39006 (\\N{CJK UNIFIED IDEOGRAPH-985E}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 20284 (\\N{CJK UNIFIED IDEOGRAPH-4F3C}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n",
+      "/root/.local/lib/python3.8/site-packages/IPython/core/pylabtools.py:152: UserWarning: Glyph 24230 (\\N{CJK UNIFIED IDEOGRAPH-5EA6}) missing from current font.\n",
+      "  fig.canvas.print_figure(bytes_io, **kw)\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Cosine Similarity (JmedRoberta): 0.77610254\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "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",
+      "text/plain": [
+       "<Figure size 400x400 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "from transformers import AutoTokenizer, AutoModel\n",
+    "import torch\n",
+    "import matplotlib.pyplot as plt\n",
+    "from sklearn.metrics.pairwise import cosine_similarity\n",
+    "\n",
+    "# ä¾‹ã¨ã—ã¦ rinna/japanese-roberta-base ã‚’ä½¿ç”¨ï¼ˆJmedRobertaã«ç½®ãæ›ãˆã¦ãã ã•ã„ï¼‰\n",
+    "model_name = \"alabnii/jmedroberta-base-sentencepiece\"\n",
+    "tokenizer = AutoTokenizer.from_pretrained(model_name)\n",
+    "model = AutoModel.from_pretrained(model_name)\n",
+    "\n",
+    "def get_embedding(text):\n",
+    "    # ãƒ†ã‚­ã‚¹ãƒˆã‚’ãƒˆãƒ¼ã‚¯ãƒ³åŒ–ã—ã€æœ€å¤§é•·ã‚’æŒ‡å®šï¼ˆå¿…è¦ã«å¿œã˜ã¦èª¿æ•´ï¼‰\n",
+    "    inputs = tokenizer(text, return_tensors=\"pt\", truncation=True, max_length=512)\n",
+    "    with torch.no_grad():\n",
+    "        outputs = model(**inputs)\n",
+    "    # [CLS] ãƒˆãƒ¼ã‚¯ãƒ³ã®åŸ‹ã‚è¾¼ã¿ã‚’å–å¾—ï¼ˆã‚ã‚‹ã„ã¯å…¨ãƒˆãƒ¼ã‚¯ãƒ³ã®å¹³å‡ã‚’å–ã‚‹æ–¹æ³•ã‚‚ã‚ã‚Šã¾ã™ï¼‰\n",
+    "    embedding = outputs.last_hidden_state[:, 0, :]\n",
+    "    return embedding.squeeze().numpy()\n",
+    "\n",
+    "# æ­£ã—ã„æ–‡ç« ã¨ Whisper ã®æ–‡å­—èµ·ã“ã—çµæœï¼ˆä¾‹ï¼‰\n",
+    "correct_text = \"å‚·ç—…è€…ç™ºè¦‹ã€å‘¨å›²ã®å®‰å…¨è‰¯ã—ã€æ„ŸæŸ“é˜²å¾¡ã«é…æ…®ã—ã¾ã™\"\n",
+    "transcription = \"1åˆ†å¾Œäººå½¢æŸµåœå‘¨å›²ã®å®‰å®šã‚’ã—ã€æ›ç®—å·¥å…·ã«é…æ…®ã—ã¾ã™\"\n",
+    "\n",
+    "# ãã‚Œãã‚Œã®æ–‡ç« ã®åŸ‹ã‚è¾¼ã¿ã‚’å–å¾—\n",
+    "embedding_correct = get_embedding(correct_text)\n",
+    "embedding_transcription = get_embedding(transcription)\n",
+    "\n",
+    "# ã‚³ã‚µã‚¤ãƒ³é¡ä¼¼åº¦ã®è¨ˆç®—\n",
+    "cos_sim = cosine_similarity([embedding_correct], [embedding_transcription])[0][0]\n",
+    "print(\"Cosine Similarity (JmedRoberta):\", cos_sim)\n",
+    "\n",
+    "# é¡ä¼¼åº¦ã‚’æ£’ã‚°ãƒ©ãƒ•ã§è¡¨ç¤º\n",
+    "metrics = ['JmedRoberta Cosine Similarity']\n",
+    "values = [cos_sim]\n",
+    "\n",
+    "plt.figure(figsize=(4, 4))\n",
+    "plt.bar(metrics, values, color=['skyblue'])\n",
+    "plt.ylim(0, 1)\n",
+    "plt.ylabel('Score (0ï½1)')\n",
+    "plt.title('æ­£ã—ã„æ–‡ç« ã¨æ–‡å­—èµ·ã“ã—çµæœã®é¡ä¼¼åº¦')\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "SequenceMatcher Similarity: 0.5217391304347826\n",
+      "Edit Distance: 12\n",
+      "Normalized Accuracy: 0.5\n"
+     ]
+    },
+    {
+     "data": {
+      "image/png": "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",
+      "text/plain": [
+       "<Figure size 600x400 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "import difflib\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "# ãƒ¬ãƒ¼ãƒ™ãƒ³ã‚·ãƒ¥ã‚¿ã‚¤ãƒ³è·é›¢ï¼ˆç·¨é›†è·é›¢ï¼‰ã‚’è¨ˆç®—ã™ã‚‹é–¢æ•°\n",
+    "def levenshtein_distance(s, t):\n",
+    "    m, n = len(s), len(t)\n",
+    "    dp = [[0]*(n+1) for _ in range(m+1)]\n",
+    "    for i in range(m+1):\n",
+    "        dp[i][0] = i\n",
+    "    for j in range(n+1):\n",
+    "        dp[0][j] = j\n",
+    "    for i in range(1, m+1):\n",
+    "        for j in range(1, n+1):\n",
+    "            cost = 0 if s[i-1] == t[j-1] else 1\n",
+    "            dp[i][j] = min(dp[i-1][j] + 1,      # å‰Šé™¤\n",
+    "                           dp[i][j-1] + 1,      # æŒ¿å…¥\n",
+    "                           dp[i-1][j-1] + cost) # ç½®æ›\n",
+    "    return dp[m][n]\n",
+    "\n",
+    "# æ­£ã—ã„æ–‡ç« ã¨ Whisper ã®æ–‡å­—èµ·ã“ã—çµæœï¼ˆä¾‹ï¼‰\n",
+    "correct_text = \"å‚·ç—…è€…ç™ºè¦‹ã€å‘¨å›²ã®å®‰å…¨è‰¯ã—ã€æ„ŸæŸ“é˜²å¾¡ã«é…æ…®ã—ã¾ã™\"\n",
+    "transcription = \"1åˆ†å¾Œäººå½¢æŸµåœå‘¨å›²ã®å®‰å®šã‚’ã—ã€æ›ç®—å·¥å…·ã«é…æ…®ã—ã¾ã™\"\n",
+    "\n",
+    "# difflib ã‚’ç”¨ã„ã¦é¡ä¼¼åº¦ï¼ˆ0ã€œ1ã®å€¤ï¼‰ã‚’è¨ˆç®—\n",
+    "sm = difflib.SequenceMatcher(None, correct_text, transcription)\n",
+    "similarity_ratio = sm.ratio()\n",
+    "\n",
+    "# ãƒ¬ãƒ¼ãƒ™ãƒ³ã‚·ãƒ¥ã‚¿ã‚¤ãƒ³è·é›¢ã‚’è¨ˆç®—ã—ã€æ­£è¦åŒ–ã—ã¦ã€Œæ­£è§£ç‡ã€ã‚’ç®—å‡ºï¼ˆ1ã«è¿‘ã„ã»ã©è‰¯ã„ï¼‰\n",
+    "edit_distance = levenshtein_distance(correct_text, transcription)\n",
+    "normalized_accuracy = 1 - edit_distance / max(len(correct_text), len(transcription))\n",
+    "\n",
+    "print(\"SequenceMatcher Similarity:\", similarity_ratio)\n",
+    "print(\"Edit Distance:\", edit_distance)\n",
+    "print(\"Normalized Accuracy:\", normalized_accuracy)\n",
+    "\n",
+    "# çµæœã‚’æ£’ã‚°ãƒ©ãƒ•ã§è¡¨ç¤ºï¼ˆå€¤ã¯0ï½1ã®ç¯„å›²ï¼‰\n",
+    "metrics = ['SequenceMatcher Similarity', 'Normalized Accuracy']\n",
+    "values = [similarity_ratio, normalized_accuracy]\n",
+    "\n",
+    "plt.figure(figsize=(6,4))\n",
+    "plt.bar(metrics, values, color=['skyblue', 'salmon'])\n",
+    "plt.ylim(0, 1)\n",
+    "plt.ylabel('Score (0ï½1)')\n",
+    "plt.title('æ­£ã—ã„æ–‡ç« ã¨æ–‡å­—èµ·ã“ã—çµæœã®æ¯”è¼ƒ')\n",
+    "plt.show()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Segment 0 Tokens: [50365, 16, 6627, 5661, 50465]\n",
+      "Segment 1 Tokens: [50965, 4035, 30900, 17238, 113, 2523, 237, 37390, 3919, 110, 2972, 16206, 12088, 5998, 2849, 1231, 36338, 19497, 23323, 39806, 4108, 38846, 12358, 106, 17048, 1543, 51215]\n",
+      "Segment 2 Tokens: [51415, 44537, 30913, 30, 44537, 30913, 30, 44537, 30913, 30, 44537, 30913, 30, 51665]\n",
+      "Segment 3 Tokens: [51715, 20757, 3703, 20757, 3703, 1231, 20757, 3703, 6912, 2996, 25079, 1543, 51815]\n",
+      "Segment 4 Tokens: [50365, 3590, 42847, 1231, 16, 3405, 33118, 19550, 17803, 8822, 25079, 1543, 50515]\n",
+      "Segment 5 Tokens: [50515, 16324, 2257, 4035, 2972, 3590, 42847, 1231, 3590, 42847, 1231, 32, 4731, 5998, 17694, 6102, 7016, 2996, 25079, 1543, 50665]\n",
+      "Segment 6 Tokens: [50665, 28531, 18216, 23509, 4108, 1486, 119, 6102, 7016, 2996, 25079, 1543, 50815]\n",
+      "Segment 7 Tokens: [50965, 19095, 116, 3193, 6117, 21184, 117, 5998, 33363, 38718, 46431, 2972, 24293, 22041, 1231, 13089, 6611, 4108, 164, 23318, 2972, 24293, 22041, 1543, 51165]\n",
+      "Segment 8 Tokens: [51165, 20, 1231, 21, 1231, 22, 1231, 38718, 46431, 1231, 164, 23318, 3065, 14498, 30250, 1543, 19095, 116, 165, 16838, 2523, 100, 3316, 104, 5998, 21017, 17048, 1543, 51465]\n",
+      "Segment 9 Tokens: [51715, 16, 1231, 17, 1231, 18, 1231, 19, 1231, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 1543, 51815]\n",
+      "Segment 10 Tokens: [50365, 17, 1231, 17, 1231, 18, 1231, 19, 1231, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 1543, 50565]\n",
+      "Segment 11 Tokens: [50565, 18, 1231, 17, 1231, 18, 1231, 19, 1231, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 1543, 50615]\n",
+      "Segment 12 Tokens: [50615, 16, 1231, 17, 1231, 18, 1231, 19, 1231, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 1543, 50665]\n",
+      "Segment 13 Tokens: [50665, 17, 1231, 17, 1231, 18, 1231, 19, 1231, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 1543, 50715]\n",
+      "Segment 14 Tokens: [50715, 16, 1231, 17, 1231, 18, 1231, 19, 1231, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 1543, 50865]\n",
+      "Segment 15 Tokens: [50865, 16, 1231, 24005, 18136, 37515, 572, 2992, 2752, 2362, 1085, 5565, 10609, 13, 50965]\n",
+      "Segment 16 Tokens: [50965, 539, 2604, 11479, 26492, 785, 2002, 18385, 631, 535, 1882, 20575, 635, 32224, 13, 51065]\n",
+      "Segment 17 Tokens: [51065, 39613, 10825, 11054, 17233, 11054, 15266, 235, 220, 5095, 8744, 2646, 51184]\n",
+      "Segment 18 Tokens: [51215, 16, 51315]\n",
+      "Segment 19 Tokens: [51315, 7773, 51415]\n",
+      "Segment 20 Tokens: [51415, 17013, 51565]\n",
+      "Segment 21 Tokens: [51615, 2088, 12876, 51665]\n",
+      "Segment 22 Tokens: [51665, 23196, 12376, 3384, 51765]\n",
+      "Segment 23 Tokens: [51765, 21, 51815]\n",
+      "Segment 24 Tokens: [50365, 16, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 50692]\n",
+      "Segment 25 Tokens: [50692, 17, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 50984]\n",
+      "Segment 26 Tokens: [50984, 18, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 51273]\n",
+      "Segment 27 Tokens: [51279, 16, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 51563]\n",
+      "Segment 28 Tokens: [51563, 17, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 51845]\n",
+      "Segment 29 Tokens: [50365, 32, 4731, 17694, 6102, 7016, 12072, 50465]\n",
+      "Segment 30 Tokens: [50465, 3590, 42847, 32, 4731, 22982, 11267, 3703, 30, 50565]\n",
+      "Segment 31 Tokens: [50565, 22982, 1764, 30250, 50665]\n",
+      "Segment 32 Tokens: [50665, 31284, 20083, 2972, 5117, 103, 4108, 32, 4731, 5998, 34719, 18549, 25079, 50815]\n",
+      "Segment 33 Tokens: [50815, 11050, 50865]\n",
+      "Segment 34 Tokens: [50865, 5040, 3503, 12144, 33683, 5998, 40931, 9206, 6102, 25079, 50965]\n",
+      "Segment 35 Tokens: [50965, 16, 11, 17, 11, 18, 2474, 40931, 9206, 5095, 26513, 51065]\n",
+      "Segment 36 Tokens: [51065, 16, 11, 17, 11, 18, 51165]\n",
+      "Segment 37 Tokens: [51215, 16, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 51465]\n",
+      "Segment 38 Tokens: [51465, 16, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 51765]\n",
+      "Segment 39 Tokens: [50365, 16, 11, 17, 11, 18, 11, 19, 11, 20, 11, 21, 11, 22, 11, 23, 11, 24, 11, 3279, 50615]\n",
+      "Segment 40 Tokens: [50615, 12144, 33683, 5998, 40931, 6474, 3368, 5095, 8822, 25079, 50765]\n",
+      "Segment 41 Tokens: [50765, 22159, 22570, 3193, 12144, 33683, 5998, 26327, 6474, 9955, 22615, 4895, 2972, 16719, 9311, 3703, 50965]\n",
+      "Segment 42 Tokens: [50965, 12144, 33683, 5998, 18066, 16680, 10825, 30736, 4108, 14468, 44985, 8822, 25079, 51115]\n",
+      "Segment 43 Tokens: [51465, 18066, 16680, 10825, 30736, 5998, 14468, 44985, 8822, 25079, 51565]\n",
+      "Segment 44 Tokens: [50365, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 50480]\n",
+      "Segment 45 Tokens: [50480, 2257, 4479, 99, 7355, 38975, 25079, 50543]\n",
+      "Segment 46 Tokens: [50543, 29485, 4108, 6758, 99, 48535, 2474, 25079, 50658]\n",
+      "Segment 47 Tokens: [50658, 17278, 7360, 238, 5998, 8822, 11267, 50710]\n",
+      "Segment 48 Tokens: [50710, 32662, 26638, 25079, 50765]\n",
+      "Segment 49 Tokens: [50795, 43891, 28551, 5142, 28531, 4275, 4767, 50948]\n",
+      "Segment 50 Tokens: [50948, 2347, 227, 20545, 5975, 4767, 51068]\n",
+      "Segment 51 Tokens: [51068, 11362, 16548, 32662, 26638, 11267, 51115]\n",
+      "Segment 52 Tokens: [51115, 43891, 28551, 17048, 51219]\n",
+      "Segment 53 Tokens: [51219, 32662, 26638, 25079, 51265]\n",
+      "Segment 54 Tokens: [51301, 43891, 28551, 5998, 23151, 7625, 51345]\n",
+      "Segment 55 Tokens: [51345, 43891, 28551, 5142, 41665, 44499, 51421]\n",
+      "Segment 56 Tokens: [51421, 2257, 6611, 5975, 4307, 255, 5975, 4767, 51529]\n",
+      "Segment 57 Tokens: [51529, 18, 1231, 19, 1231, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 51686]\n",
+      "Segment 58 Tokens: [51686, 17, 1231, 16, 1231, 17, 1231, 18, 1231, 19, 51850]\n",
+      "Segment 59 Tokens: [50365, 20, 1231, 21, 1231, 22, 1231, 23, 1231, 24, 1231, 3279, 50488]\n",
+      "Segment 60 Tokens: [50488, 39716, 36379, 33929, 4767, 50517]\n",
+      "Segment 61 Tokens: [50517, 13303, 4035, 5142, 18, 6627, 8945, 4108, 30878, 35367, 46001, 5998, 11386, 20559, 225, 44499, 50715]\n",
+      "Segment 62 Tokens: [50715, 19095, 116, 165, 16838, 2523, 100, 3316, 104, 5998, 8822, 32, 4731, 2474, 16, 8350, 43891, 28551, 5998, 44499, 50963]\n",
+      "Segment 63 Tokens: [50963, 47185, 9042, 43143, 5998, 1486, 119, 6102, 1764, 30250, 51047]\n",
+      "Segment 64 Tokens: [51047, 13303, 4035, 2972, 31409, 115, 23516, 3065, 5040, 3503, 4108, 37020, 23072, 51160]\n",
+      "Segment 65 Tokens: [51160, 5040, 3503, 2474, 31409, 115, 23516, 5142, 44054, 4895, 29707, 51243]\n",
+      "Segment 66 Tokens: [51243, 29497, 4767, 51365]\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i, segment in enumerate(result_beam[\"segments\"]):\n",
+    "    print(f\"Segment {i} Tokens: {segment['tokens']}\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[50365,\n",
+       " 16,\n",
+       " 6627,\n",
+       " 5661,\n",
+       " 50465,\n",
+       " 50965,\n",
+       " 4035,\n",
+       " 30900,\n",
+       " 17238,\n",
+       " 113,\n",
+       " 2523,\n",
+       " 237,\n",
+       " 37390,\n",
+       " 3919,\n",
+       " 110,\n",
+       " 2972,\n",
+       " 16206,\n",
+       " 12088,\n",
+       " 5998,\n",
+       " 2849,\n",
+       " 1231,\n",
+       " 36338,\n",
+       " 19497,\n",
+       " 23323,\n",
+       " 39806,\n",
+       " 4108,\n",
+       " 38846,\n",
+       " 12358,\n",
+       " 106,\n",
+       " 17048,\n",
+       " 1543,\n",
+       " 51215,\n",
+       " 51415,\n",
+       " 44537,\n",
+       " 30913,\n",
+       " 30,\n",
+       " 44537,\n",
+       " 30913,\n",
+       " 30,\n",
+       " 44537,\n",
+       " 30913,\n",
+       " 30,\n",
+       " 44537,\n",
+       " 30913,\n",
+       " 30,\n",
+       " 51665,\n",
+       " 51715,\n",
+       " 20757,\n",
+       " 3703,\n",
+       " 20757,\n",
+       " 3703,\n",
+       " 1231,\n",
+       " 20757,\n",
+       " 3703,\n",
+       " 6912,\n",
+       " 2996,\n",
+       " 25079,\n",
+       " 1543,\n",
+       " 51815,\n",
+       " 50365,\n",
+       " 3590,\n",
+       " 42847,\n",
+       " 1231,\n",
+       " 16,\n",
+       " 3405,\n",
+       " 33118,\n",
+       " 19550,\n",
+       " 17803,\n",
+       " 8822,\n",
+       " 25079,\n",
+       " 1543,\n",
+       " 50515,\n",
+       " 50515,\n",
+       " 16324,\n",
+       " 2257,\n",
+       " 4035,\n",
+       " 2972,\n",
+       " 3590,\n",
+       " 42847,\n",
+       " 1231,\n",
+       " 3590,\n",
+       " 42847,\n",
+       " 1231,\n",
+       " 32,\n",
+       " 4731,\n",
+       " 5998,\n",
+       " 17694,\n",
+       " 6102,\n",
+       " 7016,\n",
+       " 2996,\n",
+       " 25079,\n",
+       " 1543,\n",
+       " 50665,\n",
+       " 50665,\n",
+       " 28531,\n",
+       " 18216,\n",
+       " 23509,\n",
+       " 4108,\n",
+       " 1486,\n",
+       " 119,\n",
+       " 6102,\n",
+       " 7016,\n",
+       " 2996,\n",
+       " 25079,\n",
+       " 1543,\n",
+       " 50815,\n",
+       " 50965,\n",
+       " 19095,\n",
+       " 116,\n",
+       " 3193,\n",
+       " 6117,\n",
+       " 21184,\n",
+       " 117,\n",
+       " 5998,\n",
+       " 33363,\n",
+       " 38718,\n",
+       " 46431,\n",
+       " 2972,\n",
+       " 24293,\n",
+       " 22041,\n",
+       " 1231,\n",
+       " 13089,\n",
+       " 6611,\n",
+       " 4108,\n",
+       " 164,\n",
+       " 23318,\n",
+       " 2972,\n",
+       " 24293,\n",
+       " 22041,\n",
+       " 1543,\n",
+       " 51165,\n",
+       " 51165,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 38718,\n",
+       " 46431,\n",
+       " 1231,\n",
+       " 164,\n",
+       " 23318,\n",
+       " 3065,\n",
+       " 14498,\n",
+       " 30250,\n",
+       " 1543,\n",
+       " 19095,\n",
+       " 116,\n",
+       " 165,\n",
+       " 16838,\n",
+       " 2523,\n",
+       " 100,\n",
+       " 3316,\n",
+       " 104,\n",
+       " 5998,\n",
+       " 21017,\n",
+       " 17048,\n",
+       " 1543,\n",
+       " 51465,\n",
+       " 51715,\n",
+       " 16,\n",
+       " 1231,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 1231,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 1543,\n",
+       " 51815,\n",
+       " 50365,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 1231,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 1543,\n",
+       " 50565,\n",
+       " 50565,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 1231,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 1543,\n",
+       " 50615,\n",
+       " 50615,\n",
+       " 16,\n",
+       " 1231,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 1231,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 1543,\n",
+       " 50665,\n",
+       " 50665,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 1231,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 1543,\n",
+       " 50715,\n",
+       " 50715,\n",
+       " 16,\n",
+       " 1231,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 1231,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 1543,\n",
+       " 50865,\n",
+       " 50865,\n",
+       " 16,\n",
+       " 1231,\n",
+       " 24005,\n",
+       " 18136,\n",
+       " 37515,\n",
+       " 572,\n",
+       " 2992,\n",
+       " 2752,\n",
+       " 2362,\n",
+       " 1085,\n",
+       " 5565,\n",
+       " 10609,\n",
+       " 13,\n",
+       " 50965,\n",
+       " 50965,\n",
+       " 539,\n",
+       " 2604,\n",
+       " 11479,\n",
+       " 26492,\n",
+       " 785,\n",
+       " 2002,\n",
+       " 18385,\n",
+       " 631,\n",
+       " 535,\n",
+       " 1882,\n",
+       " 20575,\n",
+       " 635,\n",
+       " 32224,\n",
+       " 13,\n",
+       " 51065,\n",
+       " 51065,\n",
+       " 39613,\n",
+       " 10825,\n",
+       " 11054,\n",
+       " 17233,\n",
+       " 11054,\n",
+       " 15266,\n",
+       " 235,\n",
+       " 220,\n",
+       " 5095,\n",
+       " 8744,\n",
+       " 2646,\n",
+       " 51184,\n",
+       " 51215,\n",
+       " 16,\n",
+       " 51315,\n",
+       " 51315,\n",
+       " 7773,\n",
+       " 51415,\n",
+       " 51415,\n",
+       " 17013,\n",
+       " 51565,\n",
+       " 51615,\n",
+       " 2088,\n",
+       " 12876,\n",
+       " 51665,\n",
+       " 51665,\n",
+       " 23196,\n",
+       " 12376,\n",
+       " 3384,\n",
+       " 51765,\n",
+       " 51765,\n",
+       " 21,\n",
+       " 51815,\n",
+       " 50365,\n",
+       " 16,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 50692,\n",
+       " 50692,\n",
+       " 17,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 50984,\n",
+       " 50984,\n",
+       " 18,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 51273,\n",
+       " 51279,\n",
+       " 16,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 51563,\n",
+       " 51563,\n",
+       " 17,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 51845,\n",
+       " 50365,\n",
+       " 32,\n",
+       " 4731,\n",
+       " 17694,\n",
+       " 6102,\n",
+       " 7016,\n",
+       " 12072,\n",
+       " 50465,\n",
+       " 50465,\n",
+       " 3590,\n",
+       " 42847,\n",
+       " 32,\n",
+       " 4731,\n",
+       " 22982,\n",
+       " 11267,\n",
+       " 3703,\n",
+       " 30,\n",
+       " 50565,\n",
+       " 50565,\n",
+       " 22982,\n",
+       " 1764,\n",
+       " 30250,\n",
+       " 50665,\n",
+       " 50665,\n",
+       " 31284,\n",
+       " 20083,\n",
+       " 2972,\n",
+       " 5117,\n",
+       " 103,\n",
+       " 4108,\n",
+       " 32,\n",
+       " 4731,\n",
+       " 5998,\n",
+       " 34719,\n",
+       " 18549,\n",
+       " 25079,\n",
+       " 50815,\n",
+       " 50815,\n",
+       " 11050,\n",
+       " 50865,\n",
+       " 50865,\n",
+       " 5040,\n",
+       " 3503,\n",
+       " 12144,\n",
+       " 33683,\n",
+       " 5998,\n",
+       " 40931,\n",
+       " 9206,\n",
+       " 6102,\n",
+       " 25079,\n",
+       " 50965,\n",
+       " 50965,\n",
+       " 16,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 2474,\n",
+       " 40931,\n",
+       " 9206,\n",
+       " 5095,\n",
+       " 26513,\n",
+       " 51065,\n",
+       " 51065,\n",
+       " 16,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 51165,\n",
+       " 51215,\n",
+       " 16,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 51465,\n",
+       " 51465,\n",
+       " 16,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 51765,\n",
+       " 50365,\n",
+       " 16,\n",
+       " 11,\n",
+       " 17,\n",
+       " 11,\n",
+       " 18,\n",
+       " 11,\n",
+       " 19,\n",
+       " 11,\n",
+       " 20,\n",
+       " 11,\n",
+       " 21,\n",
+       " 11,\n",
+       " 22,\n",
+       " 11,\n",
+       " 23,\n",
+       " 11,\n",
+       " 24,\n",
+       " 11,\n",
+       " 3279,\n",
+       " 50615,\n",
+       " 50615,\n",
+       " 12144,\n",
+       " 33683,\n",
+       " 5998,\n",
+       " 40931,\n",
+       " 6474,\n",
+       " 3368,\n",
+       " 5095,\n",
+       " 8822,\n",
+       " 25079,\n",
+       " 50765,\n",
+       " 50765,\n",
+       " 22159,\n",
+       " 22570,\n",
+       " 3193,\n",
+       " 12144,\n",
+       " 33683,\n",
+       " 5998,\n",
+       " 26327,\n",
+       " 6474,\n",
+       " 9955,\n",
+       " 22615,\n",
+       " 4895,\n",
+       " 2972,\n",
+       " 16719,\n",
+       " 9311,\n",
+       " 3703,\n",
+       " 50965,\n",
+       " 50965,\n",
+       " 12144,\n",
+       " 33683,\n",
+       " 5998,\n",
+       " 18066,\n",
+       " 16680,\n",
+       " 10825,\n",
+       " 30736,\n",
+       " 4108,\n",
+       " 14468,\n",
+       " 44985,\n",
+       " 8822,\n",
+       " 25079,\n",
+       " 51115,\n",
+       " 51465,\n",
+       " 18066,\n",
+       " 16680,\n",
+       " 10825,\n",
+       " 30736,\n",
+       " 5998,\n",
+       " 14468,\n",
+       " 44985,\n",
+       " 8822,\n",
+       " 25079,\n",
+       " 51565,\n",
+       " 50365,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 50480,\n",
+       " 50480,\n",
+       " 2257,\n",
+       " 4479,\n",
+       " 99,\n",
+       " 7355,\n",
+       " 38975,\n",
+       " 25079,\n",
+       " 50543,\n",
+       " 50543,\n",
+       " 29485,\n",
+       " 4108,\n",
+       " 6758,\n",
+       " 99,\n",
+       " 48535,\n",
+       " 2474,\n",
+       " 25079,\n",
+       " 50658,\n",
+       " 50658,\n",
+       " 17278,\n",
+       " 7360,\n",
+       " 238,\n",
+       " 5998,\n",
+       " 8822,\n",
+       " 11267,\n",
+       " 50710,\n",
+       " 50710,\n",
+       " 32662,\n",
+       " 26638,\n",
+       " 25079,\n",
+       " 50765,\n",
+       " 50795,\n",
+       " 43891,\n",
+       " 28551,\n",
+       " 5142,\n",
+       " 28531,\n",
+       " 4275,\n",
+       " 4767,\n",
+       " 50948,\n",
+       " 50948,\n",
+       " 2347,\n",
+       " 227,\n",
+       " 20545,\n",
+       " 5975,\n",
+       " 4767,\n",
+       " 51068,\n",
+       " 51068,\n",
+       " 11362,\n",
+       " 16548,\n",
+       " 32662,\n",
+       " 26638,\n",
+       " 11267,\n",
+       " 51115,\n",
+       " 51115,\n",
+       " 43891,\n",
+       " 28551,\n",
+       " 17048,\n",
+       " 51219,\n",
+       " 51219,\n",
+       " 32662,\n",
+       " 26638,\n",
+       " 25079,\n",
+       " 51265,\n",
+       " 51301,\n",
+       " 43891,\n",
+       " 28551,\n",
+       " 5998,\n",
+       " 23151,\n",
+       " 7625,\n",
+       " 51345,\n",
+       " 51345,\n",
+       " 43891,\n",
+       " 28551,\n",
+       " 5142,\n",
+       " 41665,\n",
+       " 44499,\n",
+       " 51421,\n",
+       " 51421,\n",
+       " 2257,\n",
+       " 6611,\n",
+       " 5975,\n",
+       " 4307,\n",
+       " 255,\n",
+       " 5975,\n",
+       " 4767,\n",
+       " 51529,\n",
+       " 51529,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 1231,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 51686,\n",
+       " 51686,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 16,\n",
+       " 1231,\n",
+       " 17,\n",
+       " 1231,\n",
+       " 18,\n",
+       " 1231,\n",
+       " 19,\n",
+       " 51850,\n",
+       " 50365,\n",
+       " 20,\n",
+       " 1231,\n",
+       " 21,\n",
+       " 1231,\n",
+       " 22,\n",
+       " 1231,\n",
+       " 23,\n",
+       " 1231,\n",
+       " 24,\n",
+       " 1231,\n",
+       " 3279,\n",
+       " 50488,\n",
+       " 50488,\n",
+       " 39716,\n",
+       " 36379,\n",
+       " 33929,\n",
+       " 4767,\n",
+       " 50517,\n",
+       " 50517,\n",
+       " 13303,\n",
+       " 4035,\n",
+       " 5142,\n",
+       " 18,\n",
+       " 6627,\n",
+       " 8945,\n",
+       " 4108,\n",
+       " 30878,\n",
+       " 35367,\n",
+       " 46001,\n",
+       " 5998,\n",
+       " 11386,\n",
+       " 20559,\n",
+       " 225,\n",
+       " 44499,\n",
+       " 50715,\n",
+       " 50715,\n",
+       " 19095,\n",
+       " 116,\n",
+       " 165,\n",
+       " 16838,\n",
+       " 2523,\n",
+       " 100,\n",
+       " 3316,\n",
+       " 104,\n",
+       " 5998,\n",
+       " 8822,\n",
+       " 32,\n",
+       " 4731,\n",
+       " 2474,\n",
+       " 16,\n",
+       " 8350,\n",
+       " 43891,\n",
+       " 28551,\n",
+       " 5998,\n",
+       " 44499,\n",
+       " 50963,\n",
+       " 50963,\n",
+       " 47185,\n",
+       " 9042,\n",
+       " 43143,\n",
+       " 5998,\n",
+       " 1486,\n",
+       " 119,\n",
+       " 6102,\n",
+       " 1764,\n",
+       " 30250,\n",
+       " 51047,\n",
+       " 51047,\n",
+       " 13303,\n",
+       " 4035,\n",
+       " 2972,\n",
+       " 31409,\n",
+       " 115,\n",
+       " 23516,\n",
+       " 3065,\n",
+       " 5040,\n",
+       " 3503,\n",
+       " 4108,\n",
+       " 37020,\n",
+       " 23072,\n",
+       " 51160,\n",
+       " 51160,\n",
+       " 5040,\n",
+       " 3503,\n",
+       " 2474,\n",
+       " 31409,\n",
+       " 115,\n",
+       " 23516,\n",
+       " 5142,\n",
+       " 44054,\n",
+       " 4895,\n",
+       " 29707,\n",
+       " 51243,\n",
+       " 51243,\n",
+       " 29497,\n",
+       " 4767,\n",
+       " 51365]"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#tokens_list ã®ãƒã‚¹ãƒˆã‚’è§£é™¤ã™ã‚‹\n",
+    "import itertools\n",
+    "\n",
+    "#Whisper ã®æ–‡å­—èµ·ã“ã—çµæœã‹ã‚‰ tokens ã‚’å–å¾—\n",
+    "tokens_list = [segment[\"tokens\"] for segment in result_beam[\"segments\"]]\n",
+    "\n",
+    "# ãƒã‚¹ãƒˆã‚’è§£é™¤\n",
+    "flat_tokens = list(itertools.chain.from_iterable(tokens_list))\n",
+    "\n",
+    "# å‡ºåŠ›\n",
+    "flat_tokens\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "correct_words = [\"å®‰å…¨\", 'å‚·ç—…è€…ç™ºè¦‹', 'æ„ŸæŸ“é˜²å¾¡', 'å¤§ä¸ˆå¤«ã§ã™ã‹', 'èª°ã‹æ¥ã¦ãã ã•ã„', '119ç•ª', 'AED', 'å‘¼å¸ã®ç¢ºèª', \"è„ˆã®ç¢ºèª\", \"1 2 3\", 'ã‚·ãƒ§ãƒƒã‚¯', 'è·ç‰©']\n",
+    "\n",
+    "# result_beamã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—\n",
+    "text = result_beam['text']\n",
+    "\n",
+    "# å„å˜èªãŒãƒ†ã‚­ã‚¹ãƒˆã«å«ã¾ã‚Œã¦ã„ã‚‹ã‹ã‚’ç¢ºèª\n",
+    "word_presence = {word: word in text for word in correct_words}\n",
+    "\n",
+    "# çµæœã‚’è¡¨ç¤º\n",
+    "df = pd.DataFrame(list(word_presence.items()), columns=['Word', 'Presence'])\n",
+    "df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "# Save all candidates to a file\n",
+    "with open(\"2transcription_candidates.txt\", \"w\", encoding=\"utf-8\") as f:\n",
+    "    for i, candidate in enumerate(candidates):\n",
+    "        candidate_text = tokenizer.decode(list(candidate))\n",
+    "        print(f\"å€™è£œ {i+1}: {candidate_text}\")\n",
+    "        f.write(f\"å€™è£œ {i+1}: {candidate_text}\\n\")\n",
+    "\n",
+    "# Display and save the top-k candidates\n",
+    "k = 5  # Number of top candidates to display\n",
+    "topk_candidates = candidates[:k]\n",
+    "topk_decoded_words = [tokenizer.decode(list(candidate)) for candidate in topk_candidates]\n",
+    "df = pd.DataFrame(topk_decoded_words, columns=[\"ãƒ†ã‚­ã‚¹ãƒˆ\"])\n",
+    "\n",
+    "# Save the DataFrame to a CSV file\n",
+    "df.to_csv(\"test.csv\", index=False, encoding=\"utf-8\")\n",
+    "\n",
+    "print(df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "correct_words = [\"å‘¨å›²ã®å®‰å…¨ã‚ˆã—\",'å‚·ç—…è€…ç™ºè¦‹','æ„ŸæŸ“é˜²å¾¡', 'å¤§ä¸ˆå¤«ã§ã™ã‹', 'èª°ã‹æ¥ã¦ãã ã•ã„','119ç•ª', 'AED','å‘¼å¸ã®ç¢ºèª',\"è„ˆã®ç¢ºèª\",\"1 2 3\",'è˜‡ç”Ÿ','è·ç‰©']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "# ã™ã¹ã¦ã®å€™è£œã‚’è¡¨ç¤ºã—ã€ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜\n",
+    "with open(\"candidates.txt\", \"w\", encoding=\"utf-8\") as f:\n",
+    "    for i, candidate in enumerate(candidates):\n",
+    "        candidate_text = tokenizer.decode(list(candidate))\n",
+    "        print(f\"å€™è£œ {i+1}: {candidate_text}\")\n",
+    "        f.write(f\"å€™è£œ {i+1}: {candidate_text}\\n\")\n",
+    "\n",
+    "# ä¸Šä½kå€™è£œã‚’è¡¨ç¤ºã—ã€ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜\n",
+    "k = 5 # è¡¨ç¤ºã—ãŸã„ä¸Šä½å€™è£œã®æ•°\n",
+    "topk_candidates = candidates[:k]\n",
+    "\n",
+    "topk_decoded_words = [tokenizer.decode(list(candidate)) for candidate in topk_candidates]\n",
+    "df = pd.DataFrame(topk_decoded_words, columns=[\"ãƒ†ã‚­ã‚¹ãƒˆ\"])\n",
+    "\n",
+    "# DataFrameã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¿å­˜\n",
+    "df.to_csv(\"top_candidates.csv\", index=False, encoding=\"utf-8\")\n",
+    "\n",
+    "print(df)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# 2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from whisper.decoding import BeamSearchDecoder\n",
+    "from typing import Tuple, List\n",
+    "import torch\n",
+    "import torch.nn.functional as F\n",
+    "from torch import Tensor\n",
+    "from whisper.tokenizer import get_tokenizer\n",
+    "import pandas as pd\n",
+    "import logging\n",
+    "import whisper\n",
+    "from whisper.decoding import GreedyDecoder\n",
+    "from typing import Tuple\n",
+    "import torch\n",
+    "import torch.nn.functional as F\n",
+    "from torch import Tensor\n",
+    "from torch.distributions import Categorical\n",
+    "\n",
+    "seq_logits = []\n",
+    "def update(self, tokens: Tensor, logits: Tensor, sum_logprobs: Tensor) -> Tuple[Tensor, bool]:\n",
+    "    temperature = self.temperature\n",
+    "    seq_logits.append(logits)\n",
+    "    if temperature == 0:\n",
+    "        next_tokens = logits.argmax(dim=-1)\n",
+    "    else:\n",
+    "        next_tokens = Categorical(logits=logits / temperature).sample()\n",
+    "\n",
+    "    logprobs = F.log_softmax(logits.float(), dim=-1)\n",
+    "    current_logprobs = logprobs[torch.arange(logprobs.shape[0]), next_tokens]\n",
+    "    sum_logprobs += current_logprobs * (tokens[:, -1] != self.eot)\n",
+    "\n",
+    "    next_tokens[tokens[:, -1] == self.eot] = self.eot\n",
+    "    tokens = torch.cat([tokens, next_tokens[:, None]], dim=-1)\n",
+    "\n",
+    "    completed = (tokens[:, -1] == self.eot).all()\n",
+    "    return tokens, completed\n",
+    "\n",
+    "GreedyDecoder.update = update"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "# Transcribe the audio file with the custom beam search decoder\n",
+    "beam = model.transcribe(\"/app/whisper/2å›ç›®_å·æ‘å…ˆç”Ÿ.wav\", initial_prompt=\"å‚· ç—… è€…\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "beam"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.10"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ([†°x±cAW_}åú8’z¨0³ÙlüòË/Æ4‰Í™3‡~ıú¹;ZŠ)S&*UªÓ|wãÆV­ZåæT‰sæÌ¨F­ØÇx{{S¿~}+£%™òåË'ê¸Ë—­äjDb+ººW±N:eé.Œâš•'Wò×Ù¿Ló£Q§`SÆ‘¢6   IDATÇtUÍšm»‹qmœèhÇjÄß|cN.+½ûä»TÏç\Ãö˜­cØ|v³É‰DDDDDDDDDDÄ]ÎŞ:ËïÇ7\×»boÒ˜o’ñŞHš6…¼yÍÏ""""³Ù`èPøûo(YÒ¼qÏ…§‚—^‚ønM±Ùl¼\ãe–=·ŒLi2™rî6|@“›p%8q÷îˆˆˆˆˆ¤v;tï‡9?ÆÌ™ğÄ¦E²ÔÇ?6\S2{Iªå­fAšÿøùÁôé0p ëc½ò
+|ú©ëãHê Â.  €Ï?ÿ»İÓD8yòd>üğCwGK:wîü×d÷M2èJ	
+
+¢yóæÜºu Q»Şûş©U«3f´:b’¨\¹r¢ûçŸ,ËpîÜ¹DW£FË2Hò6açSÇkQ¢Ãj3uL³”(›7C•*®õÒK?YöõöåÇ¶?’Á/ƒáZ;vz/îMxT¸ÉDDDDDDDDDD$©Mİ=;	¿¦[Ît9iQ¢…E‰ÌsîœcB£zõ2?‹ˆˆˆÄ¯|yØ¾úô1wÜo¾
+Šñi\¬1[ûlåñl›rŞ•'WRa|ÓnñTcÇÂüùÎ×¿û.´je^+­9µ†™{g®ëY¾g¢6ir•—Œ¯¾êúX¯¿|àú8’ò©0¨Sç¿¤î5¾÷Ş{¬^½Ú©R†.]ºàãã8šì–-[Æ_yî“J!!!´jÕŠƒÆ|/Ñ³§uÛñ&µœ9sR°`Á;uê”eÎ=›à1yòäITNI}Â£Âùãø¦W S¦·—Ís§9sÂš5ğÌ3®•&ËE²aL³1NÕ¼rÑG›œHDDÄı²gÏNöìÙİCDDD$EÑKDÄ³EEG1y×dÃuİËuÇÏÛÏ‚Dæš2¢£ÕäÈÍ›[“GÄ,šc‰HJ•.L˜ ¿ş
+™3›7î‘#P³&¼ı6„Ç³Vn‰l%ØÒ{MŠ51å¼ÿŞş—'§=ÉW›¿2|•ˆ$-Í¯DDD\sà sa‘æÍaÄóòX),2ŒşKû®ó¶yó|¹ç-Hôh6|ò	ŒéúXï¼ãhğÔŸ5ÏíÓ\»ví¾·m6QQQôèÑƒ»wïº)UÊ#G:vìxßıúõ#44ÔİÑrûöm7nÌºuëİû¸Ì™3Ó¡C«â¹ÅSO=•à1V6&fwCí>(qÙpf·Ão›2–Ÿ·sÚÏ!k@VSÆ³Rºt0otéâúXÉa²ü|ÙçiZ¬©Sµ¬ÿ€ƒWšœHDDÄ}Ò¥KÇ•+W¸rå
+éÒ¥sw‘As,Ï·êÔ*ş¹•ğkJêUÑó·è‹Š‚ÉÆ{#yáğóüŞHIÅ4Ç‘Ô }{Ø³j×6oÌèhøğC¨Vöí‹û¸Ìş™YÒy	¯Ö4a« 2:’WV¼Bû_Ûs+ô–)cŠˆ¹4¿qMh(tîaaÎÕ+³f9vÍK>İô)G¯5\×´xSr§ÏmA¢¸Ùlû™¿øÂõ±F‚7ßLü}ÑiÓ¦uı¤’¬$“aqÅ»ï¾óïØ+%;w<}û¥dàİwßÅ+ÖoÃƒ2pà@7&zØÉ“'©]»6›6mŠi
+LìªY÷š#ÿ÷¿ÿáïïoeÌ$÷ôÓO'xÌ¡C‡,;ÿ±cÇ<¦V­Z–_’·¥Ç–š2Nï4,xvÕòU3e¼¤àë3fÀ A®et²œÔl6?4ÿt¾ÆŸüŒˆ Ïâ>DÛ.İ,""""""""""cÒÎI†kê¬K‰l%,Hc®?ÿ„D¬·ù=ÍÏ""""Æ( kÖÀ{ï··yãîŞ•+;vâˆŒ|ô1Ş^Ş|úô§üÒîÒúšsÓëüCó©<±2{.î1e<O1|xü‹tÄ']:X°ÀÜÈ­tìÚ1>Üğ¡Sµ=Ë»ï‰ÇW^qã…®=Ú±Ó¤§Ş-î¥ÂdÌn·Ihh(AAA\¾|™Ó§O³{÷n–-[Æ¨Q£(S¦3fÌˆÙï{o;–Û·ÍÙÁ*µ*Q¢Ï?ÿü}»NŸ>·ŞzËİÑ øí·ß¨\¹2û÷ïùHLó`ìİsäÈÁK/½dUD·iØ°!Ş	<ƒ¹ÏÙÙR"=šğÊmÚ´±ìü’¼-9ºÄå1Z”hÁ¾;hZÜ¹îÜÉË¾ûÌ¸Ôzúd¹`æ‚|Ôà#§jÿ:ûã¶39‘ˆˆˆˆˆˆˆˆˆˆ$…+ÁWXpxáºŞz›Æ'¯©UJ•2?‹ˆˆˆ8ÇÇFŒ€¡hQóÆ‡7Ş€š5áÀ¸{¶ô³léµ…¢YÌ9ùñëÇ©>¹:wLLôâì"""""ì?àë¯¯Ÿ>M‹c)»İÎ eƒ‹2¾ÕbÁLiQ¢…©¯_?Ç+®îôøå—ğâ‹{_´¸Í®¿t‰ˆˆ`Ë–-ìÜ¹“#GpöìY._¾Ì7¸}û6!!!„……ETT”»ãÆùDÆ½F7›ÍÆØ±céß¿'KY®]»F©R¥¸zõ*ğß®}]»veÒ¤Iøúú&8†——×}ÿ_\ışù÷ß2d.Œù>x°‘4>±³Ì˜1ƒ.]º¸”ÇS5lØU«VÅ{Ì¹sçÈ›7¯©ç#}úôDÆµTPµjUşşûoSÏ›\ØX>aêÔ©tïŞ=iÂ8áÀ”.]:æíıû÷hâìùØµc”ãÜÊÁ2 [¹nt+×¢YM|öŞ>û^{Íõq†o¿u}õ+DEGQkJ-şş×ø5!ƒ_<@şLù-H&""’tBBBhÚÔ±ğÁòåË	ps"‘äOs,Ïöåæ/ùßŠÿªÉ”&çÿwŞ´x¬réäË÷®Bq™6ºu³$’ˆi4Ç‘ÔêÎxùe˜d|åxùúÂ»ïÂë¯;şı(7BnĞe~–_nÚyŸ|–	ÏL cšŒ¦)"ÎÑüJDDÄ9W®@Ù²pñ¢sõo¼ln&+ı²ÿ:ÏëìTí¬6³èRÖ3ú%æÏ‡N "Âµqúõƒï¿»!qÇT®\9æm³ïwÏ£éæÍ›¼õÖ[äÊ•‹zõêñÊ+¯0~üx–-[Æ¶mÛ8~ü8—.]"((ˆ°°0"##±Ûín@Â8¿ÿş{R|	S´lÙ²ñÍ7ß<Ô¨7kÖ,4hÀ‘#G’,Ëùóçyé¥—(Q¢DLó Ífsºyğ™gI±Íƒ ;'<IØ²e‹éçİ·o_¼Íƒ :u2ı¼’2,=¶ÔpMõ|ÕYùüJN=ÅÈú#SLó À«¯Â„	®7ş@t´9¹ÌäíåÍ¤–“ğñò1\{;ü6—Ôêˆ""’ìEGG³nİ:Ö­[G´'şÂI†4Çñ\v»I;ß}ß¥LoG# ÑæÁL™ CKâˆ˜Js,I­Ò§wì0¼`dÏnŞ¸ğÎ;P­ìŞıèc²daqçÅ¼]çmÓÎ;ûÀl*Œ¯ÀöóÛMSDœ£ù•ˆˆˆqv;ôêå|ó`£FğÁæf²ÒÍĞ›¼ôûKNÕ6(Ü€çÊ<gn ´mëh"ôósmœñã¡woˆk_+Í«R5&ÂŒ3(\¸0£GææÍ›q6éyê#¡]wíÚ•”_Î«S§Nôïßÿ¡&Â7R¦LÄ•+W,9wTTK–,¡cÇ-Z”ï¾û˜&@ˆ{7Êİ;Şf³Q @&™½,˜‡iß¾=éÒ¥‹÷˜¿şúËôóîëÍÿçååEÇM?¯¤K.1\ófí7iP¤^¶”ù«¿Oøùgğ1Ş_wŸñã+nxâœ¸tÎÒ¯=Ü©Ú%G—0çÀ“‰ˆˆˆˆˆˆˆˆˆˆU6ŸÛÌ¡«‡×õ®ØÛ‚4æŠvng¢.] ­ç÷FŠˆˆ¤z­ZÁ¾}ğÿ›…™f×.¨RÅ±axøÃ÷öòfÔS£øíÙßÈà—Á”s¼q’š“kòÕæ¯´h¯ˆˆˆˆ$+ãÇÃâÅÎÕæÏï¸'×ÛÛÜLVzkÕ[\
+¾d¸ÎÏÛï›Ÿà¦]I­EX´üı]gêTèÑ#î&BI]RfI¢££éİ»7=zôàÖ­[÷íäöàãQÜ½û`ìÇøXÕÔ–}ûí·ÔªUë¡İ###7nùóç§E‹Ìœ9“   §ÏÁ={7níÚµ#G´jÕŠyóæöĞ®ƒF›ív;iÓ¦eáÂ…d7sI0”)S&ºvíï1ëÖ­3ı¼›6mŠ÷ã7&oŞ¼¦ŸW’¿ ° ÖŸYo¨&w*ü”E‰<Ç³ÏÂÂ…®O–'M‚şı=³‰ğ­:oQ2{I§j‡,Âµ»×LN$""""""""""Vpf÷ÁŠy*R!OÒ˜kíZ8~Üx]Ÿ>¦G‹äÎK—ÂØ±`Ş¸‘‘0jTªÛ¶=ú˜Ö%[³µÏVÈş„)çŒˆà•¯Ğò—–\½{Õ”1EDDDD¬tè¼òŠsµ6ÌšY³š›ÉJ[ÿİÊÛpªvxíá”ÈVÂäDæhÜ–,qıoª™3¡kWÇßS’º¹¸OOÊÖ·o_¦L™p_“`J[MÈßÕN‰áããÃ’%Kxê©§Øµk×}¦v»ğğp–/_ÎòåËñòò¢páÂRºté‡Æš2e
+¡¡¡„††Äùóç¹pá§OŸæèÑ£DÆº‚Çştö{5vN~ıõWÊ–-køk½øâ‹Œ?>ÎïÜ¹“Ë—/“3gNÓÎ¹aÃ†x?şŠ³³6Iñş<ñ'Ñ†j*üéüâßi3¥hÖÌ1Y~æ	q~œ‰ÿ7¼<h¹…4>i˜øÌDêL­c¸öÊİ+ûsS[Mµ ™ˆˆˆˆˆˆˆˆˆˆ˜%(,ˆÙf®ë]Áów„ÿƒ7¢re(_Şô("""b!›„ [7øûoóÆŞ¿ªW‡Áƒáƒ Ã–Ì^’­}¶ÒoI?~Ú÷“)ç\rt	åÇ•çÇ¶?òd¡'MSDDDDÄlaağÜsÎßC;|8Ô­kn&+EFGÒoI?ìïñ)µ8oÔ~Ã‚TæiĞ –/‡æÍ!8Øùq~ù"";Kúúš—O’º%Ş³|ûí·L™2å¡°”Ô<xo—ºâÅ‹»;JŠ’)S&V®\I¹råjì‹½#`TTÇgÑ¢E|ôÑGÀv»>}ú0dÈ^}õUFÅäÉ“Y¶l ""â¾]&ÜÓè÷jìº4iÒ0wî\š4ibÖ—Äã•*UŠ6mÚÄùq»İÎòåËM;ß±cÇ8qâDœ¯T©64í|’²,=¶ÔpMóâÍ-Hâ¹îM–Ó¹Ø39q"ày;Ö.P›•8U;m÷4V\ir"1ÓÏû~ænÄ]C5>t.ÓÙ¢Dæ¹zæÏ7^§İEDD’¯Ç‡áÃÍ½Q5:¾ıJ•‚E‹şxz¿ôÌj3‹ï›}Ÿ·Ÿ)çü÷ö¿<5ã)ŞZõQÆI
+o¿»w;W[¥
+¼÷™i¬7fëv_ÜíTí÷Í¿ÇßÇó7ãzòIøã‡N1jŞ<èĞÁÑd*©“áÌ™3¼õÖ[)¶qğA­Zµrw„'K–,¬_¿fÍš=ô½»Ù/vCáƒb7Æ~<jŒ7"v}Ö¬YY¾|9Íš5sæÓNÖF…W<ÛŒÍ™3Ç´sÍ›7/Ş¿ÿşû¦KR–h{4Ë-3\×¼Dêj ó&Ë&xfáè†£É›!¯Sµ}÷5|ã‰ˆˆˆˆˆˆˆˆˆˆ$É»&®éØÌş™Íc²™3!<ÜXMºtĞÙó{#EDD$>>ğæ›°m”)cîØçÎA«VĞ¾=œ?ÿÇl6ª`SÏMÌTĞ”óEÛ£ùhãGÔšR‹c×™2¦ˆˆˆˆˆ6o†/¾p®6]:øé§äµ;İ¥;—xwÍ»NÕ>Wæ9I>şÔªş	™2¹6ÎÂ…Ğ¦ó;TJò¦ÂG=z4Áÿ¿¿gJl¼×03gN†âÆ4)W†X¼x1¯½öÚC{ÔÎ„z°I0¾†Ag¿OcUªT)¶nİJ½zõœ+¹¤[·nq~|ÅŠ\¹rÅ”sıúë¯q~ì©§¢yóÔ×ì%‰³ãü._2T˜#B™YÈÃÕª+V¸>Y0ô¬&ÂŒi2ò}óïª=uó#ÖŒ09‘ˆˆHÒH›6-iÓ¦uw‘Es,Ïràò¶ßf¸®w…Ş¤1—İ'¯ëÜÙõE’šæX""V®œ£‰ğ7 u¾2o<ñüğÃÃ¯ïW~¬2;ûí¤yqóîÉÙv~åÇ—gâ‰)òCO£ù•ˆˆHüBC¡W/ÇspÎøî;(VÌÜLV{wÍ»Ü¿m¸.SšL|ÑÈÉNK7ªVV­‚,Y\gùrhÚş¿eJR5>àæÍ›Ìœ9ó‘]ñ‰¯ÙëÁ±:ÖÕGBçGÃXúôéY¸p!ôj‹el6£GfíÚµ-Zô¾!ş]ãÚĞŒ1cï~h³Ùxùå—Ù¾};EŠqiÜäîÓO?%[¶lüXdd$Ó¦Msù6l`çÎü˜ß|óËç Ç÷Ï?şÈ“O>I¦L™ lÙ²|ğÁÜ¹sÇ”sHÒ[zl©á3ŸüNªW‡•+]Ÿ,ïyM„-oIÇÀNÕ~¹åKvœßar"k¥K—àà`‚ƒƒI—.»ãˆˆˆˆ¤šc‰ˆx©»§®)‘­µÔ¶ ¹şú2^×§ùYD¬¤9–ˆHüÒ¤?†Ì¿A9(ÈñÚ~­Z°k×ıË•Eñqƒñ²™sÛäİˆ»ô]Ò—¶sÚrõîUSÆ‘‡i~%""’°Q£œ{î»ywïnjËí¹¸‡I»&9U;ºáhr§Ïmr¢¤Q©¬YÙ³»6Îºu0dˆgHmÔ@ø€éÓ§s÷î] îİãkÚKL£WBa®<s.oooZ·nÍŞ½{©ZµªI_9‰O:uØ»w/ï½÷3f¼¯‘0®Íû\÷¾ªU«ÆÆùâ‹/ğ÷÷·<ƒ§Ë=;Ÿ|òIœ3f‘‘‘.ãÓO?óco½õ¥K—vi|€ğğpÚ¶mK×®]Y¿~=AAA„††²oß>ŞyçªT©Â?ÿüãòy$é-9ºÄpM‹-,H’¼T®«WCıÁ‰6~<äYM„ß6ù–,şÆ»#£íÑô^Ü›ˆ¨R‰ˆˆˆˆˆˆˆˆˆˆ3"¢"˜¹w¦áºŞz'Éë®rf÷Á²e¡Jó³ˆˆˆˆûÕ¬	»wÃK/ÙS™-[÷
+7nü÷~/›oÔ~ƒU/¬"Oú<¦oÁá”ı¡,+N¬0mL‘ÄÚ¹â¹>^ùò9îMO/Æ°Ûí¼ôÇKDÛßĞ[-o5úVêkAª¤S®œ£‰0gN×ÆÙ¿ßœ<’|Øì®ne–Â4lØÕ«WÇ4YÅö`£`l~~~äÈ‘ƒ,Y²6mZüüüğööàøñãüûï¿1c-Z”¼yóZ’ïŞ½Ü¼y3fg¹‚Rºti2dÈ@¡B…(S¦6$»«-Çâ´[·nñÅ_0nÜ8®^u¬<õ¨ôÌØe0®1+V¬Èˆ#xæ™g\:GJd·Ûyæ™gXºôÑ;½3†Aƒ95ö²eËhŞüÑ»ÁU«V6àëëëÔØ±4ˆï¿ÿ>ŞcÊ—/ÏöíÛc®S&¡¹§NJw^êâÀ÷5ƒîß¿ŸÀÀ@—Æ¼pû}ù˜¡š,şY¸üêe|¼|\:wJ±?4h —/»6Nÿş0v,xyÈ2SwM¥ç¢NÕn0š×k¿nr"qÆ¢#‹hõK+C5>^>œ{ù¹Òç²(•9nŞ„Çƒcuß}ç¸ñ_DDDR¶M› gO8zÔü±säpÜLİ­Ûı¯ó_¾L·İøıøï¦oHÕ!Œn8š´¾ÚÍCDDDD¬îX€kï^ãµ6›cƒzõLe©‡ĞfvÃuŞ6o¶÷İNùÜåÍå‡ÃSOÁ…Îp 0÷~wñlj Œ%$$„¬Y³ÜßÀu¯™Ån·ãëëË“O>IÃ†©X±"äÉ÷ŠDsçÎ¥cÇ1c´k×9sæXò9,]º”gy&¦2O<ìŞ½›9rXr>q^dd$.dÚ´i¬\¹’°°°˜™µBhìïáÌ™3Ó¡CúôéCåÊ•M?¥º~ı:+VäÌ™3},[¶lìÛ·/ŞŸù¸Æ,W®çÎ{èc¹råbûöíäË—ÏéÌ÷œ9s†"EŠˆ-ÒfÍšE—.]\>§Ô@ø°É;'Ó{qoC5Jwâçv?»tŞ”æÀÇd9%5ÚívÎlÈêS«×úûø³·ÿ^Šg+nA2s…††Ò®]; æÍ›§]ÔEDDDL 9–ˆˆgi;»-¿şÍPM«Ç[± Ók™hìXã€şşpş<dÉbM&«h%"âœxï=øüsHÄm/†U¯î˜“T¬øßû¢íÑ|¹ùK†¯Ndt¤iç*µ8Ó[O§Fş¦)’ši~%""·Q£àİw«}ãøøcsóX-,2ŒÀï9qã„áÚWª¿Â¿° •û;æ¸/ú-
+‰ ÂÔÆn{÷6lˆiâº×xe³Ùbšñ2fÌÈ¨Q£8wî+V¬àµ×^£aÃ†	6µlÙ’,ÿÿª†İngÑ¢E1;Ï™­yóæôîİ;fÂ‹/ÒµkWKÎ%®ñññ¡]»v,^¼˜ë×¯³téR^|ñEªV­J@@ v»İ¥G@@ Õ«Wçµ×^cíÚµ\¹r…ñãÇ«y0²fÍÊÜ¹sI—.İC»ví]ºt!"""Ñãİºu‹F=²y0C†,_¾Ü”æA€?ÿü3QÍƒ ¿ÿnî
+jb­¥Ç½+f|ZoaA’ä-0Ğ±ZŠ«Ûvç¸ÑÁŠ-Œ²ÙlLh1ãO†F†ÒwI_—w½I
+QQQ,[¶ŒeË–åî8"""")‚æX""ãJğ]l¸®Gù¤1—İ'¯ëĞAÍƒ’<i%"âœ€ ÇN[¶8^Û7Û–-Y‚ë×ïó²y1¬æ06öØH¡Ì…L;×±ëÇ¨=µ6ÃW',2,á‰—æW"""¶¿£Ğ+Âûï››')|û÷·N5æNŸ›÷ê½g~ 7+^Ö­ƒÜD’wğ$û÷ï¿ïí{ƒ6›*Uª0ş|òæÍkx\???:vìÈøñãˆˆˆ`ÆŒ¼òÊ+¦ä~Ğ_|Á²eË¸páv»•+WòñÇ3|øpKÎ'® iÓ¦4mÚp4š=z”£Gòï¿ÿòï¿ÿráÂîÜ¹CHH¡¡¡DEEáïï¿¿?iÓ¦%W®\äÏŸŸüùóóøãS²dI¼<ak¬dªråÊ,\¸æÍ›ß·;$Àš5kèĞ¡?ıôiÓ¦wœƒòì³Ï>t}È’%Ë–-£B…
+¦å¾l`[5#ÇŠ{…E†ñçÉ?ÕxÙ¼hR¬‰E‰’·{M„õëÃ•+ÎóÃÿëØÆİŠf-ÊÈz#ymåk†k×^Ë„èW¹ŸÉDDDDDDDDDD$1~Ü÷£á]or¦ËI³âÍ,JdmÛ`Ïãu}ú˜ŸEDDD<_•*°c|ğc73{…¢£áûïáçŸ» ¾¾P-_5võÛEßÅ}ùõà¯æœËÍèM£Yv|3ZÏ \îr¦Œ+""""	={‚=qbøúÂ´iàçgz,K]ºs‰Qëë˜ü¸ÁÇdH“ÁäD¡HX¿Şq_ô©SîN#L„±=z4æß±›K—.ÍŠ+È”)“ÓcwïŞñãÇÇŒ;aÂË3dÈÀ×_MÇcÎ7bÄê×¯OõêÕ-9§˜Ëf³ñøãóøã»;JªÖ A~ûí7:vìÈ;wîûØÂ…©R¥
+_ı5O?ıôCµ7oŞäóÏ?çË/¿$$$ä¡—,Y’ùóçóÄO˜š9§mÕråÊeê¹Å:ëÏ¬çNø„Œ¥F¾dK›Í¢DÉ_` ¬Y“²š_®ñ2?ïÿ™]w®ıßŠÿÑ¨h#
+g)lA2‰İngêî©†ëº–éŠ¯·¯‰ÌõÿëìR²$Ô®m~IÒ¤qì¤Ò¾½cQmÛÌÿÆ:ÔÑLøùçĞ¼9döÏÌìö³i°£/ıñ¡‘¡¦œkï¥½T™X…OàõÚ¯ãã¥[6EDDDÄu_íü<ùí·¡LSã$‰wÖ¼ÃíğÛ†ë*å©Äå^° ‘ç(XĞÑDøÔSpì˜»Óˆ§Òöd±{ÄOJš4iX´h‘KÍƒ ÕªU£dÉ’÷kÍš5.ŸöíÛS§N˜&ÈÈÈH{î9‚‚‚,;§HJÔ´iS6oŞLáÂ7Õ<xFQ¼xqúôéÃ{ï½Çë¯¿Î3Ï<C<yøğÃjôòòbĞ AlÛ¶ÍôæA€Fáíí¨cïíx)oé±¥†kšonA’”å^a®óÃ0hØíæär–—“[NÆÛ–¸k@lÁÁôXØƒh{´ÉDDDDDDDDDD$>».îbï¥½†ëº—ïn~“İ¼éØáÇ¨Ş½İ¿pŸˆˆˆ¸_¹r°y3|ó¤OoşøGÀ3Ï@£F°oŸcÑ÷~•û±½ÏvÊæ*kÚy"¢#x{ÍÛÔœ\“ı—÷›6®ˆˆˆˆ¤NGÂ;ï8W[¶,¼ñ†¹y’Âî‹»™´s’Sµ_7ù/[ÊoÊ—Ö­Z$…Hù?üûï¿ØşÿUˆ{wC†¡`Á‚¦Œß£G˜qÆgÊ¸qùüóÏï{ûÌ™3ôë×ÏÒsŠ¤D¥K—fçÎ0 /¯‡/›ÇgÒ¤I¼ÿşû|úé§,Y²„ĞĞ‡W!«P¡›7ofÌ˜1¤·âYM @80Áã*UªDÇ-É æ²Ûí,9ºÄp]ój LŒÀ@X½Úœ&ÂÁƒİßDX!O†ÕæTíº3ëøîïïLN$""""""""""	™ºËøîƒ•òT¢L.Ï_&|Ö,x`½ÍùùA·nÖä‘äÇÛ^|„–-­9ÇÊ•P¾<ôë—/C`Î@¶öŞÊ+Õ_1õ<ÛÎo£âøŠŒ\7’ğ¨pSÇ‘Ô!:zõ‚GÜª oo˜2Åñü[rb·Ûyù—±cü&İgŸ¥vÚ¤òLyò8š+VtwñDj Œ%88ø¡÷:Ô´ñ_xá||| ÇElÁ‚\¼xÑ´ñT¥Jš4iÓ´h·Û™3g³fÍ²ìœ")UæÌ™ùşûïÙ¶mÏ>û,¾¾¾‰®­_¿>K–,aÇT­ZÕÂ”_|ñíÚµ‹óã¥K—fÑ¢E‰Ş©PÜëèµ£œ¸qÂPMşŒù)“Óóoğ¥K›ÓDøı÷ÑD8âÉÍRÔ©Úá«†sôÚQ“‰ˆˆˆˆˆˆˆˆˆH\Â"ÃøiÿO†ëz”ïaAsÙí0~¼ñº6m {vóóˆˆˆHò–??,X óæ9nŠ5[t4L˜ E‹Â{ïAØİ4|ÑøVt]Aôæ0":‚kGPebvœßaÚ¸""""’:Œ7:WûÚkP©’¹y’Â‚ÃX{z­á:>iø‰ù<\û¢k§¾II$5Æò`a©R¥xì±ÇL?W®\4oŞûÿwDFF2aÂÓÆ”ÿıï1ÿ¾×D8xğ`Î=kéyERªŠ+òË/¿pöìY&NœÈ/¼@éÒ¥É™3'¾¾¾dÉ’…'x‚V­Z1fÌ?ÎêÕ«iŞ¼yÌî£Vóõõå×_åÇ¤nİºdÈÊ”)ÃG}ÄßÿmêµÍ
+v»=ŞG÷îİİ1É8µû`ñ¤û~K)Ìl"2Ä½M„¾L|f¢Sµ!‘!t_Ğ¨è(“S‰ˆˆˆˆˆˆˆˆˆÈ£,>º˜ë!×ÕøyûÑ¹Lg‹™gófØ¿ßx]¿~æg‘”Áfƒ¶máĞ!8Ğñ¶ÙîÜ÷ßw4~óÔÍ÷4ûì£MÉ6¦gï¥½T›T7W½Ih¤ÛÇˆˆˆˆHªsáî\mÉ’ğî»ææI
+¡‘¡ûs˜SµÃj£`æ‚&'J2e‚?ş€&MÜD<‰Ínw÷>9ÃÏÏ¨¨¨˜ûúôéÃ¸qãL=Çï¿ÿN³fÍbšùrçÎÍ?ÿü³3¡Š+Æ©S§ bš6lÈŠ+,;§ˆHjvàÀJ—.óöşıû	tj¬§¦?ÅšÓkÕ,é¼„æ%š;u¾Ônÿ~¨_®^umœAƒà»ï¬y±"±z/êÍä]“ªı¤á'¼Vë5“‰ˆˆˆˆˆˆˆˆˆÈƒšÿÔœeÇ–ªéØ‘Ùíg[”È</¼ 3g«)Qvïóë"""’|lİêx}~ûvëÎQ  Œ	]ºØ™¾w
+/şş"w#îšz’ÙK2¹ådjæ¯iê¸""""’²tî¿üb¼ÎfsìZX3N7_\ş"ßmıÎp]ôy8:ä(éıÒ[*ù‡.]`îÜG}ô `Îıî’<hÂxäÊ•Ëô17nLÁ‚ÿu1_ºt‰_œ¹ŠĞ¶mÛ˜ÆÁ{;R­ZµŠ©S§Zz^qÍé›§Yf½¡ê®oQ¢”¯tiX³²gwmœ±cİ¿áç>'o†¼NÕ¾³æ\>`r"‰íüíóü~üwÃu=Ê÷° ¹®_‡9sŒ×õí«æAI¼ªUaË?²fµæÿüİ»C¹r6²ŸíÅ®¾»©¯º©ç8|õ0µ§ÔfÈ²!…™:¶ˆˆˆˆ¤+V8×<0thòl\td‘SÍƒ £NõÍƒ ~~ğóÏĞÃóŸR–$ ÂXüııï{;»«İ`³ÙèÛ·oÌ.‡v»Ï>ûÌôóÄÖ Aƒ‡2Øív^ıu‚‚ô„ƒÄïÚµkŒ9’‘#Gº;ŠHªóé¦O‰²GªiP¸i}ÓZ”(u(]V¯6§‰ğÅİ×D˜Ù?3“ZNrª6<*œnºar*¹gæ™DÛ£Õ<–á1.ò´E‰Ì3c„…«I“ºu³&ˆˆˆ¤\ŞŞEµv1‚ƒ¡ukx®Iq^Ë¾ú_/_ÓÆ·cgÌ¶1”[Š‡˜6®ˆˆˆˆ$!!0p sµEŠÀ˜›')œ:G…Îu½U~¬2]Ëv59Qòåã“&9I%uSa,éÒ¥»ïí0£¯h$RŸ>}ğóó‹y{ÿşı,^¼Ø’s”-[6æßöX]×®]cìØ±–WR†óçÏóŞ{ïñşûï»;ŠHªrşöy&ïšl¸®yñæ¤I}Ê”1§‰pÌ÷66)Ö„>û8U»ãÂ>Şø±É‰DDDœJ‡èĞ¡¡¡¡î#"""’"h%"â>v»©»§®{¡ìx{y[È<v»c £Ú·wıyyO 9–ˆˆ{dËæ˜ƒlÙ•+[w; mk~úŸßN¹\åLÿßÛÿÒfvÚÌnÃ¹ s¦-’\i~%""©İèÑpâ„sµ“&Ám2/*:Š.ó»p=äºSõ_7ş/›Z¥bóò‚¯¾‚#ÜDÜI?±äÊ•ë¾·¯]»fÉy²gÏN‡îÛ…ğwŞ¹¯¹ÏL9räxè}÷Î;i’s;Iêâî"©Òç}NxT¸áºæ%Ô@h3›‡u_á¾ `¦‚NÕZ?Š]v™œHDDÄ9QQQÌ;—¹sçel—fy4Í±DDÜgË¹-¹vÄp]
+Î­º”6l€Ã‡×õëg~wĞKDÄ½ªVu4oíâ»vÁKËbŸ°•ö9ßÆÛfî"/ ÔØRŒÙ:†¨hı>‘ÔMó+IÍq4:£¨_ßÜ<Iáƒõ°şÌz§j;•îD­µLN”2ØlğŞ{ğå—îN"î¢ÂXrçÎÓÔ°cÇËÎ5ôı?÷íÛÇ?ü`É¹‚‚‚î{;v£âéÓ§Ùºu«%ç•”áòåËî ’ê\	¾Â¸íã×Uy¬
+2° QêU¦¬Zåú‹
+ß}ç¾&Âi20µ•ñU¬"£#é2¿ÁáÁ&§Iİ¦íf¸¦fşš”ÈVÂü0&gü%J•‚ÚµÍÏ""""©“·7ôíÇÁ°aàëkİ¹öîòcîÀQ^ıù•4uìÛá·²|µ¦ÔbÏÅ=¦-""""Ïn‡ Üø~$äÉã|ã¡;­?³‘ëG:UëïãÏ'?19QÊóòË)ÁM;£ˆÛ¨0–%ş{±Ån·³eËîŞ½kÉ¹*W®LíÚµÚ…ğêÕ«¦ŸëäÉ“ñ~üÏ?ÿ4ıœ’rœ9sÆİDR¯¶|EH¤ñİ?WlA)[ÖÑD˜-›kã|÷ÑÑæä2¢~áú®âÜ÷Ç¡«‡¸l e;%‹ˆˆˆˆˆˆˆˆˆ¤6w#îòË_×õ(ïù»^½
+óæ¯ë×Ï±¶ˆˆˆˆ™2g†Ï>ƒC‡ m[kÏu|]UÎ¿»“L_Æ†¹›¿ÿı›J*ñÊ¯”pˆˆˆˆ¤?şkÖ8Wûõ×)“©q,wíî5ºÌïB´İ¹m‡×®X©W/øğC':S%YSa,÷½Ì$Gk­%^~ùåûŞ¾yó&}ûö5ı<‹-Š÷ãÛ¶m3ıœ’rèûC$iİ¹Á˜­c×Î\˜Î¥;[HÀÑD¸zµëM„ãÆAŸ>eN.#F7M±¬Åœª±g†S«a‹ˆˆˆˆˆˆˆˆˆÈÃ~;ô›á¿|èØÑ¢Dæ™6ÍøŠèşşğüó–Ä hQÇ"k×B…
+(2€[s¾Ä>iŞ7Ìİ0ÊÅW[¾¢ä˜’ÌŞ?[‹ ‹ˆˆˆ¤p7nÀ+¯8WÛ¸1tè`n«Ùívz-êÅ¹ sNÕWË[áµ‡›œ*e{úi7ÜÌ,n¥ÂXªT©óï{»9’ÿı×’óµnİšÇü¾ó-\¸	&˜vàà`¦L™‚íË5Ş;ç‘#GL;Ÿ¤,!!!,^¼Øİ1DR•oÿş–Ûá·×½Qû|½}-H$÷˜ÕD8e
+tï‘‘¦ÄJ´t~é˜ÖjšÓ+Z6ˆı—÷›œJDDDDDDDDD$õ™º{ªášö¥Ú“1MFÒ˜':œy©ûÙg!Kóóˆˆˆˆ<èÉ'aûv˜:òä±ğDçj5vlÑŞ¦}áÎ:ÍëD£Y8rU÷ı‰ˆˆˆ¤TÃ‡Ã•+ÆëüıaìXxDûˆGû~Û÷,<²Ğ©ÚŒi2òs»ŸuµHÔ@K…
+ÈôÀ>­×¯_§mÛ¶Ü¼yÓôóÙl6^{íµ˜Õ€î5ô½øâ‹¬qv¯Ù¼÷Ş{œ? ÎU‡.]ºdÊ¹$å0` 7nÜpw‘T#(,ˆoşşÆp]ŞyéV®›‰äAf5ÎšÏ=æäJ¬ZjñJç–¤	‰¡Ã¯¸~ÇäT""""""""""©Ç™›gX}jµáºîå»›ÆdkÖÀ±cÆëú÷7?‹ˆˆˆH\¼¼‹ş?Ü.hHXõLÜ
+Ëš>üÊ“+)óCŞ^ı6w#îš>¾ˆˆˆˆ¸ÏæÍ0~¼sµo¿íØ;9Ù{i/ÿ[ñ?§ë'>3‘ÂY
+›˜H$eRa,6›Æß×Ğ°}ûvêÔ©Ãîİ»M?çóÏ?OáÂÿ]¬l6ááá´iÓ†­[·º4öôéÓùâ‹/bãrçä~¡¡¡:”3f<r÷J±ÆÛ~àF¨ñ¦İ×j½FŸ4$’G)[V­r½‰ğ×_¡cG3'Wbª?Š’ÙK:U{øêa,ï¼BDDDDDDDDDDâ6}Ïtì{µPæBÔ+TÏš@&ræ¦¦²e¡Z5ó³ˆˆˆˆ$$mZxã8y^İ±S‹%.T„‰Û`õHˆ2wG”ˆè>Üğ!¥Æ–â·C¿éµ|‘ 2Òù·J–„aÃÌÍcµÈèHº/èNX”s7Óö®Ğ›MN%’2©ğ;wù·İni¾;pà UªT¡uëÖL<™?ÿü“õë×Ç<6mÚÄşıû	5t>Şyçûşx·ÙlQ¿~}æÌ™ãÔç1vìXúöí›¨c½½½:‡¤v»K—.±~ız>şøcJ—.Í˜1cÜK$U¹q—/6a¸.gºœô©ØÇ‚DŸråÌi"\° Ú¶ƒÓ—ø0½õt¼lÎMgíÅä]“MN%""’°´iÓrçÎîÜ¹CÚ´iİGDDD$EĞKD$iEÛ£™¶{šáºnåº9ıœnR¹t	~ûÍx]¿~ õL%¥ÑKD$yÉšFvìHØ·/Xr+]”¬Æï„sUMşÌ­3´Ó–F³qğÊAÓÇq7Í¯DD$5ùş{Ø»×¹Ú~€4Él?’qÛÇ±ëâ.§jŸÈşß4ıÆäD©G@@€»#H³ÙµìÌ}"""(\¸0.\ îo"ÜÍÇÇ‡ğşûïS¥J•D3::š²eËrèĞ¡ûŞïÜmÛ¶å³Ï>£P¡B	uôèQ†Î‚ÊÛ½ÏÃn·“;wnÎŸ?Ÿ¨¬¦H‘"îlEEEAhh(AAA÷}Ÿ<øı~ï{)**Ê-YE’›Pºté˜·÷ïßO```¼5ßlù†—şxÉğ¹>mø)¯ÖzÕp˜cÏhĞ ®]smœ§Ÿv4&åsœ#ÖŒ`äú‘NÕúûøówï¿)›«¬É©DDDDDDDDDDR®u§×Qoz=Ãu'_<Iá,…MÏc¦Ñ£aøpc5iÓÂùó)“5™DDDDœqô(¼ó8¹îÂlQPåh0ÒÜ1}xo›7CªaD½döÏlúø""""bK— D	
+2^ûÂ0}ºù™¬t9ø2%¾+Á­°[†kÓx§a[Ÿm”ÉUÆ‚d©ƒ3÷»Kò¦ÂGøì³Ïxıõ×Ù8˜Ø/—¯¯/Ó§O§S§N‰:ş÷ß§Y³f1ç|°qËËË‹¦M›ÒªU+jÖ¬IŞ¼yI—.7nÜàÂ…lÜ¸‘ßÿeË–oóà½ÏçŞ15kÖdÃ†‰Êéi¼¼¼âı<Å9~ÿ©PÄ£ª°È0Š|[„ó·5sgÈÊé¡§É&ƒÓYÅu{öÀSOÁõë®S§,^œt7JDEGñôÌ§YszSõ%²•`{ŸíúşI¤îº3}±»xêªÏên«-Jd¨((ZÎœ1V×»7LœhM&WíÙ#GÂüù ã9h:X`Éğ9ÒæàãÓ£BßÍZDDDDzö„©S×eÉ‡CÎœæg²R…=˜¶{šSµc›e`•æJeÔ@˜úè/ÃG2d
+ n´Ùl	>À±“aÏ=9{öl¢ÎÙ¤IÚ·oÿÈív;QQQ,]º”¾}ûRºti²dÉ‚ŸŸ¹rå¢|ùò<˜%K–u_bbT­Z5ÑÇzªÄüÑ#ñH|³¬ˆ¸nÚîi†›^ªö’š·<@¹r°z5dËæÚ868¯\1'WB¼½¼ù©İOäJ—Ë©ú£×ÒwI_ı¾‘$F÷îİéŞ½;aaaî#"""’"h%"’tn‡İæ×ƒ¿®ëQ¾‡iÌõûïÆ›úõ3?‹ˆ'ĞKD$e(WæÍs4¶kgÁ	‚òÁìßà—ùô˜éÃ_¹{…Ş‹{SmR5ş:û—éã‹$%Í¯DD$5Ø²Å¹æA€O>I~ÍƒıËéæÁ6%Û0 ò s¥Báááî IL„àïïÏ7ß|óĞñv»=Áü×tÆ„	}Ş±cÇ’5kÖ˜1îy¯©+1çğØÄhÒ¤I¢3zšòåË«qÁ$ú^ëEDE0zÓhÃuÓddHµ!$g”+k×ºşØÎP·.œ;gJ¬åNŸ›ÛşˆÄ/<Û/ûaÔúQ&§y´ÈÈH¦OŸÎôéÓ‰ŒŒtw‘As,‘¤óëÁ_¹q×PM¿´}¢­E‰Ìóı÷Æk*V„Ê•ÍÏ"â	4ÇIYÊ–…¹saï^èĞÁ‚ncÁßƒÁîÜk÷ñÙ~~;µ¦Ô¢ÓÜNœ¹éÄª"@ó+Ié¢¢`ğ`çjkÖ„^½ÌÍcµÈèH-äTmşŒù™Ôr’¡·äÑ4¯J}Ô@‡V­Z1`À Ã»ù=ØxµmÛ¶D×æÈ‘ƒ¯¾úê‘‹øİjşŠıùäË—†&:£§éß¿Ì¿Ó`©GüÍ¯"’ô~Ú÷§o6\7¸Ê`2ûg6=8¯tiX·òäqmœÃ‡¡vm8~Üœ\	iP¤#átıˆµ#œ^FDDDDDDDDD$µ˜ºÛøòá;’Î/iÌsê,_n¼N»ŠˆˆHrS¦Ì™ûöAÇ`êıÊaaùw0ù/¸PŞÄÿ3ûÀló8o®z“Ûa·-9‡ˆˆˆˆ8gòdØ±Ãx·7Œ^É¬+hÜöqì¾¸Ûp—Í‹ÛşHÖ€¬æ‡I’Ù¥"i}ıõ×Ô¯_ßpalÁÁÁ†şùçéÖ­ÛCç4»ìŞøÃ†KÖİ×]ºt!C† Éúó‘Ô)ÚÍ'›>1\—Ö7-/UÉü@â²’%M„ùò¹6Î™3P§ã…‡¤ğvİ·iXÄùú,îÃŠ+LL$"""""""""’r¿~œÿl4\×£|Ò˜küx0ºVi†Ğ¹³5yDDDD¬Vº4ÌG:EH“ÆÄÁÏU‡‰Û`Ù·šÑÄÂ¢ÂøxãÇÿ®8“vN"*:Êôsˆˆˆˆˆ1×®ÁğáÎÕêXè"9¹tço¯~Û©Ú!U‡P§`“‰¤j Œ‡¯¯/, zõê1wF›Ô
+,hø¼ãÆ£R¥J.5.ÆÅf³ÅŒ[ºtihêøI-]ºttéÒE;è‰H²´øÈb]=d¸®¥şäH—Ã‚Db†âÅaız(TÈµq.^„'Ÿ„¿ÿ6%V¼¼½¼™Õf¹Óçvª>2:’ösÚ³çâ““‰ˆˆˆˆˆˆˆˆˆ$ÓvO3\S"[	jæ¯i~……9VG7ê…M„""""ÉY±bİ^Îœ·Ş‚Ì™M8Ú¶1‡ao“½ß¥àKôYÜ‡J*±úÔjKÎ!""""‰óöÛpıºñºÜ¹aÄóóXíUop+ì–áº\érñ~½÷-H$’z¨02d`åÊ•4kÖ,¦IÍH#a‡Ÿ3Mš4ÌŸ?Ÿ
+ÄœÏ±ÇI›6-?ÿü3ŞŞŞ¦ŒíNpwÃìv;oüØp]ï4ü¯æÿ,H$f*\Ø±aÑ¢®sã4h «“àùú\ésñs»Ÿñ²97=¼~›f?5ãì­³&'I¾¢¢£˜¾gºáºîåº›¾Ø¬ÙæÎ…«W×éå]IIrå‚>€ş/¿„|ùLøN˜?¦­†+O˜4èıö\ÚCƒhşSsö]ÚgÉ9DDDD$n;wÂøñÎÕ~öd4ÓjKmúg“S‹­|Şès2ùg27H*£ÂDH›6-K–,áƒ>ÀÏÏï¡FÂ÷´hÑ‚V­Z9uÎüùó³nİ:
+,hÊN„÷êív;~~~Ì;—R¥J¹4¦§(S¦5kÖtúë×ÿÇÔô‘¤·îÌ:şş×øÖr½*ôâ±YHÌV €c'ÂÇwmœà`hÚæÌ1'W|êªçÒ
+-çoŸ§ÙOÍ¸zÓ¼P""""""""""ÉØªS«8tÎP—Í‹Ê½`Q"óüğƒñšºu!0Ğü,""""î–!¼ü2œ<	3f@¥J&|º>ŒÛ†ğ´&z¿eÇ–Qn\9z.ìixî*""""Î‰†Áƒáÿ[S©]ºX³Yµe"£#´lSµu
+Ô¡K™dö	‹x 5ğæ›o²ÿ~ºvíŠ··7v»ı‘€={2{öl—ÎW°`AÖ­[G¹råbšãœmGóàc=ÆªU«hÜ¸±KÙ<M¿~ıâı¸šçâ§¯‹HÒ½q´á/^«õšiÄ*=æØ‰ĞÕ›!ÂÃ¡S'øæsrÅçÍ:oÒ¨h#§ë÷_ŞOÛÙm	
+71•ˆˆˆˆˆˆˆˆˆHò4u÷TÃ5Š6"oÆ¼¤1ÏŞ½°i“ñ:í>(""")¯/<ÿ<lÛı;ƒ‹ƒFùÁ¦×aÌaØ×É”œ²cgêî©ÿ®8o®z“[¡·,9ˆˆˆˆ8Ìœ	›7¯óò‚1c ¹İî?nû8ö\Úc¸ÎÛæÍØfcÕß b›İîLÏ²\¿~%K–°uëVşùçBCCÉœ93åÊ•£}ûö<îêvC±„‡‡óê«¯òİwß¾øİû_Ü¸qc¦OŸNÎœ9MËæ)ÂÂÂÈ—/×¯_şûœáşÊGI“&iÒ¤Á××___¼¼¼ğööNñt‘‘‘„‡‡ÊíÛ·ïûØƒŸ÷½Ö¨¨¨¤Œ(’l8p€Ò¥KÇ¼½ÿ~cuí¼°“JŒ/5×­\7¦µfFDIb×®A“&°}»ëcŸ|âø#Ğ*W‚¯PqBE—VìZ¶+3ZÏHÑ¿KED$iÙív®^½
+@öìÙõ;FDDDÄšc‰ˆXëFÈò|‘‡°¨0Cu¿´û…gK?kQ*s ãÆ«É™Î??k2‰x
+Í±DDäAçÏ;æNãÆÁ•+&Xp=4¹÷š0Ø£eÈÆ»O¾KÿÊıñóÖNÜKó+Iinİ‚%àòeãµƒÃÿ·•$—î\âñ1s+Ìø"/U{‰¯š|eA*Ù¿?eÊ”¹ïí@WwL¦ÂddóæÍ¼ûî»¬Zµ*æ}úCèÁÿ¥M›6åÍ7ß¤V­Z–gt§aÃ†ñå—_b³ÙbŞÀñõÈš5+íÛ·çÉ'Ÿ¤D‰äÌ™“Ì™3“>}zı1	DDDpñâE:Ä¦M›øñÇ9yòä}_C5Š$^B„ÏÎ}–9æ÷àÀƒ<‘ã	S2JÒ
+‚–-;ºªK˜2ÅÚ›,ö^ÚK©u
+rzŒŞz3®Å8¼½¼ML&"""""""""’<ü°í.h¨&³f.üïş>ş¥r]P<ö«{óMøğCk2‰ˆˆˆ$aa0{6Œ[·º8˜W$Tš O½7LÉ÷(…3æızïó\™çôÚ¿ˆˆˆˆI^~¾şÚx]öìpô(dÉbz$KõZØ‹)»§®Ë>7‡&“&RIB÷»KÊ£ÂdèÔ©SÌ›7-[¶°oß>®\¹Â;wH—.Ù²e#{öì”.]šúõëóÔSO‘'OwGNÇ¿oçÇ{MoíÛ·gÒ¤IdÈÁé’—¨¨(>ıôSŞyçìv»EŠoBuìÚ1J-I´=ÚĞ˜­K¶æ·g35§$½èØ–,q}¬`ş|È˜Ñõ±â²êä*šüØ„ÈèH§Çè\º3Ó[OÇ×Û×Äd""""""""""¯Ú¤jlı×Øá+dló±%2Ç÷ßÃ AÆj¼¼àäI(XĞšL""""ÉÍŞ½0q"ÌœéØÆi×à©w Òxğ2v/Š¥s–æÃ§>ä™ÏhÁ~<eË‚3·åOš½z™ŸÉJ[ÿİJµIÕœªÙf&]Ëv59‘Ü£ÂÔG„’¢4jÔˆ•+WÆìB˜3gNNœ8AºtéÜ-Yúî»ï:t(€EˆoBÕwq_&îœhxÌÍ½6S=_uÓ2ŠûDDÀ/À/¿¸>Vùò°lX¹VÀŒ=3è¶ ›Kc´|¼%³ÛÏöè³EDÄó………ñÊ+¯ ğå—_’&M7'Iş4Ç±ÎÁ+	üŞøÍÛúl£òc•-Hd»Ê”ŒÕµl	Z“IÄÓh%""FÜ½sçÂ„	°i“åŞM^‚BëLJöh5òÕà£Q¯P=KÏ#›æW""’RØíĞ¸1üù§ñÚ*U`ËÇB]ÉE´=š“k^d N:¬ë¾N‹WXh×®]T¬X1æm5¦|j ”eŞ¼ytèĞ!æÅóÏ?Ï´iÓÜ*™+]º4T¡ˆq5¿}Âß&<*ÜĞxõ
+ÕcM·5fÇ7ŠŠr¬Î<~¼ëc*K—B©R®—QëFñîÚw]£Aá,è´€ô~éMJ%""©Mpp0éÓ;~Ü¹sGÅˆˆˆˆ˜@s,ë¼ºâU>ßü¹¡šÒ9K³·ÿ^¾)fÃ¨[×xİòåĞ¤‰ùyD<‘æX""â¬ƒ»ÎšW¯:3‚J.€F¯BÖ&§»_å,øú™¨U¸’¥çÍ¯DD$åX¸Z·6^g³Áß;š““i»§ÑcaÃuŞ6ovõÛE™\e,H%÷lÛ¶ªU«Æ¼­Â”/õ‹$¬uëÖäÉ“‡{}±ùòåss¢ä¯U«Vî ’b|½åkÃÍƒ Ãk· ¸“·7üğ¼öšëc>5kÂŠ®—·ë¾Mï
+½]cÕ©U4Õ˜›¡7Í	%"""""""""â¡"¢"˜¹w¦áºå{xtó À÷ß¯)R52?‹ˆˆˆHJSª|õœ?‹AûöàçgdncÀŸCh&«¢²ıÆ
+jÏ¨LöAmé÷î>V­rì¦(""""
+/¿ì\mïŞÉ¯yğVè-ŞXù†Sµ/V{QÍƒ"P¡¤(ŞŞŞôêÕ+æí+W®¸1MÊP¶lYwGIn„Üà‡í?®«»OyÚ‚Dân6|ò	|ü±ëcİºÍš9š­`³Ùø¾ù÷4)æÚòĞı‹§¦?Å•`ı~‘”ë÷ã¿s)ø’¡o›7]Êt±(‘9.]‚yóŒ×õï^º3ADDD$Ñ|}á™gà×_áâE?jÕ20@TØü?øö8lÑŞ–e½–ó7&x—¥á¸gÉTôµkÃ[oÁŸBp°e§Iv¾üN2^—%|ô‘ùy¬6jı(ÃÏ‘äNŸ›÷ê½g~ Q¡¤<}ûöÅÛÛñ¤Ç;Üœ&ùË›7¯»#ˆ¤ßoû;áw×½Qû_mX\óÆ0a‚ë7ODEÁÀğâ‹iN¶Ø|½}™Ó~rWpiœ]wQwZ]ş¹õIÉDDDDDDDDDD<ËÔİS×4/Ñœ\ésYÆ<“'CD„±š4i Gkòˆˆˆˆ¤Y²@ß¾°q#?ï½O<‘Èâ»ÙaÙøa/kjeL(=‡È¾¥Ù”óy>wŒF sf¨Q†‡ß‡Û·­ """â©Îƒ?t®vÔ(ÈİÜ<V;|õ0ßüıSµŸ6ü”Œi2šœHD@„©VÏ=éÕ«—.ïêötùòå£Y³fØívvïŞ"?Ç¤”!CwGIöB"BœšËZŒvO´³ ‘xš>}`Áp}¬ï¾ƒ–-!(Èõ±”!M–>·”™
+¸4Îá«‡©4¡«N®2)™ˆˆˆˆˆˆˆˆˆˆg¸|…ÅG®ëQŞ³»ì¢¢‹áÕ±cò»ÁIDDDÄS-
+#FÀ°w¯c§¿bÅQx¥ü¸¦¯„ó­èåfÁà' UO"3œdË=š6u4CV«¯¾
+óç;vWI^îŞ5^W¶,ôëg~+Ùív†ş>”Èhã;aÔÈWƒ®e»ZJD@„©Rhh(Ó¦McÚ´iÜºuËİq,1`À  ¢££ùóÏ?İœ&yË’%uëÖ¥nİºî"’l-8¼€+w¯®{­ækx{y[H<Ñ3ÏÀªU5«ëc-_5kÂéÓ®õ <ò°¼Ër²dsiœ«w¯ÒhV#>Şğ1Ñöh“Ò‰ˆˆˆˆˆˆˆˆˆ¸×Oû~2|sL´9h^¼¹E‰Ì±t)œ9c¼nà@ó³ˆˆˆˆ¤v6”)| GÂÎ›ÒN ğT˜¸æı7ZĞ+
+*L…!% uwÈzp,J±u+|ş9´kyò@‘"Ğµ+Œ»vA¤ñûÌEDDD<Ú¦MğÓOÎÕ~û-øø˜›Çj‹.fÅ‰†ëlØÓl6›Í‚T"j L•‚¬Ø’ÈÃ4nÜ˜.]º°zõjºvUº+
+(ÀÚµkY³f»£ˆ$[3öÌ0\“'}^(÷‚iÄ“Õ¨áøc± 	ÏÓ8 U«Â_¹>ÖƒJå(ÅºîëÈ>·KãDÛ£ysõ›´™İ†›¡7Í	'"""""""""âFSwO5\ÓµlW|½}-Hc1cŒ×”/ïØaFDDDD¬c³A…
+]şNœ€íÛáí·¡té8
+ì^°ï9øîüñ„d±.œW”ŸƒKBÛ®ıĞC‡œ:?şƒCÅŠ93<õ”ãsX¶®_·.ˆˆˆˆÕ¢¢àÅ«íĞ|ÒÜ<Våå?^vª¶OÅ>TÌcánÙ"¢ÂÔèŸşqwËÙl6fÎœI½zõÜED„³Ag×¼RãÒø¤± xº’%MåÊ¹>Ö•+P¯üğØí®[`Î@6ôØ@ÁL®w;.:²ˆ*«°ïÒ>’‰ˆHJÀ©S§8uêî#"""’"h%"b®]v±çÒÃuİËw7?Œ‰†?ÿ4^7p ã†v‘ÔFs,q›*U‚Q£`ß>8v>ûjÕzÄ¼,*l~¾9›^…HïQñŠ†²?Â @hß	rîóĞà`X³>üš7‡lÙà‰' W/˜<Ù±˜rT”uQÅ3i~%""ÉÕ”)İ¢
+pÌã’›/şú‚“7N®ËìŸ™úÀ‚DwG$¦ÂTh§3¿…DD$ÉdöÏLßJ}İCÜè±Ç`ızhĞÀõ±""7iôì	¡¡®[±¬ÅØĞc%²•py¬ã×SmR5~Üû£	ÉDD$%òòò¢P¡B*T//=!"""bÍ±DDÌåÌîƒóT¤l®²¤1Ï÷ß¯É˜{Îü,"ÉæX""â)ŠƒaÃ`ãF¸p&L€V­ ]ºX…f??…oÁÎ^máï.›JÏ†e c;xl{¢ÊvÜ|ß»·cgÅÌ™¡~}xã˜?Î3Qeñ,š_‰ˆHrtó&¼ù¦sµ¯¿]ßÛ!I½u–6~äTíÈz#É‘.‡É‰$!šW¥>ú?
+-^¼ØİDD$ƒª"cšŒî!n–1#,[;›3Ş´iP»6˜½qşLùYß}½)7¸„D†Ğõ·®ô\Ø“!7LH'"""""""""’4Â"ÃøqŸñÒz”ïaAóÜ¾íx~Ù¨^xàÆtq«\¹ OX° ®]ƒ+`èP(^üÿÊ‹&ÁØƒp ƒõJÍ‡¾Uàù§¡ğj ñ€wîÀÚµğÉ'Ğ®äÏyóBëÖğñÇ°jÜºeUp‘Äyÿ}¸zÕx]ğê«æç±’İngğòÁÜ¸k¸60G ª° •ˆ<H„©Ì;X¾|¹»cH2râÄ	Š)BÑ¢EİE$Uğ÷ñçÅj/º;†x??˜5Ş~Ûœñvì€J•O–›)Wú\¬é¶†jy«™2ŞÔİS)õ})æšoÊx""’2„‡‡óê«¯òê«¯îî8"""")‚æX""æYrt	×C®ªñóöã¹2½MßÌ™&B£2?‹Hr¡9–ˆˆxº4iàé§áë¯áèQÇãë¯¡Q#ğ~~ã·ÃñFÖ‡)ºº5€ŞÕáñ…`‹vj˜`áBÇ.?:v)|â	èÖÍ±£ööí _ËÉ—æW""’Ü<ß}ç\íçŸCÚ´ææ±Ú§›>eÑ‘ENÕ~Ûô[|¼|LN$‰áî’Älv»6oO-._¾L­Zµ8yò$v»›ÍÆ¡C‡(Q¢„»£‰Û»w/åË—Çf³åî8"ÉÂ(]ºôïäL\m«Ç[± Ó+bI27kôêeÎÚ^^0z46›ëãİs;ì6-iÉÚÓkM³İíÓl¹Óç6mLI‚ƒƒIŸ>= wîÜ!¶1q™æX""æiñS–[j¨¦C©Ìé0Ç¢D®³Û!02V÷ôÓmDR+Í±DD$9…ó¹?ÿ„İ7×BƒáKÒ¸\
+6½û:C´¯©CûùA…
+Pµ*T«æøo±bæŞ7!ÖĞüJDD’»İñü˜3=Ô««W'¯ùÉª“«h4«ÑvãA´/Õ_;üjA*IŒmÛ¶QµjÕ˜·÷ïßO`` ‰Õ´a*pûöm~üñGªV­Ê‰'ÜG’™;wî¸;‚HªR§@wGÕµ«ãÃ9\+:^{:v„  ×Ç»'Cš,{nÍŠ73mÌy‡æQjl)¦í†Ö½Otáö–_n¸®Gù¤1Ïš5Æ›6?‹ˆˆˆˆ$Ç~Ÿ~
+»vÁÅ-õ˜Uÿ/\\‚ïÕŠÖÈyÚtƒ¡E ÆÆ¼›ÂÃáï¿»uí
+%J@¶lĞ¸1¼ó,Z/šv:I¥,p®yĞË¾ù&y5şsë:ÍëäTó ¿?Ÿ?ı¹©D$.ÚëÓaaaœ>}šóçÏsõêUnŞ¼Ipp0¡¡¡DEE$7¼GGGAhh(×¯_çÊ•+;vŒS§N¥›î-pşüyºvíŠÍfcåÊ•Ø’ÓoìDº|ù²»#ˆ¤*µÔvwñ`µj9ÌnÑÂ±Å½«æÎ…;aöl¨\Ùõñ |Xğì^úı%¾ßş½)cŞ½A…=øißOŒo1ÂY
+›2®ˆˆˆˆˆˆˆˆˆˆfîiø&™Ç2<F£¢,Jd1cŒ×,Í››ŸEDDDDÜ#W.èÒÅF—.Í‰nÆøõøè¯œ‹Øgí‰3ƒÆÃàÉ‘°£/ü=‚ò™~š7»-ÆŞA;_>Çî„Uª8•+C¦L¦ŸZDDDR xåçjû÷‡²eÍÍc¥ĞÈPÚÏiÏÕ»Wª£ÖÌ\ĞäT"5:áÒ¥K,X°€Õ«W³cÇNŸ>í±Íy±s¥Äæ6w		aíÚµØl6BBBH›6­»#™îèÑ£î ’jøP!OwÇW¸0üõtê¿ÿîúx'OBÍš0z4¼ô’cWùzû2¶ùXªç«N¿%ı‰q}PàÏ“RrlI†VÊ›uŞ$³fSÆq–İngêî©†ë/û<Ş^Ş$2Ç™3°p¡ñºÁÛs?-q——õÚĞïÉVÌ=8—÷Ö¾Ç¡«NlYm„Ôúªû;Ã_ÿƒKå,=å¹sÇüùÿ½ïñÇÍ„÷Ë—wìÖ("""ÛgŸÁéÓÆë²f…‘#Mc©¡Ë‡²íü6§jf*Èkµ^39‘ˆ$Ä„[ÄSİ»wÓµkW
+(ÀÀ™;w.'OŒÙaĞ6›-æ÷7Š¹BBÌiğ4k×®uw‘T£Z¾jøyû¹;†$™2ÁâÅ0dˆ9ãEDÀÿşÏ<W®˜3&Àóågs¯ÍÍRÔ´1Ã£Âùì¯Ï(öm1ÆlCDT„ic‹ˆˆˆˆˆˆˆˆˆõ÷¿søêaÃu=Ê÷° yÆƒhc›*âï½zY“GDDDD<‡—Í‹Ù7`³ÚÌ¢xÖâÖŸÔ;ÊÍ„åáù§¡Ä°œ°ºàÈ˜5^|jÔ€ R%ÇNA“'Ã¾}•dqDDDÄ9ì\í¨Q-›¹y¬4e×&ìœàtı—¿$À7ÀÄD"’j L„óçÏÓ¾}{*UªÄÏ?ÿLDDÄ#ô<ñqÏ½¼b.¸;‚é;ÆŠ+ÜC$Õ¨¿¶»#H2âãß~?ü ¾¾æŒ¹l™c•<3{ÇËå.Çö¾Ûy¦Ä3æ
+\¹ÆåC(óCY¤yˆˆˆˆˆˆˆˆˆ¸ÅÔ]Æw¬‘¯gÜ‚4æ…‰×uîœ¼nt×x{yÓ¥l:È¬6³(™½dÒœ¸èJxîü8Tûün'Íyc‰Œ„;aüxèİÊ–…Œ¡NÇÎ¿ü'N€neI=†s<¯fT™2Ğ·¯ùy¬²ãü.èt}ËÇ[Ò¦d‰Hb©0S§Nå‰'à·ß~‹sW?ÀÒ]ÍxˆõşùçwG0İ+¯¼B´Ñ¥EEÄiµ¨PŒëßßÑğ—'9ã?À{ï9ğ6CfÿÌ,è´€Ÿú¶„8rí­~iÅS3bÇù¦-"""""""""Ÿˆ~9ğ‹á:Oß}pöl¸vÍxİàÁægÏçãåC—²]Ø?`?¿´û…ÀIsâlÇ¡éPø_^hòd9‘4çÃİ»°q#|ù¥cqbÅ {vhÒŞ}/†‹İQDDD,²z5Ìë\íwß96”H®İ½F»9í‹
+sª¾pæÂLm5õ¾>I:j ŒÇo¼AïŞ½¹}ûö}ƒğpÃ È¡C‡ÜÁTS§NeéÒ¥ú-’D¼l^ÔÈ_Ãİ1$™ªYvì€ZµÌ/:Şß±2Ş±cæŒéeóâÍ:oòG×?È`şÔkO¯¥òÄÊ´İ–½—öš>¾ˆˆ¸_@@ û÷ïgÿşı¸;ˆˆˆHŠ 9–ˆˆk~;üAaA†j|x¶ô³%rİî¸iÉ¨5 bEóóˆ$Gšc‰ˆHjåíåÍ³¥Ÿeï€½Ìí0—r¹Ê%Í‰ÓÜ†êßÀ‹Å¡sK(úØ<cÑüë×á?`Ô(hÙÒ±8tĞ®Œíh6¸uËİ)=ŸæW""âÉ""àÅ«}öYxòIsóX%*:Šçæ?Ç™[gœª÷÷ñg^ÇydÈjr2q–¿¿¿»#HSa†Î§Ÿ~z_ã %>›7ovwÓìØ±ƒAƒ©yP$	•ÍU–Œi2º;†$cyò8X6s…ç-[ \93ÆÑTh†§‹>ÍÎ~;©_¨¾9>à·Ã¿Qn\9ÚÏiÏ¾Kû,9‡ˆˆ¸‡——âå¥§3DDDDÌ 9–ˆˆk¦îj¸¦]©vızÀÖ­ëŒÒîƒ"ÿÑKDDR;/›íJµcW¿],ì´ÊUNšÛìğøbx¾	)5?‡ '¶Ö¶ØÙ³0>@æÌP²$¼ğ‚c1-[ 4Ôİ)=‹æW""âÉ~ø0^—6-|ö™ùy¬òé¦OYqb…Óõã[Œ§B
+&&Wi^•úèÿø#Ì™3‡O>ùä¡Eâ³aÃ¢Íê®p£ãÇÓ¼ysBõ,„H’ª¿¶»#H
+àççx2yÚ40ka27v<‰m†™
+°ê…UL|f¢e7ÊÌ;4²ãÊÒñ×¸ìÄ_ç""""""""""ñøçÖ?¬:¹Êp]÷rİÍc¢1cŒ×äÊíÛ›ŸEDDDD’7›ÍFËÇ[²µ÷Vş|şO*üTÒ<ë	hô*ü//´yòm<÷Ğ#G`æLÇîE5j@†P©ôïS¦À¾}åî”"""ò +Wàİw«}óMÈŸßÜ<VÙrnï¬yÇéú•òB¹LL$"ÎPánß¾Í!CbŞÖƒ’v»«W¯²råJwGqÉ™3gxúé§¹|ùrÌ®›"’4jP¡˜§[7Ø´	
+4oÌ•+¡ti˜>Ìøõ`³Ùè]±7¤åã-]0¿ü•2?”¡ÓÜNì¿¼ß²óˆˆˆõÂÃÃyï½÷xï½÷ww‘As,çMÛ=»Áf*HıÂõ-JäºK—`Îãu}û:¸Í±DDDîg³ÙhX¤!«^XÅß½ÿ¦uÉÖIwrŸ0(7z×€~¡ÒxH”tçwRd$ìÜ	ãÇC¯^P¶,dÊuëÂÿş³gÃÉ“æÜ¿‘h~%""êÍ7áÖ-ãu…;~§'·BoñÜ¼çˆ²;·šAõ|ÕùªÉW&§3DDD¸;‚$1›]B÷yûí·ùè£5OİÛ¥ĞÓİû|î}n6›C‡Q¢D	7'K¾Nœ8AñâÅc¾Z·nÍ¼yóÜœÊ9‡¦qãÆœ={ö¾7c¿Di#‘D9pà ¥K—şïœñ×œ}ù,ù2æ³4—¤>×®A×®ğûïæÛª•ãIê\¹ÌÏn·óëÁ_¼l0Wî^1gĞ8´}¢-oÕy‹Šy*Zz1_pp0éÓ§àÎ;¤K—ÎÍ‰DDDD’?Í±DDœm¦è·E9}ó´¡ºwë¾Ëûõß·&”	>üŞ~ÛX·7œ9yóZ“I$9ÒKDD$a¯ä“MŸğãŞ¾İiáiá@GØÙÎÖ’ÇıŸ’-T©rÿ#wnw§2ŸæW""â‰¶o‡ªUkè_°Àq¦§³Ûít™ß…Ÿ÷ÿìT}Ît9ÙÙw'y3êÉCO´mÛ6ªV­óöşıû	tc"±šv Œ%22’‰'&º!Ğf³İwì½İ
+=ñq/¯XÇn·³páBöïO~»mÜ¸‘Úµk?Ô<("I£PæBjKdËK—ÂgŸyã.\¥JÁ´iæíFØ1°#‡âù²Ï»>`<æšO¥	•hñS6Ÿİlé¹DDDDDDDDD$eZsjáæA€îå»›Å,ğı÷ÆëÚ´Qó ˆˆˆˆW*G)¦·Î‰OğRµ—Hç›„a~w¡Â4èU?5?‡t—“îü&ºvÍ±¨ô¨QĞ²%äÉ
+@»vğÉ'°zµs»"‰ˆˆHü¢£áÅ»²qcÇïíä`ÆN7zÛ¼™İ~¶šE<ˆ‰·’'Ë—/çÊ•+	î>ø`ƒ•Íf£dÉ’”/_¢E‹’'O²eËF†ğóóÃÇÌ;öãa·Û‰&**Šğğp‚ƒƒ¹zõ*Û¶mcşüùÜ¾}[M„‹æ¥—^båÊ•î’h?ıô½zõ",,LÍƒ"nR»@mwGÌË†ƒºu¡S'8uÊœq¯_‡=`æLÇn„ÅŠ¹>f¶´Ù˜ÑfKwæÅß_äøõã®‡¥Ç–²ôØRnÀÛußæÉ‚Oj$"""""""""‰2e÷Ã5õ
+Õ£p–Â¤1Ç¼ypş¼ñºÁƒÍÏ"""""©GÁÌùªÉW¼ûä»LØ1oşş†w.$]€ìG Ñ«Ğ`8i	{ºÁñ&å—tLvö¬ã1şï+Yò¿
+«V…råÀßß}EDD’»Y³`³ûøøÀ×_Cr¸Uñèµ£Z6ÈéúO~B½BõÌ$".Sa,k×®Mğ˜ØVeÊ”aÈ!´nİšìÙ³[œÎ5_|ñC‡åÇÔÍñ¹×xºfÍfÌ˜Á/¼àîH	z÷İwùğÃ±Ûíjq£ÚùÕ@(Ö«Zví‚>}à×_Íwõj(SŞ}×Ñ¨èëëú˜M‹7å@‘ü°íF®Éõë®‡U§V±êÔ*j¨ÍÛuŞ¦QÑFš+‰ˆˆˆˆˆˆˆˆHœn„Ü`ŞÁy†ëz”ïaAó|óñšÒ¥‹×‰ˆˆˆˆ¸*K@^¯ı:/×x™Ÿ÷ıÌç›?gÿåıIÀ;JÍ‡Róñ
+ÉNôŞÎ°çy8_Hş÷>ìxÌœéxÛ××q¯GÕªÿ5–*ŞŞîÍ)""’Áë¯;W;t¨£±ßÓ…E†Ñin'‚#‚ªïØ‘Wj¼br*q•—»x’mÛ¶Åù1›ÍÓ f³Ùøä“OØ½{7½{÷öøæA€¬Y³2sæLºvíª1İû:t(§OŸvwœ8…„„Ğ¡C5Šxí@(I%S&˜=Û±c ™+É…†Â›oB¥J°e‹9cúyû1´úP9Îÿjü_/:ã±ñŸ4ù±	U'UåÿØ»Ïè¨ª‡ãÏ¤7zï½w¤ƒ ¤«t©‚€ øG_‚ŠŠ€REPºtQ&¡÷NBï¡$¤gŞ#1 %3¹S’ìßZ³RÏ9;áfr÷9+­$Îg×õDDDDDDDDD$yZph‘±‘VIã•†WJ¾b§DI·s§mÏí<vK‘äÃËİ‹nå»q ï~íü+
+6px†8ßPõèS…L”¤H÷OI—÷œÃsØSt4ìÙS§BÏP¶¬å’ÚµaèPX° ˜g'q=Ÿ|W®X?.[6ËAÉÁÈõ#Ù{e¯Mc‹d,ÂŒ3tƒˆR0àààÇşE•°\åææÆ¼yóxûí·“å_j_ı5iÓ¦uvŒ)aùîÎ;´k×èèh'&z¼sçÎQ³fM–-[¦ò ˆÈà“YJ8;†¤"&ôé–İãŒtğ Ô¨ÂíÛÆÌ™Á7_6ú’cÑ¶d[c&}Š]—vÑú§ÖT˜VE‡k÷5EDDDDDDDD$ùø~ï÷VéXº#~~vHcŒ‰­“.tîl|°Ü³Ù¤p~ïò;‡ú¢OÅ>øzø:<ÇMÓ1NæÉİù©<¹=&Oáõ·®S«ø¹î%¾MÂÂ`Ë7:u‚R¥ M¨TÉR2œ86n„g'qãÇaüxÛÆ~ş9$‡ÇÚSk·}œMc=İ<YøÊBÒx§18•ˆAÂBò“Íƒ¢ÕĞ¡Ciß¾½S+S¦L´mkÿ›ïS«„…¼İ»wÓ£G''zØæÍ›©\¹2û÷ïÏj6›Uq¢šykâfÒ?Çâx¥K[J„;¯Ùß~E‹ÂÌ™gĞA~3dQÛEüÕã/ªå®fÌ¤OqàêÚ/iO©É¥˜½61qÚVODDDDDDDD$µÛwe{.ï±z\ÏŠ=íÆ—/Ã¢EÖëÕŒÏ#""""ò¨RYK1­Å4Î9Ïgõ?#OÚ<Ï`ÆLàµÍÌ¼ÖŸérà÷zc&lÅ–ÀÛÌ˜¯¿*€‡‡Ã£ÙUDìŞm¹ÿcĞ ¨[2f„¼y¡Exï=ËÏÇC¬ög‘Îl¶ü{hËùBÕªA—.Æg2ÚÅ»é¶¢›Íã?oğ9sT40‘ˆI…¢¢¢şó¾„§fÌ˜‘?üĞ‰ì£iÓ¦Î¢%,æÍŸ?Ÿ>úÈÙ‘ øöÛoiØ°!×¯_(£ˆ8W­<µœAR1??Ëqüy~~ıúuËtÕªÁÎÆÍ[#O¶õØÆ/á¹Ï7ñ¿yœn+ºQrRIæœ¯	EDœÈÇÇ‡;w²sçN|||œGDDD$EĞ5–ˆˆufîiõ˜RYJQ9ge;¤1Æ”)ÖßôäæØ'HJ k,ûÈä—‰µFpfĞ½²ˆšyj:%G¬9–u§×Ñ{Uêıš••~-y¾ÿ<6l»Íİ»ğ÷ß0a¼ú*+æ”ˆvwş<¬Z£GCûöP¼¸åD¥ªU-›|õ¬YAAÆl<­ë+q¿ü¿ıfı8“ÉrŸ¦›‹7wÎ†œ¥öµ¹vÍ¦ñM7ePµA§{òöövvq0“Y¢xÙ²eãÆ ñÅª%+“ÉÄ›o¾É×_íÌˆ†8yò$ÅŠÃd2qôèQŠ-êìHÉÖéÓ§)R¤ÈcËx	¿w¦NJïŞ½’1**Š×_Ù³g?tBbbÿ×OøuÄj› ‘D9|ø0¥K—ş÷ı¬ÿÜ­İ·R3¯sĞIèÎ<~øÁ>ówïŸ~
+Ù²7§Ùlæ—¿ğáÆÙ{e¯q?EÉ,%ùø…iS¢NIE"b"ÈùUNB"B¬7®Ñ8†Tb§TIa99äúuëÆµnË—Û%’ˆˆˆˆˆUö]ÙÇ”À)Ì;8°è0§fñtó¤~Áú´)Ş†VÅZ‘-ÀrƒÄíÛ–Sü-0Â…NêP~~–"e‰–GÑ¢P¸°å‘6­³Ó‰ˆˆ$ND”*gÎX?¶gO˜1ÃøLF:|í0ç4ärèe›ÆgóÏÆ~Èêÿ„›¥Å%=z¿û¡C‡(Uª”‰½©@˜@É’%9~ü8ğøáêÕ«iÒ¤‰3#âŞ½{¤K—NB<«@–ï%www.\ÈË/¿ìĞ|.\ M›6ìÙ³Ç¦ò ¨@(b‹Ä½İ½¹óÎ¼=´ƒƒ¸Ÿ†Ş½ášm›È<UÚ´ğÑGğÆàéiÜ¼f³™•ÇWòáÆÙu¿q?E…ìUw/yñ¡«EDDDDDDDD$eúéĞOtXÚÁª1n\|ë"Yü³Ø)UÒüø#¼öšõãşü^xÁè4"""""¶»q‡9æ0e×\?âì8˜0Q+o-ÚoC›mÈŸ>ÿC¿|ÙR$LX*±n¯’!kV(RÄR&,R
+„|ù,9\ÿ¤&I=ÆŒwßµ~\ºtpâ„åß<Wx1&óšp+ü–Ísüöêo4*ÔÈÀTâ*¦>*&Ğ®];–,YòP,ay*88˜Ü¹s;9eÒ=(´©@˜tŸT 0›Íx{{³jÕ*ê×¯ïl›6m¢]»vÜ¸qÃêò`ÂÏUPÄz‰-ÖÊ[‹-İ·8,—Hbİ¸ıúÁ’%ö™¿X1øì3hÕ
+ŒìŞÅ™ãXqlmúˆW7ñSTÍU•Oê}Bƒ‚²ˆHjÅ„	 4h^^^NN$"""’üéKD$ñÍiÄïg~·jÌË%^fI;;=ÑšDf3<÷ìİkİ¸²eaß>cŸÛIit%""â<f³™-ç¶09p2K.%&.ÆÙ‘ (“µÍ‹6§Y‘fTË]w7÷‡>n6[N4zP&´œZî¤À.ÀËòä±”	óä‰åÒ¥í¤MÊ«¯Ö#_>Oræ„,YT2û;Š‡û÷­;~<dx$ÃlÚH‹-
+µy·k¼ÍØ†cL%²oß>*T¨ÿ¶
+„)Ÿ
+„	|úé§¼ûî»O,Ş¿oï”qJTşüù1™LlØ°
+8;N²•°@ø@Âï„Ìf3lØ°J•*Ù5×øñã>|8111ñY¬)>JBë$¶@øNÍwø´Á§Ë%b³.„7ß´
+í¡V-øòK¨ZÕØyãÌq¬:±ŠQ›G±ëÒ.c'‚Æ…óEÃ/(“­ŒCÖIÂÂÂ  44''Işt%"’8Á·ƒ)0¡ f¬ûÕúšNkhZ¤©R%Í–-P»¶õãfÌ€=Ï#’’èKDDÄ5\½Êìı³™±w'npvœx™|3Ñ¤pšiF“ÂMÈà›á±ŸG<|JáÁƒ–÷‹…»;dÏN|™0sfË#S¦‡_fÌiÓBš4–‡§§³“?›Ù‘‘ñğ#<ü¿ï³öıOûÜ˜ËÚ2$|	–?sOÏÇ?¼¼   üıÿ2]:Ë‹L™,¯§K§MjDÄµuìh¹—ÒZ%KZ6ârÕwVXÅ+‹^!26Òæ9*å¬Ä_=şÂË]›'%GT©R%şmS>Ø±cÕ«Wb0**
+ww÷gÌ"©É£'Ğ¾}{Ò¤IÃ²eË8wîÜÊ…™2ebëÖ­+VÌğ<ôêÕ‹$éÔA777üüüÕ	„"6HlpUÇU4+ÚÌa¹Dlqó&?ü`¿5Úµƒ1c P!cç5›Í¬;½Q›Gñ×ù¿Œü1ÜLnt/ßë~LÎ49í¾ˆHj£¯DDDDŒ§k,‘ÄùhãG|¸éC«ÆäJ“‹àÁÁÿ9YÄU´mK¬<1S&Ëë¾¾öÉ$’RèKDDÄµ˜Ífş:ÿ3öÌ`ÑáE„Ç¸Î±~î&wªå®F£BhX°!•sUÆÃÍã‰Ÿn)"<8¥pçN8á:İÈdÃÇçáB¡¯¯å}{xzZN9ts³”ç¾4™ 6ÖRº³öıô2_D„³ÿ”ÇİİR&|PÍ™råú÷õogÏ®'EÄñ6o†:ulûÇP¿¾±yŒ²ààº®èš¤Óš¼Øûú^
+g,l`2q$S‘/_>.\¸ ü{êÚƒ—×®]#S¦LNN(®$a0K–,lİº•Â…-ÿFDDĞ½{w~úé§ÿ”óäÉÃ_ıEîÜ¹ËL›6mØ¿¿UåÁ„Ÿ—6mZFÉë¯¿NºtéX·n:tàöíÛ*ŠX!±Â[Ão=q1W³~=¼ş:œ>mŸù==¡ø¿ÿ³Ü„b$³ÙÌæàÍŒÚ<Šõg×;ùcøyú1¬ú0Ş®ù6^v_OD$µĞW""""ÆÓ5–ˆÈ³Å™ã(8¡ Áw‚­÷îóïòI½Oì”*iÎƒ‚-7ºZcäH=Ú>™DR]c‰ˆˆ¸®;wXxh!3öÎ`×¥]Îóé¼ÓQ¯@=lH£B(”ñÙ;1ß¾»v=\*¼xÑşYEÍÛ
+°ü<û¸‡.»EÄh11ğÜspà€õc_~ÙúÍ»åÇ}?Ò}ewÌ$­F4»õlº”ëbP*qS1bÄ¾øâ‹‡Šƒ^nß¾Ê•+;;¢¸„Â‰'òÆoüçsúôéÃŒ3şS",^¼8[¶l1¤”º~ız:tèÀ­[·l.6lØY³f‘3çÃ'&5Š>ø@B+$¦@X:kiö;èĞ\"I£FÁ_X~8¶‡´iaèP<ØòºÑş>ÿ7£·ŒfõÉÕÆOşˆìÙùø…é^¡ûSw‘ÄÑW""""ÆÓ5–ˆÈ³ıqæÎihõ¸SO%êf_g1ÆµnŒ»;û£Š¤XºÆI^=Èœs˜{`.—C/;;ÎcåOŸŸºùëR'_êä¯Cşôù5îòåË„Š…!!öÍ*âlùòAÉ’P¢Ä¿/K”€Úß_Dl4a‚å>FkùøÀÑ£?¿Ñ‰’nsğfêıXXsÒ:¯•Y­f”JœEÂÔGÂG\ºt‰‚ÿ¾…¬)S¦Ğ§O'¦W“°@xâÄ	
+zü/{öìÉ¬Y³şSì«T©6lˆÿå-¾øâŞ}÷]bşir<(½>MÂnnn|ôÑGŒ9ò¡’ã6l Aƒ*ŠX!1Â¾ÏõeJó)Í%b” woËÍö’)“å&–7Ş ??ãçßsy£·ŒfÙÑeÆOşˆ2YËğí‹ßR;_m»¯%"’’éÆ+ãéKDäÙ:.íÈÂC­óBşø³ÛŸvJ”4÷ï[J€ÖŞ<Ü¾=,´îA$ÕÒ5–ˆˆHòËú³ë™½6Ë.#<&ÜÙ‘(_º|ÔÉ_ÇR(ÌW‡‚
+>ö¿G™ÍpúôÃ§îÙcÙHZ$¥ËÊ–…òå¡BËË"E,åˆˆ<É¥KP¼8Ü»gıØ?„>0<R’]»Fù©å“¼qB“ÂMXÙa%^î^%gQ0õQğ1zõêÅÌ™3*Y™L&ZµjÅ²eö¿É\’„Âğğp¼¼ÿ¡Ùl¦sçÎ,\¸ğ?ßWuëÖeÍš5Oû$ááátïŞÅ‹Û|ê`ÆŒ™?>5zâç:tˆ²eËª@(b…Äç¶™Kç²šKÄH±±0m¼÷}w©ËŞ}×RXôö6~şÃ×3fëZHœ9Îøxµì«Œm0–irØu‘”J7^‰ˆˆˆO×X""Ow+ü9¿ÊIdl¤Uãæ´™Ã«e_µSª¤™>^İúqÛ¶AõêÆçI‰t%""’|İ‹¼ÇÒ£K™½6ƒ6bÆµo¯ÍƒêyªS=wujä©AÅññğIÔØ˜8räßS
+wî„C‡,ïIéüü,¥Â
+,*U T)ğğpv2qíÛÃ¢EÖË—Ïrú ¯¯ñ™’"6.–&óšğÇ™?’4OÛ’m™ûÒ\•SSãÊ•++VŒĞĞĞø÷™Ífüıı¹|ùr’N‹s›7o J•*øø$îFù¯ØØX.\¸ @¾|ùù¹­ZµbÍš5ÿ)¶nİš%K–$j7 €3gÎĞ¦M:dsy°B…
+,]º”üÏ89&&†‹/ÏşEÄ"1ÂàÁÁäM—×¡¹DìáÆK‰pútËuö’7¯eW®]íódİ‰›'ølëgÌ90‡˜8û=Æ+×ı˜Uàá¦gED¬¡¯DDDDŒ§k,‘§ûvç·üu UcÒz§åòĞËøyúÙ)•íÌf(S¶n\¥J–›‰ù«L‘TO×X""")Ã¥{—X|x1/dû…íÎ“(^î^TÈ^yjP-w5*å¬Dô}_bT”¥ô°?8`y¹?\¿nçà".ÀÏÏòóoÕªP­šåe®\ÎN%"Î°n4nlÛØ¥Ká¥—ŒÍc„7}Ì“v,bÏ
+=™Ö|în:Â5¥P0õQğ	¾ûî;^ıõÿ½ÆÏÀÖı’ÈÕÄÄÄàåå…››G¡hÑ¢Î”jDDDĞ°aCşúë¯ÿ|ouïŞ3f<sµk×Ò¹sgnß¾msy°k×®L:UåQ;yV0OÚ<œrÎá¹Dìiï^8şúË¾ë,#GB—.`åá½‰r6ä,£6âÇı?ÚõDÂÒYK3éÅIÔÎWÛnkˆˆ¤4±±±lÙ²€çŸww=!)"""’TºÆy2³ÙLÅéÙweŸUãú>×—)Í§Ø'Tış;4jdı¸9sàU×<PQÄ%éKDD$å9r–E‡±ğğB«Fp¶>x.çs<—Ãò¨”³ùÓçOt©Ğl†+Wş[*<vbcí^ÄÉrå‚êÕáùç-²eA—÷")[D„e®S§¬[¿¾åù7WÛ„kı™õ4œÓ0I'+­>”/~‘èëI8@¹råâßV0åSğ)Úµk÷Ğ©pf³™|ùòqüøq¼ìqÇºƒ„……‘&ML&GUĞÁîÜ¹C­Zµ8räHüû‡ÆçŸşÄ±cÆŒáƒ> öŸŸ¼M&“UÅAOOOÆÇo¼aÀW""Oò¬aÇÒ™ÿò|‡ç±7³æÍƒáÃáòeû®•/üïğÚkàímüüÇoç£M±ğĞÂ$ıàü,ËtæËF_’= »İÖëíº´‹ÊßU¶z\`ï@*å¬d‡DI×´)¬]kİ˜ìÙ!8Ø>º‰ˆˆˆˆ$GÇoç§Ã?±ìè2ö_İïì86Éè›‘²ÙÊR6kYÊd+C™¬e(µ4ş^‰?99"âßÓ
+÷ï‡ƒ-o_ºdÇà"N–6-Ô¨ño¡°reĞ9")Ë‡ÂGY?Îİİòï¡«u¯.ß»Lùiå¹vÍæ9>©û	#Ÿ©ò`
+ôèıî*¦|*>EXX5jÔàĞ¡CÀ¿%¯1cÆ0bÄ'§³İ¹sçÈŸ?¿
+„NtñâEjÔ¨Á…âß÷àûëÓO?eøğá}~XX]»veÅŠ6Ÿ:˜#G/^L5şjDäQÏ*Nzqı+÷wx.G¹wF‚ñã!:Ú¾kåÎï¼={Úç	¹C×ñÁÆXvt™ñ“ÿ#½Oz¾jôİËw×Ù""""""""".¢Ï/}ønÏwV)“µûûîwÉçù±í¦?„>0<ˆˆˆˆHŠp&äË.gÙ±el;¿ÍÙq’Ä„‰‚
+R6[YJe)EñÌÅ)¹8E3%wšDÏsçåtÂ£G-?‡=jyœ=qqvüDœÀËËrBaıúP¯T©ÎN%"¶:yJ—†¨(ëÇãÆŸ))bâbh0»›‚7Ù<Ç7M¿a@•¦W¢aê£á3\¼x‘jÕªqéŸmQÌf3şşşìß¿Ÿ‚:9m¶mÛF­ZµT t²ãÇóüóÏsóæÍø÷=(~÷İwôèÑ€“'OÒºuk;fsy°V­Z,^¼˜lÙ²Ùé«‘„U Üßw?e³•ux.G;sF„Ÿ~²ÿZ9rÀÛoCïŞ`üü»/íæıï³æäã'ÿG½õ˜Ş|:…2²Û""ÉYtt4Ó§O OŸ>xê7/""""I¦k,‘Ç»yœãrjÕ¸ñÇ3¨Ú ;¥Jš>}à;ëúxyÁ¹s _1ŠXG×X"""©Óå{—Yy|%Ë.ãÏ ?‰‰‹qv$ÃäJ“‹â™‹S,S1Še.F¡…(˜¡ ùÓçÇ×Ó7QsDEAP¥œqêÔÃ/ƒ‚T.””Áßj×ş·PX®¸¹9;•ˆ$†ÙÃï¿[?6W.KY>MâûöñŞ†÷½e´McİMîÌl5“®åºœJ\É¾}û¨P¡BüÛ*¦|*&ÂñãÇ©S§×¯_,…¬êÕ«³eËÜ’á•İ”)Sxã7T t;wî¤~ıúÜ¿?ş}f³www/^Œ‡‡]ºtáîİ»6—À¸qãğğğ°ß""yZ0w:n¿‰»›»S²‰8ÃÎ0llÙbÿµ2d€-Ì™ŸcĞF†­ÆîË»Ÿğõğåãº3¸Ú`<Üôo·ˆHBaaaüÓÅßßßÉ‰DDDD’?]c‰ˆ<Şw»¿£Ïª>VñtóäÒĞKdö³Ã“Itı:äÍÖëÚ~üÑ>™DR2]c‰ˆˆÈˆ;¬;½Õ'W³æä®ß¿îìHv“3MN
+¤/@Á)˜¡ ùÒå#wÚÜñÄœ^/Bp°¥LüğëçÏ›‰Šr½“ŞÃ÷Áûxß¯{ÿ}İó>x„ƒg¸å¥GÄÃ¯»ÅXîÑÿ¾şàaŠ³	ÌnÀ?/Í¦_ñ†Ÿ¾–—Ñ^úAd:Ï é!âŸ—ŞJóÏ¼©G¦LĞ 4iAÎœÎN$"O²p!tìhÛØÅ‹á•WŒÍ“T¿ü•ç¿hóø©Í¦òz¥×L$®(00*UªÄ¿­aÊ§a"8p€†rãÆø"×°aÃøüóÏÍj/½ô+V¬PĞE¬]»–V­ZóïCf³///bbbˆûgk“ÉdUqĞ××—éÓ§Ó¹sgû…‘ÇzZ°iá¦¬él¿ÌD\•Ù¿ü#FÀ±cö_Ï×zõ‚¡C!_>cç3Ç±ààFnÉ¹;çŒüÏåx-gP>{y»Ì/"’éÆ+ãéKDäñ*W™]—vY5¦}©ö,|e¡%Í¨QğşûÖÛ³l@-"‰¤k,I(ÎGàÅ@VXÅê“«Ù{e¯³#9TZï´ñeÂœir’Í?Yü²Õ?ëC,şYğr÷zì¡¡a¤I“ÈÉÏ?rë–/—.ÁåËpé’eÓ”›7áÆË#6Ö±_ã3™âÀ+ôá’Ÿ×?¥?«^ÿç¥[2=®1ÖB³Ã½œšîåxøõ;ù ¤ D§Üëç2e,'œ5nÏ?ŞŞÎN$" wî@ñâpåŠõc›45kÀäB=÷ówÎSaZn†ß´i|§2˜Ûfn|/AR.S­pøğa6lÈÕ«WãK„óçÏ§}ûöÎ–h§OŸ¦D‰ÄÄÄ¨@èBæÍ›G×®ñûàM[N,P  Ë–-£\¹rIÎvúôi6lˆÉdâôéÓIO$5xZpt½ÑŒ|~¤Sr‰¸‚˜˜1>ø ®]³ÿzîî–†·<	g¤ˆ˜&î˜Èè-£¹y×ØÉw“;Ãkçı:ïããácøü""Én¼1®±DDşkïå½Tœ^ÑêqtùƒúëÛ!QÒDFZ6Y»zÕºq/¼ şi—H")®±DDDäi.Ş½ÈºÓëøıÌïüqæ}:¡µü=ıÉà›ô>ézø»û3mÂ4ˆ†ÏF}F†€øyú=ôğtóÄÓİ“'‘á„Şñäîmîİñ$4Ô°P¸wÏÌ½P5
+÷îAØı8"¢£‰ˆŠ&*&šˆèh"c¢‰Œ¶¼c
+'Îı¾åáFœû}Ì–a˜¼î?ôÀ3Ìr ç}Ì^÷ˆó¼‹Ù3ÌÙ´ÉŠ)4;æ[!¤„„[ÿ¼¼^Òrªa
+áëõêAóæĞ¬äÉãìD"©×›oÂ7ßX?ÎÇ‚B…ŒÏd«8su¬ËæàÍ6/¹8½	ğ
+08™¸"S­túôi5jDPPf³???şüóO*W®ììhÏCıúõÙ²e€
+„.fÜ¸q6ì±m}kÊƒMš4aşüù¤OŸŞ\¤\¹r˜L&b]nk×ôhĞs€'Ñ™£ØôÚ&jç«í¬h".#4&L€/¾°ìàãÍšÁ;ï@­ZÆÎ{ãş>Şô1SvM!&.æÙ¬T*K)f·™MÅÖß´$"’’èÆ+ãéKDä¿ú¯îÏ”]S¬S(C!N<›ÉÍN©l÷ÃĞ½»õã~şZ´0<Hª k,I¬8sû¯ìç÷3¿óû™ßÙ¼…ÈØHgÇqY^¹àZi¢.”†kÿ<®—H§–-ûo™°jUË¦é"b{ö@åÊgÃá®ÿ÷ÆgJŠ©»¦Òou?›Æúzø²³÷NJg-ıìO–AÂÔGB\¹r…fÍš±w¯å(ùÌ™3ó×_Q¤H''{²K—.Ñ³gO~ûí7L&Sü	Š*º–#FğÅ_<T"|Úÿ¢–ß}÷]>úè#C¤jÕª*ŠXáÑá}{ÏÎ–à-¼YõM|=}˜NÄµ„„ÀW_Áøñæ ×jÖ„#,O¸¹x?Ï‘ëGøë@6œİ`Ü¤ÿğpóà½çßcäó#ñt÷4|~‘ä@7^‰ˆˆˆO×X""‹
+#ç¸œÜ¼kÕ¸OëÊ;µŞ±S*Û™ÍP¾<8`İ¸"EàØ1cŸ?IMt%"""¶
+gë¹­lÚÈ¦àMì¼¸“è¸hgÇqi&LDÂóZ%BOT&êle¸\1Y—
+3e‚¦M¡U+hÒt˜ˆ]ÄÄX
+»{öX?¶hQËsnŞŞÆç²ÕÅ»)1©÷¢îÙ4~V«Y¼Vş5cC‰KS0õQĞF÷ïß§}ûö¬^½€üùóóÁZÜ²Ell,QQQ„……qûöm._¾ÌÑ£GÙµkÑÑÑñÅA]×k¯½ÆìÙ³ãÿ;=IÂSÓ¦MËœ9sha‡m@×®]Ë‹/¾¨¡ˆ-ê‚JäÙ®_‡Ï>ƒI“ ÒA›é•*Ã‡CÇàiP'Ïl6³èğ"ŞZ÷—î]2fÒ*æ¨ÈìÖ³)•U§ˆHê£¯DDDDŒ§k,‘‡ÍÚ;‹?÷°jŒ‡›ç‡œ'{@v;¥²İúõĞ õã&M‚şıÏ#’ZèKDDDŒr?ú>Ÿÿ›MÁ›Ø¼‰í¶åìX".Ï7²º•$àNe"NWæÊ®jÄ\,æäw¬Ÿ··ågûÖ­¡EÈ–ÍÙ‰DR±c-Øâ? ~}có$…Ùl¦õO­ùùøÏ6ï^¾;3[Í48•¸:S­ÅºuëX³fkÖ¬áÜ¹sò\ÕƒÿÌ	Kg*º¦ØØXZµjÅš5kX"Løß±T©R,[¶Ìn'`Îš5‹={ª@(bElwñ"Œ3f@´ƒ6ÑË›†^½ŒÛ±ë^ä=FmÅ×Û¿&&.Æ˜IÿáåîÅ'u?á­êoáî–üØ±•n¼1®±DDVıûêl¿°İª1/—x™%í–Ø)QÒ4oÿì‡›h2Àùó Dl§k,±—ğèp/ò÷ù¿ùû‚åq-ìš³c‰$i)èQ‹€[µ	;ò<§6W"ì®—³cYÅd‚êÕ-eÂÖ­ÁN·‹¤
+'OBÙ²aıØN`Ş<ã3%ÅâÃ‹i·¤McKg-Í^;ğóô38•¸:SéöíÛLš4‰o¿ı–k×şı+aqĞ•ÿ(-ª@èÚÂÃÃ©_¿>Û·oÿO‰0áË¶mÛ2sæL»şÂaèĞ¡|ıõ×*ŠXAB‘¤¶œHøı÷+¦OıúÁÀ#‡1s¹~„¿dÃÙÆL˜@<5ø±õÎXØğ¹ED\QLL¿ıö 7ÆÃÃÃÉ‰DDDD’?]c‰ˆüëàÕƒ”ZÖêqk;¯¥qáÆvH”4ÇA‰Ö{çøôSãóˆ¤&ºÆG1›Íœ	9c)ÿ›m¶qğêAbÍºÏOäY|=|)“¡Ù"'ît}‚¶Vãè!/ââœ,ñÊ•ƒW^±<Šwv‘ä#.êÕƒM›¬›.åy·ìÙÏe«[á·(1©„M›
+ø{ú³«Ï.ŠgÖ_"©Ñşıû)_¾|üÛºß=åS0fÏÍ Aƒ¸{÷îK‚®|úà	O!TĞõ…„„P«V-;öĞûÍf3îîî|öÙg:Ô®Ìf3E‹åôéÓ*ŠXABãœ?Ÿß}QQYÓË:w†aÃ dÉ¤Ïg6›ùéğOZ;Èğÿü=ı™Øt"İËwO×£"""""""""®êÍ_ßä›ßX5&_º|œt7“›RÙ®_?˜:Õº1¹rÙ%’ˆˆˆˆˆ8@xt8®`÷åİìº´‹İ—wsøÚa•
+EÁßÓŸçóÔ¥°©!çr|[qşÚjâÎg'KœR¥ş-–*e9­PDoÚ4èÛ×¶±ß~o¼al¤ê¹²'3÷Í´iì¼—æÑ©L'ƒIr¡ûİSŸ"<<œ.]º°|ùò‡Êw	%Ç?>“óçÏS³fM.^¼X¾ß²dÉÂO?ıÄ/¼`÷õÇŒÃ{ï½ ¡ˆtA%b¼‹á‹/,?¼GD8nİ_„·ß†:u’şÄÚÍû7öû0~Ø÷ƒ!Ùz¥ä+Lo>¾Ÿ[DDDDDDDD$¥'ç¸œÜ¸mÕ¸QuGñ^í÷ì*	nŞ„<y <Üºq;ÃÜ¹öÉ$"""""ÎÎş«ûÙ}i7¯äÀÕ¼vĞ¨PgGqY¹Óæ¦A†÷j„ÛéÆìÚš-[àòeg'{¶bÅ ];èØJ”pv×rá‚åP{÷¬[©lßîîÆç²Õú3ëi0§Mc{”ïÁ÷­¾78‘$'ºß=õQğ	ÂÃÃiŞ¼97nŒ/Û=ÜÿÈT L

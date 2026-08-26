@@ -1,0 +1,4 @@
+## 解析について
+263_full_paper.ipynbが最新のBeam SeachカスタムWhisperに基づく音声認識解析用プログラムです
+
+解析の時には，0604data, 0606dataにdataを入れて行って下さい
