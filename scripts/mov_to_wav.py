@@ -1,6 +1,7 @@
 import ffmpeg
 import sys
 import os
+from pathlib import Path
 
 def convert_mov_to_wav(input_file, output_file):
     """
@@ -32,8 +33,9 @@ def convert_mov_to_wav(input_file, output_file):
 
 if __name__ == '__main__':
     # --- ここを編集してください ---
-    input_mov_file = "/root/MedWhisper/20241018/右後_2回目_川村先生.MOV"  # 変換したいMOVファイル名
-    output_wav_file = "/root/MedWhisper/20241018/右後_2回目_川村先生.wav" # 出力するWAVファイル名
+    project_root = Path(__file__).resolve().parents[1]
+    input_mov_file = project_root / "data" / "20241018" / "右後_2回目_川村先生.MOV"
+    output_wav_file = input_mov_file.with_suffix(".wav")
 
     # スクリプトと同じディレクトリにあると仮定
     # 必要に応じて絶対パスを指定してください (例: "C:/Users/YourUser/Videos/test.mov")

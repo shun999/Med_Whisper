@@ -2,7 +2,8 @@ from pydub import AudioSegment
 from pathlib import Path
 
 # m4a があるフォルダ
-BASE_DIR = Path("/root/MedWhisper/2025115cleandata/スマホ")  # ←ここだけ変える
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+BASE_DIR = PROJECT_ROOT / "data" / "2025115cleandata" / "スマホ"  # ←ここだけ変える
 
 # 「ファイル名: [(開始秒, 終了秒), ...]」
 # 終了を「最後まで」にしたいところは None にする

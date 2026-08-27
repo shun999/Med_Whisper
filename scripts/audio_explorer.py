@@ -3,9 +3,10 @@
 # pip install -U pyannote.audio torch==2.1.2+cpu -f https://download.pytorch.org/whl/torch_stable.html
 # 使い方例:
 #   export HUGGINGFACE_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxx
-#   python audio_explorer.py "/root/MedWhisper/0604data/2回目_右後ろ.wav" --noise-hint 3,7
+#   uv run python scripts/audio_explorer.py "data/0604data/2回目_右後ろ.wav" --noise-hint 3,7
 
 import os, sys, argparse, struct
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import librosa, soundfile as sf
@@ -169,20 +170,21 @@ def main():
     segments = merge_tracks(speech_flags, step, sr, spk_segs, total_len)
 
     # 出力物
-    os.makedirs("explore_out", exist_ok=True)
-    timeline_png = os.path.join("explore_out", "timeline.png")
+    output_dir = Path(__file__).resolve().parents[1] / "outputs" / "audio_explorer"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    timeline_png = output_dir / "timeline.png"
     plot_timeline(segments, timeline_png, title=os.path.basename(args.wav))
 
     # サマリー
     df = summarize(segments)
-    df.to_csv(os.path.join("explore_out", "summary.csv"), index=False)
+    df.to_csv(output_dir / "summary.csv", index=False)
 
     # 健全性 + 代表特徴CSV
     meta = pd.Series({
         "sr": sr, "duration_sec": round(total_len,2),
         "LUFS": round(lufs,2), "RMS_dBFS": round(rms,2), "SNR_est_dB": round(snr,2)
     })
-    meta.to_csv(os.path.join("explore_out", "health.csv"))
+    meta.to_csv(output_dir / "health.csv")
 
     # 代表フレーム特徴（先頭1万点まで）
     nrec = int(min(len(flat), 10000))
@@ -193,14 +195,14 @@ def main():
         "flux": flux[:nrec],
         "zcr": zcr[:nrec]
     })
-    feat.to_csv(os.path.join("explore_out", "frame_features.csv"), index=False)
+    feat.to_csv(output_dir / "frame_features.csv", index=False)
 
     # ロジックツリー風の要約（標準出力）
     print("\n=== Health ===")
     print(meta)
     print("\n=== Class summary (seconds / %) ===")
     print(df)
-    print(f"\nSaved: {timeline_png}, summary.csv, health.csv, frame_features.csv in ./explore_out")
+    print(f"\nSaved: timeline.png, summary.csv, health.csv, frame_features.csv in {output_dir}")
 
 if __name__ == "__main__":
     main()

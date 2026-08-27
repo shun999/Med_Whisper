@@ -6,7 +6,7 @@ pyannote を「生波形」と「音声加工後」の両方に適用し、
 時系列グラフ（RMS×話者）を保存するワンファイルスクリプト。
 
 出力先:
-  pyannote_result/
+  outputs/diarization/
     timeline_raw.png
     timeline_processed.png
     raw/
@@ -62,7 +62,9 @@ if not hasattr(torchaudio, "info"):
 from pyannote.audio import Pipeline
 import os
 
-HF_TOKEN = os.getenv("HF_TOKEN", "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")  # ← 環境変数で上書き推奨
+HF_TOKEN = os.getenv("HF_TOKEN")
+if not HF_TOKEN:
+    raise RuntimeError("HF_TOKEN 環境変数を設定してください")
 pipe = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=HF_TOKEN)
 # pipe = pipe.to("cuda")  # GPUあれば有効化
 
@@ -80,10 +82,11 @@ from collections import defaultdict
 import csv
 
 # ---- 設定 ----
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FILE_NAME = "20240827/右後_4回目_大野"
-BASE_DIR = Path("/root/MedWhisper")
+BASE_DIR = PROJECT_ROOT / "data"
 WAV_RAW  = BASE_DIR / f"{FILE_NAME}.wav"   # 生波形
-OUTROOT  = Path("./pyannote_result")       # 要求どおり: 直下にグラフ。配下に raw/ processed/
+OUTROOT  = PROJECT_ROOT / "outputs" / "diarization"
 OUTROOT.mkdir(parents=True, exist_ok=True)
 
 # ---- ユーティリティ ----

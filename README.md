@@ -1,4 +1,40 @@
-## 解析について
-263_full_paper.ipynbが最新のBeam SeachカスタムWhisperに基づく音声認識解析用プログラムです
+# MedWhisper
 
-解析の時には，0604data, 0606dataにdataを入れて行って下さい
+BLS（一次救命処置）演習動画の音声を解析し、必要なコールの実施状況を評価するためのプロジェクトです。
+
+## 主な解析
+
+最新の Beam Search カスタム Whisper による解析は [263_full_paper.ipynb](263_full_paper.ipynb) です。ノートブックは既存の相対パスとの互換性を保つため、当面はプロジェクト直下に配置しています。
+
+## ディレクトリ構成
+
+```text
+.
+├── src/                    # Whisper 拡張などの再利用コード
+├── scripts/                # 音声変換・話者分離・解析用スクリプト
+├── data/                   # 入力動画・音声（Git 管理対象外）
+├── _work/                  # 既存実験の中間データ
+├── outputs/
+│   ├── audio_explorer/     # 音響特徴の解析結果
+│   ├── beam_search/        # Beam Search のログ・CSV・図
+│   ├── diarization/        # pyannote の話者分離結果
+│   ├── evaluation/         # 候補文・評価用 CSV
+│   └── transcription/      # Whisper の文字起こし結果
+├── *.ipynb                # 既存の実験ノートブック
+└── requirements.txt
+```
+
+## データ配置
+
+解析対象は `data/0604data/` または `data/0606data/` に配置します。動画・音声や仮想環境は GitHub にコミットしないでください。
+
+## 実行例
+
+依存関係は `uv` で管理・実行します。
+
+```bash
+uv run python scripts/audio_explorer.py data/0604data/example.wav --no-diar
+uv run python scripts/check_model_loading.py
+```
+
+各スクリプトはプロジェクトのルートディレクトリから実行してください。生成物は用途ごとに `outputs/` 配下へ保存されます。

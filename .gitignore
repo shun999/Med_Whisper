@@ -1,3 +1,10 @@
-env
+data/
+env/
+.venv/
 
-data
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+.DS_Store
