@@ -34,6 +34,7 @@ BLS（一次救命処置）演習動画の音声を解析し、必要なコー�
 依存関係は `uv` で管理・実行します。
 
 ```bash
+uv sync
 uv run python scripts/audio_explorer.py data/0604data/example.wav --no-diar
 uv run python scripts/check_model_loading.py
 ```
