@@ -12,15 +12,16 @@ BLS（一次救命処置）演習動画の音声を解析し、必要なコー�
 .
 ├── src/                    # Whisper 拡張などの再利用コード
 ├── scripts/                # 音声変換・話者分離・解析用スクリプト
+├── notebooks/archive/      # 過去の実験ノートブック
 ├── data/                   # 入力動画・音声（Git 管理対象外）
-├── _work/                  # 既存実験の中間データ
+├── _work/                  # 再利用する既存実験の中間データ
 ├── outputs/
 │   ├── audio_explorer/     # 音響特徴の解析結果
 │   ├── beam_search/        # Beam Search のログ・CSV・図
 │   ├── diarization/        # pyannote の話者分離結果
 │   ├── evaluation/         # 候補文・評価用 CSV
 │   └── transcription/      # Whisper の文字起こし結果
-├── *.ipynb                # 既存の実験ノートブック
+├── 263_full_paper.ipynb   # 現行の解析ノートブック
 └── requirements.txt
 ```
 
@@ -37,4 +38,4 @@ uv run python scripts/audio_explorer.py data/0604data/example.wav --no-diar
 uv run python scripts/check_model_loading.py
 ```
 
-各スクリプトはプロジェクトのルートディレクトリから実行してください。生成物は用途ごとに `outputs/` 配下へ保存されます。
+各スクリプトとノートブックはプロジェクトのルートディレクトリから実行してください。生成物は用途ごとに `outputs/` 配下へ保存されます。`outputs/` は実験結果を共有するため、Git 管理対象として維持します。
