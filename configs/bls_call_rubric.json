@@ -1,0 +1,99 @@
+{
+  "rubric_id": "bls-call-ja",
+  "version": "1.0.0",
+  "score_levels": [0.0, 0.5, 1.0],
+  "calls": [
+    {
+      "id": "scene_safety",
+      "label": "周囲の安全確認",
+      "detector": "patterns",
+      "full_patterns": ["周囲(?:の|は)?安全(?:確認)?(?:よし|です|問題なし)", "周囲(?:の)?安全を確認"],
+      "partial_patterns": ["安全確認"]
+    },
+    {
+      "id": "patient_found_and_safety",
+      "label": "傷病者発見と周囲の安全確認",
+      "detector": "compound_safety",
+      "injury_patterns": ["傷病者(?:を)?発見", "傷病者がいます", "倒れている人(?:を)?発見"],
+      "safety_patterns": ["周囲(?:の|は)?安全", "安全確認"]
+    },
+    {
+      "id": "infection_protection",
+      "label": "感染防御",
+      "detector": "patterns",
+      "full_patterns": ["感染(?:防御|対策|予防)(?:よし|します|に配慮)?", "感染防御に配慮"],
+      "partial_patterns": ["手袋(?:を)?(?:着用|装着)", "個人防護具", "ppe"]
+    },
+    {
+      "id": "responsiveness_three_calls",
+      "label": "反応確認の呼びかけ3回",
+      "detector": "response_count",
+      "response_patterns": ["大丈夫ですか", "聞こえますか", "わかりますか"]
+    },
+    {
+      "id": "call_for_help",
+      "label": "応援要請",
+      "detector": "patterns",
+      "full_patterns": ["誰か(?:こちらに)?来てください", "誰か来て", "応援(?:を)?(?:お願いします|呼んでください)"],
+      "partial_patterns": ["助けてください", "人を呼んでください"]
+    },
+    {
+      "id": "request_emergency_call",
+      "label": "特定者への119番通報依頼",
+      "detector": "directed_request",
+      "action_patterns": ["119番(?:に)?(?:通報|電話)", "救急車(?:を)?呼"],
+      "request_patterns": ["してください", "お願いします", "して", "呼んでください", "呼んで"],
+      "addressee_patterns": ["あなた", "そちらの方", "そこの方", "そこの人", "[ぁ-んァ-ヶ一-龥A-Za-z]{1,8}さん"]
+    },
+    {
+      "id": "request_aed",
+      "label": "特定者へのAED搬送依頼",
+      "detector": "directed_request",
+      "action_patterns": ["aed(?:を)?(?:持ってき|持って来|取ってき|運んで)", "除細動器(?:を)?(?:持ってき|持って来|取ってき|運んで)"],
+      "request_patterns": ["ください", "お願いします", "きて", "来て"],
+      "addressee_patterns": ["あなた", "そちらの方", "そこの方", "そこの人", "[ぁ-んァ-ヶ一-龥A-Za-z]{1,8}さん"]
+    },
+    {
+      "id": "check_breathing",
+      "label": "呼吸確認",
+      "detector": "patterns",
+      "full_patterns": ["呼吸(?:を|の)?確認", "呼吸(?:を)?見ます", "胸(?:と|や)お腹(?:を)?見"],
+      "partial_patterns": ["呼吸(?:は)?(?:なし|ありません|ない)"]
+    },
+    {
+      "id": "check_pulse",
+      "label": "脈拍確認",
+      "detector": "patterns",
+      "full_patterns": ["脈(?:拍)?(?:を|の)?確認", "脈(?:拍)?(?:を)?診ます", "頸動脈(?:を)?確認"],
+      "partial_patterns": ["脈(?:拍)?(?:は)?(?:なし|ありません|ない)"]
+    },
+    {
+      "id": "compression_counting",
+      "label": "胸骨圧迫中の回数カウント",
+      "detector": "compression_count"
+    },
+    {
+      "id": "handoff_interventions",
+      "label": "救急隊への胸骨圧迫・AEDショック実施説明",
+      "detector": "handoff_interventions",
+      "handoff_patterns": ["救急隊", "引き継(?:ぎ|き)", "申し送(?:り|る)"],
+      "compression_patterns": ["胸骨圧迫(?:を)?(?:しました|しています|実施|行い|行った)"],
+      "shock_patterns": ["aed(?:で|を)?(?:[0-9一二三四五六七八九十]+回)?(?:ショック|除細動)", "電気ショック(?:を)?(?:しました|実施|行い|行った)"]
+    },
+    {
+      "id": "handoff_belongings",
+      "label": "救急隊への傷病者の荷物の申し送り",
+      "detector": "handoff_belongings",
+      "handoff_patterns": ["救急隊", "引き継(?:ぎ|き)", "申し送(?:り|る)"],
+      "belonging_patterns": ["(?:この人|傷病者|患者)?(?:の)?荷物", "所持品", "持ち物"]
+    }
+  ],
+  "sequence_constraints": [
+    {"id": "safety_before_response", "label": "安全確認後に反応確認", "before_any": ["scene_safety", "infection_protection"], "after": "responsiveness_three_calls"},
+    {"id": "response_before_requests", "label": "反応確認後に応援要請", "before": "responsiveness_three_calls", "after_any": ["call_for_help", "request_emergency_call", "request_aed"]},
+    {"id": "help_before_vitals", "label": "応援要請後に呼吸・脈拍確認", "before": "call_for_help", "after_any": ["check_breathing", "check_pulse"]},
+    {"id": "vitals_before_compressions", "label": "呼吸・脈拍確認後に胸骨圧迫", "before_any": ["check_breathing", "check_pulse"], "after": "compression_counting"},
+    {"id": "compressions_before_handoff", "label": "胸骨圧迫後に処置内容を申し送り", "before": "compression_counting", "after": "handoff_interventions"},
+    {"id": "interventions_before_belongings", "label": "処置説明後に荷物を申し送り", "before": "handoff_interventions", "after": "handoff_belongings"}
+  ]
+}
