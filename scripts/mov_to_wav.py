@@ -1,7 +1,7 @@
-import ffmpeg
-import sys
-import os
+import argparse
 from pathlib import Path
+
+import ffmpeg
 
 def convert_mov_to_wav(input_file, output_file):
     """
@@ -10,9 +10,11 @@ def convert_mov_to_wav(input_file, output_file):
     :param input_file: 入力MOVファイルのパス
     :param output_file: 出力WAVファイルのパス
     """
-    if not os.path.exists(input_file):
-        print(f"エラー: 入力ファイルが見つかりません: {input_file}")
-        return
+    input_file = Path(input_file)
+    output_file = Path(output_file)
+    if not input_file.is_file():
+        raise FileNotFoundError(f"入力ファイルが見つかりません: {input_file}")
+    output_file.parent.mkdir(parents=True, exist_ok=True)
 
     print(f"変換を開始します: {input_file} -> {output_file}")
     try:
@@ -20,24 +22,30 @@ def convert_mov_to_wav(input_file, output_file):
         # -i: 入力ファイル
         # -acodec pcm_s16le: オーディオコーデックをWAV標準のPCM 16bitに指定
         # -ar 44100: サンプリングレートを44.1kHzに指定（CD音質）
-        stream = ffmpeg.input(input_file)
-        stream = ffmpeg.output(stream.audio, output_file, acodec='pcm_s16le', ar=44100)
+        stream = ffmpeg.input(str(input_file))
+        stream = ffmpeg.output(stream.audio, str(output_file), acodec='pcm_s16le', ar=44100)
         
         # 既存の出力ファイルを上書きする設定で実行
         ffmpeg.run(stream, overwrite_output=True)
         
         print(f"変換が完了しました: {output_file}")
-    except ffmpeg.Error as e:
-        print("エラーが発生しました:")
-        print(e.stderr.decode())
+    except ffmpeg.Error as exc:
+        message = exc.stderr.decode(errors="replace") if exc.stderr else str(exc)
+        raise RuntimeError(f"ffmpegによる変換に失敗しました:\n{message}") from exc
+
+def main():
+    project_root = Path(__file__).resolve().parents[1]
+    parser = argparse.ArgumentParser(description="MOV動画の音声をWAVへ変換します")
+    parser.add_argument("input", type=Path, help="入力MOVファイル")
+    parser.add_argument("--output", type=Path, default=None, help="出力WAVファイル")
+    args = parser.parse_args()
+
+    input_file = args.input.resolve()
+    output_file = args.output or (
+        project_root / "outputs" / "audio" / f"{input_file.stem}.wav"
+    )
+    convert_mov_to_wav(input_file, output_file)
+
 
 if __name__ == '__main__':
-    # --- ここを編集してください ---
-    project_root = Path(__file__).resolve().parents[1]
-    input_mov_file = project_root / "data" / "20241018" / "右後_2回目_川村先生.MOV"
-    output_wav_file = input_mov_file.with_suffix(".wav")
-
-    # スクリプトと同じディレクトリにあると仮定
-    # 必要に応じて絶対パスを指定してください (例: "C:/Users/YourUser/Videos/test.mov")
-    
-    convert_mov_to_wav(input_mov_file, output_wav_file)
+    main()

@@ -40,30 +40,30 @@ split_plan = {
     ],
 }
 
-# 出力フォルダ（なければ作る）
-OUT_DIR = BASE_DIR / "split_wav"
-OUT_DIR.mkdir(exist_ok=True)
+OUT_DIR = PROJECT_ROOT / "outputs" / "segments"
 
-for fname, segments in split_plan.items():
-    in_path = BASE_DIR / fname
-    print(f"[INFO] Processing {in_path}")
 
-    # m4a を読み込み（自動で ffmpeg が使われる）
-    audio = AudioSegment.from_file(in_path)
+def main():
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    for fname, segments in split_plan.items():
+        in_path = BASE_DIR / fname
+        if not in_path.is_file():
+            print(f"[WARN] 入力がないためスキップ: {in_path}")
+            continue
+        print(f"[INFO] Processing {in_path}")
 
-    for idx, (start_s, end_s) in enumerate(segments, start=1):
-        start_ms = int(start_s * 1000)
-        end_ms = len(audio) if end_s is None else int(end_s * 1000)
+        # m4a を読み込み（自動で ffmpeg が使われる）
+        audio = AudioSegment.from_file(in_path)
 
-        # 切り出し
-        seg = audio[start_ms:end_ms]
+        for idx, (start_s, end_s) in enumerate(segments, start=1):
+            start_ms = int(start_s * 1000)
+            end_ms = len(audio) if end_s is None else int(end_s * 1000)
+            seg = audio[start_ms:end_ms].set_frame_rate(16000).set_channels(1)
+            out_path = OUT_DIR / f"{in_path.stem}_part{idx:02d}.wav"
+            seg.export(out_path, format="wav")
+            end_label = end_s if end_s is not None else "end"
+            print(f"  -> saved {out_path} ({start_s}–{end_label} s)")
 
-        # Whisper 用などならここで 16kHz モノラル化
-        seg = seg.set_frame_rate(16000).set_channels(1)
 
-        # 出力ファイル名
-        out_name = f"{in_path.stem}_part{idx:02d}.wav"
-        out_path = OUT_DIR / out_name
-
-        seg.export(out_path, format="wav")
-        print(f"  -> saved {out_path} ({start_s}–{end_s if end_s is not None else 'end'} s)")
+if __name__ == "__main__":
+    main()

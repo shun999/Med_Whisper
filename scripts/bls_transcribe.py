@@ -1,5 +1,8 @@
 
+import argparse
 import re
+from pathlib import Path
+
 import whisper
 import pykakasi
 from moviepy.editor import VideoFileClip
@@ -9,10 +12,7 @@ def to_hiragana(text):
     """
     テキストをひらがなに変換する
     """
-    kakasi = pykakasi.kakasi()
-    kakasi.setMode("J", "H")  # J(apanese) to H(iragana)
-    converter = kakasi.getConverter()
-    return converter.do(text)
+    return "".join(item["hira"] for item in pykakasi.kakasi().convert(text))
 
 def remove_punctuation(text):
     """
@@ -24,8 +24,12 @@ def convert_video_to_audio(video_path, audio_path):
     """
     ビデオファイルをオーディオファイルに変換
     """
-    video = VideoFileClip(video_path)
-    video.audio.write_audiofile(audio_path)
+    audio_path = Path(audio_path)
+    audio_path.parent.mkdir(parents=True, exist_ok=True)
+    with VideoFileClip(str(video_path)) as video:
+        if video.audio is None:
+            raise RuntimeError(f"動画に音声トラックがありません: {video_path}")
+        video.audio.write_audiofile(str(audio_path))
 
 def whisper_model(model_size='large'):
     """
@@ -77,18 +81,28 @@ def check_words(transcribed_text, words_to_check):
     return results
 
 
-if __name__ == '__main__':
-    video_path = '/app/whisper/正面右_4回目.MOV'
-    audio_path = '正面右_4回目.wav'
+def main():
+    project_root = Path(__file__).resolve().parents[1]
+    parser = argparse.ArgumentParser(description="BLS動画をWhisperで文字起こしします")
+    parser.add_argument("video", type=Path, help="入力動画ファイル")
+    parser.add_argument("--model", default="large", help="Whisperモデル名")
+    parser.add_argument("--initial-prompt", default="傷病者 感染防御 頸動脈")
+    parser.add_argument("--audio-output", type=Path, default=None)
+    args = parser.parse_args()
+
+    video_path = args.video.resolve()
+    audio_path = args.audio_output or (
+        project_root / "outputs" / "transcription" / f"{video_path.stem}.wav"
+    )
     
     # ビデオをオーディオに変換
     convert_video_to_audio(video_path, audio_path)
     
     # Whisper modelのロード
-    model = whisper_model('large')
+    model = whisper_model(args.model)
     
     # 最初のプロンプト & 正解の単語
-    initial_prompt = '傷病者 感染防御 頸動脈'
+    initial_prompt = args.initial_prompt
     # correct_words = [
     #     '傷病者', '周囲の安全', '感染防御', '大丈夫ですか', '誰か来てください', 
     #     '1 2 3', '119番', 'AEDを持ってきてください', '呼吸の確認', '脈の確認', '蘇生', '荷物'
@@ -101,3 +115,7 @@ if __name__ == '__main__':
     transcribed_text = transcription_result['text']
     
     check_words(transcribed_text, correct_words)
+
+
+if __name__ == '__main__':
+    main()

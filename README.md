@@ -31,12 +31,37 @@ BLS（一次救命処置）演習動画の音声を解析し、必要なコー�
 
 ## 実行例
 
-依存関係は `uv` で管理・実行します。
+Python 3.12 と依存関係は `uv` で管理・実行します。既存の `env/` は使用せず、プロジェクトルートで同期してください。
 
 ```bash
+uv python install 3.12
 uv sync
+uv run python --version
 uv run python scripts/audio_explorer.py data/0604data/example.wav --no-diar
 uv run python scripts/check_model_loading.py
+```
+
+ノートブックは同じ環境から起動します。
+
+```bash
+uv run jupyter lab
+```
+
+VS Codeでは `.venv/bin/python` をPythonインタープリターとして選択してください。
+
+GPU認識は次のコマンドで確認できます。
+
+```bash
+uv run python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+```
+
+本プロジェクトはCUDA 12.1版PyTorchを使用します。`False`になりドライバー互換性の警告が出る場合、コードはCPUへフォールバックしますが、GPUを使用するにはNVIDIAドライバーの更新が必要です。
+
+`notebooks/archive/` の過去実験も実行する場合は、追加依存関係を同期します。
+
+```bash
+uv sync --group archive
+uv run jupyter lab
 ```
 
 各スクリプトとノートブックはプロジェクトのルートディレクトリから実行してください。生成物は用途ごとに `outputs/` 配下へ保存されます。`outputs/` は実験結果を共有するため、Git 管理対象として維持します。

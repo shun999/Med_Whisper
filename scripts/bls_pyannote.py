@@ -62,13 +62,16 @@ if not hasattr(torchaudio, "info"):
 from pyannote.audio import Pipeline
 import os
 
-HF_TOKEN = os.getenv("HF_TOKEN")
-if not HF_TOKEN:
-    raise RuntimeError("HF_TOKEN 環境変数を設定してください")
-pipe = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=HF_TOKEN)
-# pipe = pipe.to("cuda")  # GPUあれば有効化
-
-print("pyannote pipeline ready ✓")
+def create_pipeline():
+    hf_token = os.getenv("HF_TOKEN")
+    if not hf_token:
+        raise RuntimeError("HF_TOKEN 環境変数を設定してください")
+    pipeline = Pipeline.from_pretrained(
+        "pyannote/speaker-diarization-3.1",
+        use_auth_token=hf_token,
+    )
+    print("pyannote pipeline ready ✓")
+    return pipeline
 
 # ========================== 以降: 本処理 ===============================
 import numpy as np
@@ -199,7 +202,7 @@ def plot_timeline_rms(wav_path, segments_padded, out_png):
     plt.savefig(out_png, dpi=150)
     plt.close()
 
-def diarize_and_export(label, wav_path, outroot: Path):
+def diarize_and_export(pipeline, label, wav_path, outroot: Path):
     """
     label: "raw" or "processed"
     wav_path: 入力wav（モノ or ステレオ可）
@@ -213,7 +216,7 @@ def diarize_and_export(label, wav_path, outroot: Path):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # 1) diarization
-    dia = pipe(wav_path, min_speakers=2, max_speakers=3)
+    dia = pipeline(wav_path, min_speakers=2, max_speakers=3)
     segments = []
     for turn, _, speaker in dia.itertracks(yield_label=True):
         segments.append((speaker, float(turn.start), float(turn.end)))
@@ -268,6 +271,7 @@ def diarize_and_export(label, wav_path, outroot: Path):
     plot_timeline_rms(wav_path, segments_padded, outroot / f"timeline_{label}.png")
 
 def main():
+    pipeline = create_pipeline()
     # a) 生波形の読み込み
     y_raw, sr_raw = librosa.load(WAV_RAW, sr=None, mono=True)
 
@@ -278,10 +282,10 @@ def main():
     print(f"[processed] wrote {wav_processed.name}  peak={np.max(np.abs(y_proc)):.3f}  RMS(dBFS)={rms_db(y_proc):.1f}")
 
     # c) 生波形で diarization → 保存
-    diarize_and_export("raw", WAV_RAW.as_posix(), OUTROOT)
+    diarize_and_export(pipeline, "raw", WAV_RAW.as_posix(), OUTROOT)
 
     # d) 加工後で diarization → 保存
-    diarize_and_export("processed", wav_processed.as_posix(), OUTROOT)
+    diarize_and_export(pipeline, "processed", wav_processed.as_posix(), OUTROOT)
 
     print("\nAll done. Results ->", OUTROOT.resolve())
 
