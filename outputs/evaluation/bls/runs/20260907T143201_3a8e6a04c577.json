@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-09-07T14:32:01.096688+00:00",
+  "status": "failed",
+  "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260907T143201_3a8e6a04c577.json",
+  "stage": "evaluation",
+  "inputs": [
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/transcription/gemini/1回目_右前_gemini.txt"
+  ],
+  "results": [],
+  "errors": [
+    {
+      "source_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/transcription/gemini/1回目_右前_gemini.txt",
+      "type": "RateLimitError",
+      "message": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 34.260291112s.', 'code': 'too_many_requests'}}"
+    }
+  ],
+  "pending": []
+}

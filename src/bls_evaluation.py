@@ -86,7 +86,9 @@ EVIDENCE_SCHEMA = {
 }
 RESPONSE_SCHEMA = {
     "type": "object", "additionalProperties": False,
-    "properties": {"items": {"type": "array", "minItems": 18, "maxItems": 18,
+    # Keep the nested array schema small for Gemini's structured-output compiler.
+    # Exact item count and unique IDs are enforced by validate_response below.
+    "properties": {"items": {"type": "array",
         "items": {"type": "object", "additionalProperties": False,
             "properties": {"id": {"type": "integer", "minimum": 1, "maximum": 18},
                 "status": {"type": "string", "enum": list(STATUSES)},

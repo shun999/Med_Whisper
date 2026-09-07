@@ -378,6 +378,9 @@ class SDKContractTests(unittest.TestCase):
             self.assertEqual(len(budget.requests), 3)
             self.assertEqual(requests[-1]["response_format"]["mime_type"], "application/json")
             self.assertIn("schema", requests[-1]["response_format"])
+            items_schema = requests[-1]["response_format"]["schema"]["properties"]["items"]
+            self.assertNotIn("minItems", items_schema)
+            self.assertNotIn("maxItems", items_schema)
             self.assertIn("system_instruction", requests[-1])
 
 

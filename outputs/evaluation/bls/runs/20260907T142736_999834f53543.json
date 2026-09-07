@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-09-07T14:27:36.946962+00:00",
+  "status": "failed",
+  "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260907T142736_999834f53543.json",
+  "stage": "evaluation",
+  "inputs": [
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/transcription/gemini/1回目_右前_gemini.txt"
+  ],
+  "results": [],
+  "errors": [
+    {
+      "source_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/transcription/gemini/1回目_右前_gemini.txt",
+      "type": "InternalServerError",
+      "message": "Error code: 500 - {'error': {'message': 'gemini-3.8-flash is currently experiencing high demand, spikes in demand are usually temporary. Please try again later.', 'code': 'api_error'}}"
+    }
+  ],
+  "pending": []
+}
