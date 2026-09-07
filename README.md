@@ -4,7 +4,20 @@ BLS（一次救命処置）演習動画の音声を解析し、必要なコー�
 
 ## 主な解析
 
-最新の Beam Search カスタム Whisper による解析は [263_full_paper.ipynb](263_full_paper.ipynb) です。ノートブックは既存の相対パスとの互換性を保つため、当面はプロジェクト直下に配置しています。
+Geminiによる文字起こしと18項目の自動採点は [gemini.ipynb](gemini.ipynb) です。
+保存済みTXTからの採点、音声の一括処理、根拠付きJSON/CSV出力に対応します。
+採点仕様・API上限・精度検証手順は [BLS評価システム](docs/bls_evaluation.md) を参照してください。
+
+```bash
+# 通信せず対象とリクエスト数を確認
+uv run python scripts/evaluate_bls.py --transcript outputs/transcription/gemini/1回目_右前_gemini.txt --dry-run
+# GEMINI_API_KEYを設定済みの場合、保存済みTXTを採点
+uv run python scripts/evaluate_bls.py --transcript outputs/transcription/gemini/1回目_右前_gemini.txt
+# APIを使わない検証
+uv run python -m unittest discover -s tests -v
+```
+
+Beam Search カスタム Whisper による解析は [263_full_paper.ipynb](263_full_paper.ipynb) に残しています。
 
 ## ディレクトリ構成
 
@@ -20,7 +33,7 @@ BLS（一次救命処置）演習動画の音声を解析し、必要なコー�
 │   ├── beam_search/        # Beam Search のログ・CSV・図
 │   ├── diarization/        # pyannote の話者分離結果
 │   ├── evaluation/         # 候補文・評価用 CSV
-│   └── transcription/      # Whisper の文字起こし結果
+│   └── transcription/      # 既存のGemini / Whisper文字起こし結果
 ├── 263_full_paper.ipynb   # 現行の解析ノートブック
 └── requirements.txt
 ```

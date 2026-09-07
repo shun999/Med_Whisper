@@ -7,4 +7,7 @@ __pycache__/
 .ipynb_checkpoints/
 .pytest_cache/
 
+# Local request-budget state is shared between notebook/CLI, not across machines.
+outputs/.bls_state/
+
 .DS_Store
