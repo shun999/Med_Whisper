@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-09-08T13:10:55.890274+00:00",
+  "status": "completed",
+  "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260908T131055_07db8ee652ae.json",
+  "stage": "evaluation",
+  "inputs": [
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/transcription/gemini/1回目_右前_gemini.txt"
+  ],
+  "results": [
+    {
+      "sample_id": "1回目_右前_gemini",
+      "input_sha256": "18a948a9c8a8f0a262e275f235486d2d4767ca652d50742e50d91a5122c61581",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/1回目_右前_gemini_3fa20e97d94d3733cc1176a7812065c4a5fcdbe2eaccf0945b008a01b82f117c.json"
+    }
+  ],
+  "errors": [],
+  "pending": []
+}

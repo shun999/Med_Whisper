@@ -1,0 +1,445 @@
+{
+  "evaluation": {
+    "score": 38.9,
+    "met_count": 7,
+    "uncertain_count": 0,
+    "items": [
+      {
+        "id": 1,
+        "name": "傷病者発見",
+        "status": "met",
+        "model_status": "met",
+        "reason": "傷病者を発見したことを明確に発言している。",
+        "evidence": [
+          {
+            "segment_id": 1,
+            "quote": "傷病者発見。",
+            "role": "participant",
+            "kind": "call",
+            "start": 0,
+            "end": 6
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 2,
+        "name": "周囲の安全",
+        "status": "met",
+        "model_status": "met",
+        "reason": "周囲の安全を確認した旨を発話している。",
+        "evidence": [
+          {
+            "segment_id": 2,
+            "quote": "周囲の安全確認よし。",
+            "role": "participant",
+            "kind": "call",
+            "start": 6,
+            "end": 16
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 3,
+        "name": "感染防御",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "感染防御に関する発言が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 4,
+        "name": "反応の確認",
+        "status": "met",
+        "model_status": "met",
+        "reason": "傷病者に呼びかけて反応を確認している。",
+        "evidence": [
+          {
+            "segment_id": 3,
+            "quote": "大丈夫ですか？",
+            "role": "participant",
+            "kind": "call",
+            "start": 16,
+            "end": 23
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 5,
+        "name": "応援を呼ぶ",
+        "status": "met",
+        "model_status": "met",
+        "reason": "周囲に応援を求めている。",
+        "evidence": [
+          {
+            "segment_id": 5,
+            "quote": "すみません、誰か来てください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 30,
+            "end": 45
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 6,
+        "name": "119番通報の指示",
+        "status": "met",
+        "model_status": "met",
+        "reason": "他者に119番通報を指示している。",
+        "evidence": [
+          {
+            "segment_id": 6,
+            "quote": "あなたは119番通報してください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 45,
+            "end": 62
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 7,
+        "name": "AED持参の指示",
+        "status": "met",
+        "model_status": "met",
+        "reason": "他者にAEDを持ってくるよう指示している。",
+        "evidence": [
+          {
+            "segment_id": 7,
+            "quote": "あなたはAEDを持ってきてください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 62,
+            "end": 80
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 8,
+        "name": "戻るよう指示",
+        "status": "met",
+        "model_status": "met",
+        "reason": "依頼した相手に戻るよう指示している。",
+        "evidence": [
+          {
+            "segment_id": 8,
+            "quote": "必ずここに戻ってきてください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 80,
+            "end": 95
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 9,
+        "name": "呼吸の確認",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "呼吸の確認に関する発言が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 10,
+        "name": "脈の確認",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "脈の確認に関する発言が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 11,
+        "name": "胸骨圧迫の数唱",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "胸骨圧迫の数唱が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 12,
+        "name": "AED使用能力の確認",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "「使いますか？」という使用意思の確認にとどまり、AED使用能力の確認が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 13,
+        "name": "胸骨圧迫交代の依頼",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "胸骨圧迫交代の依頼が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 14,
+        "name": "合図による交代",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "合図による交代が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 15,
+        "name": "ショック前の離隔指示",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "該当箇所の離隔指示は機器音声の一連の流れであり、参加者による離隔指示が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 16,
+        "name": "ショック後の数唱",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "ショック後の胸骨圧迫の数唱が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 17,
+        "name": "救急隊への経緯説明",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "救急隊への経緯説明が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 18,
+        "name": "荷物の存在を知らせる",
+        "status": "not_detected",
+        "model_status": "not_detected",
+        "reason": "荷物の存在を知らせる発言が検出されない。",
+        "evidence": [],
+        "context": [],
+        "warnings": []
+      }
+    ],
+    "rubric_version": "bls-18-v1",
+    "validator_version": "guards-v1"
+  },
+  "model_response": {
+    "items": [
+      {
+        "id": 1,
+        "status": "met",
+        "reason": "傷病者を発見したことを明確に発言している。",
+        "evidence": [
+          {
+            "segment_id": 1,
+            "quote": "傷病者発見。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 2,
+        "status": "met",
+        "reason": "周囲の安全を確認した旨を発話している。",
+        "evidence": [
+          {
+            "segment_id": 2,
+            "quote": "周囲の安全確認よし。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 3,
+        "status": "not_detected",
+        "reason": "感染防御に関する発言が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 4,
+        "status": "met",
+        "reason": "傷病者に呼びかけて反応を確認している。",
+        "evidence": [
+          {
+            "segment_id": 3,
+            "quote": "大丈夫ですか？",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 5,
+        "status": "met",
+        "reason": "周囲に応援を求めている。",
+        "evidence": [
+          {
+            "segment_id": 5,
+            "quote": "すみません、誰か来てください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 6,
+        "status": "met",
+        "reason": "他者に119番通報を指示している。",
+        "evidence": [
+          {
+            "segment_id": 6,
+            "quote": "あなたは119番通報してください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 7,
+        "status": "met",
+        "reason": "他者にAEDを持ってくるよう指示している。",
+        "evidence": [
+          {
+            "segment_id": 7,
+            "quote": "あなたはAEDを持ってきてください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 8,
+        "status": "met",
+        "reason": "依頼した相手に戻るよう指示している。",
+        "evidence": [
+          {
+            "segment_id": 8,
+            "quote": "必ずここに戻ってきてください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 9,
+        "status": "not_detected",
+        "reason": "呼吸の確認に関する発言が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 10,
+        "status": "not_detected",
+        "reason": "脈の確認に関する発言が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 11,
+        "status": "not_detected",
+        "reason": "胸骨圧迫の数唱が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 12,
+        "status": "not_detected",
+        "reason": "「使いますか？」という使用意思の確認にとどまり、AED使用能力の確認が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 13,
+        "status": "not_detected",
+        "reason": "胸骨圧迫交代の依頼が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 14,
+        "status": "not_detected",
+        "reason": "合図による交代が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 15,
+        "status": "not_detected",
+        "reason": "該当箇所の離隔指示は機器音声の一連の流れであり、参加者による離隔指示が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 16,
+        "status": "not_detected",
+        "reason": "ショック後の胸骨圧迫の数唱が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 17,
+        "status": "not_detected",
+        "reason": "救急隊への経緯説明が検出されない。",
+        "evidence": [],
+        "context": []
+      },
+      {
+        "id": 18,
+        "status": "not_detected",
+        "reason": "荷物の存在を知らせる発言が検出されない。",
+        "evidence": [],
+        "context": []
+      }
+    ]
+  },
+  "transcript": "傷病者発見。周囲の安全確認よし。大丈夫ですか？大丈夫ですか？すみません、誰か来てください。あなたは119番通報してください。あなたはAEDを持ってきてください。必ずここに戻ってきてください。AEDを持ってきました。あなたはAEDを使いますか？私の横に置いてください。動画撮ります。電気ショックが必要です。充電中です。体から離れてください。ショックを実行します。ショックが完了しました。\n",
+  "transcript_sha256": "18a948a9c8a8f0a262e275f235486d2d4767ca652d50742e50d91a5122c61581",
+  "evaluation_model": "gemini-3.8-flash",
+  "cache_key": "2f9db139b0358e39f136f9c8e3d71d73af632894b673af47e40dfdbcc4b9acce",
+  "response_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/cache/evaluation/2f9db139b0358e39f136f9c8e3d71d73af632894b673af47e40dfdbcc4b9acce.json",
+  "created_at": "2026-09-08T13:11:10.931688+00:00",
+  "sample_id": "1回目_右前_gemini",
+  "source_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/transcription/gemini/1回目_右前_gemini.txt",
+  "source_kind": "text",
+  "input_sha256": "18a948a9c8a8f0a262e275f235486d2d4767ca652d50742e50d91a5122c61581",
+  "transcription": null,
+  "exported_at": "2026-09-08T13:11:10.959028+00:00"
+}

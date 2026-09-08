@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-09-08T13:18:17.355093+00:00",
+  "status": "completed",
+  "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260908T131817_14a5076cffff.json",
+  "stage": "evaluation",
+  "inputs": [
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_6回目.wav"
+  ],
+  "results": [
+    {
+      "sample_id": "20260706_6回目",
+      "input_sha256": "ebd118c1c59a611fb10a9e52ed426d484279c7594071513938f77b052c3d37f9",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_6回目_a3f4a92146ff1643c27f799d1471af158a991e8d6d74be20c1390722fa4158ba.json"
+    }
+  ],
+  "errors": [],
+  "pending": []
+}
