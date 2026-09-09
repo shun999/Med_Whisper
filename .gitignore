@@ -2,6 +2,16 @@ data/
 env/
 .venv/
 
+# Legacy/local analysis work products are not part of the Gemini pipeline.
+_work/
+outputs/audio/
+outputs/audio_explorer/
+outputs/beam_search/
+outputs/diarization/
+outputs/segments/
+outputs/setup_logs/
+outputs/transcription/out_whisper/
+
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
