@@ -25,6 +25,10 @@ from src.bls_evaluation import (
 ROOT = Path(__file__).resolve().parents[1]
 TRANSCRIBE_MODEL = "gemini-3.5-transcribe"
 EVALUATION_MODEL = "gemini-3.8-flash"
+TRANSCRIPTION_RPM = 2
+TRANSCRIPTION_RPD = 100
+EVALUATION_RPM = 1000
+EVALUATION_RPD = 10_000
 MIME_TYPES = {".wav": "audio/wav", ".mp3": "audio/mp3", ".flac": "audio/flac",
               ".m4a": "audio/m4a", ".ogg": "audio/ogg"}
 VIDEO_TYPES = {".mp4", ".mov"}
@@ -140,8 +144,9 @@ class RequestBudget:
 class BLSPipeline:
     def __init__(self, *, client=None, output_dir: Path | None = None, budget=None,
                  transcription_model=TRANSCRIBE_MODEL, evaluation_model=EVALUATION_MODEL,
-                 vocabulary="revised", transcription_rpm=3, transcription_rpd=25,
-                 evaluation_rpm=3, evaluation_rpd=25, quota_scope="default", sleep=time.sleep):
+                 vocabulary="revised", transcription_rpm=TRANSCRIPTION_RPM,
+                 transcription_rpd=TRANSCRIPTION_RPD, evaluation_rpm=EVALUATION_RPM,
+                 evaluation_rpd=EVALUATION_RPD, quota_scope="default", sleep=time.sleep):
         self.output_dir = safe_output(output_dir or ROOT / "outputs" / "evaluation" / "bls")
         self.client = client
         self.budget = budget or RequestBudget(scope=quota_scope)

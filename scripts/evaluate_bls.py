@@ -6,7 +6,8 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.bls_pipeline import (  # noqa: E402
-    BLSPipeline, EVALUATION_MODEL, TRANSCRIBE_MODEL, MIME_TYPES, VIDEO_TYPES, read_json,
+    BLSPipeline, EVALUATION_MODEL, EVALUATION_RPD, EVALUATION_RPM, TRANSCRIBE_MODEL,
+    TRANSCRIPTION_RPD, TRANSCRIPTION_RPM, MIME_TYPES, VIDEO_TYPES, read_json,
 )
 
 
@@ -16,9 +17,13 @@ def pipeline_arguments(parser):
     parser.add_argument("--transcription-model", default=TRANSCRIBE_MODEL)
     parser.add_argument("--vocabulary", choices=["baseline", "revised"], default="revised")
     parser.add_argument("--quota-scope", default="default", help="同じGoogleプロジェクトでは同じ値を使用")
-    for stage in ("transcription", "evaluation"):
-        parser.add_argument(f"--{stage}-rpm", type=int, default=3)
-        parser.add_argument(f"--{stage}-rpd", type=int, default=25)
+    limits = {
+        "transcription": (TRANSCRIPTION_RPM, TRANSCRIPTION_RPD),
+        "evaluation": (EVALUATION_RPM, EVALUATION_RPD),
+    }
+    for stage, (rpm, rpd) in limits.items():
+        parser.add_argument(f"--{stage}-rpm", type=int, default=rpm)
+        parser.add_argument(f"--{stage}-rpd", type=int, default=rpd)
 
 
 def make_pipeline(args):

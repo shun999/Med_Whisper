@@ -1,0 +1,900 @@
+{
+  "evaluation": {
+    "score": 94.4,
+    "met_count": 17,
+    "uncertain_count": 1,
+    "items": [
+      {
+        "id": 1,
+        "name": "傷病者発見",
+        "status": "met",
+        "model_status": "met",
+        "reason": "傷病者を発見したことを明確に発言している。",
+        "evidence": [
+          {
+            "segment_id": 1,
+            "quote": "傷病者発見。",
+            "role": "participant",
+            "kind": "call",
+            "start": 0,
+            "end": 6
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 2,
+        "name": "周囲の安全",
+        "status": "met",
+        "model_status": "met",
+        "reason": "周囲の安全を確認した旨を発言している。",
+        "evidence": [
+          {
+            "segment_id": 2,
+            "quote": "周囲の安全よし。",
+            "role": "participant",
+            "kind": "call",
+            "start": 6,
+            "end": 14
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 3,
+        "name": "感染防御",
+        "status": "met",
+        "model_status": "met",
+        "reason": "感染防御への配慮を発言している。",
+        "evidence": [
+          {
+            "segment_id": 3,
+            "quote": "感染防御に配慮します。",
+            "role": "participant",
+            "kind": "call",
+            "start": 14,
+            "end": 25
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 4,
+        "name": "反応の確認",
+        "status": "met",
+        "model_status": "met",
+        "reason": "傷病者に対して大丈夫ですかと呼びかけ反応を確認している。",
+        "evidence": [
+          {
+            "segment_id": 4,
+            "quote": "大丈夫ですか？",
+            "role": "participant",
+            "kind": "call",
+            "start": 25,
+            "end": 32
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 5,
+        "name": "応援を呼ぶ",
+        "status": "met",
+        "model_status": "met",
+        "reason": "誰か来てくださいと周囲に応援を求めている。",
+        "evidence": [
+          {
+            "segment_id": 7,
+            "quote": "誰か、誰か、誰か来てください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 46,
+            "end": 61
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 6,
+        "name": "119番通報の指示",
+        "status": "met",
+        "model_status": "met",
+        "reason": "他者に対して119番通報を具体的に指示している。",
+        "evidence": [
+          {
+            "segment_id": 8,
+            "quote": "あなた119番通報お願いします。",
+            "role": "participant",
+            "kind": "call",
+            "start": 61,
+            "end": 77
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 7,
+        "name": "AED持参の指示",
+        "status": "met",
+        "model_status": "met",
+        "reason": "他者に対してAEDを持ってくるよう指示している。",
+        "evidence": [
+          {
+            "segment_id": 9,
+            "quote": "あなたAED持ってきてください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 77,
+            "end": 93
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 8,
+        "name": "戻るよう指示",
+        "status": "met",
+        "model_status": "met",
+        "reason": "依頼相手に戻るよう明確に指示している。",
+        "evidence": [
+          {
+            "segment_id": 10,
+            "quote": "必ずここに戻ってきてください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 93,
+            "end": 108
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 9,
+        "name": "呼吸の確認",
+        "status": "met",
+        "model_status": "met",
+        "reason": "呼吸の確認を行い、呼吸がないことを確認している。",
+        "evidence": [
+          {
+            "segment_id": 11,
+            "quote": "胸とおなかを見て呼吸の確認",
+            "role": "participant",
+            "kind": "call",
+            "start": 108,
+            "end": 121
+          },
+          {
+            "segment_id": 12,
+            "quote": "呼吸、脈ありません。",
+            "role": "participant",
+            "kind": "call",
+            "start": 130,
+            "end": 140
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 10,
+        "name": "脈の確認",
+        "status": "met",
+        "model_status": "met",
+        "reason": "脈の確認を行い、脈がないことを確認している。",
+        "evidence": [
+          {
+            "segment_id": 11,
+            "quote": "同時に脈の確認。",
+            "role": "participant",
+            "kind": "call",
+            "start": 122,
+            "end": 130
+          },
+          {
+            "segment_id": 12,
+            "quote": "呼吸、脈ありません。",
+            "role": "participant",
+            "kind": "call",
+            "start": 130,
+            "end": 140
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 11,
+        "name": "胸骨圧迫の数唱",
+        "status": "met",
+        "model_status": "met",
+        "reason": "胸骨圧迫の開始時に回数を数唱している。",
+        "evidence": [
+          {
+            "segment_id": 14,
+            "quote": "1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。",
+            "role": "participant",
+            "kind": "count",
+            "start": 150,
+            "end": 213
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 13,
+            "quote": "胸骨圧迫開始します。",
+            "role": "participant",
+            "kind": "call",
+            "start": 140,
+            "end": 150
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "id": 12,
+        "name": "AED使用能力の確認",
+        "status": "met",
+        "model_status": "met",
+        "reason": "持参者に対してAEDを使えるかどうか能力を確認している。",
+        "evidence": [
+          {
+            "segment_id": 17,
+            "quote": "えー、あなたAED使えますか？",
+            "role": "participant",
+            "kind": "call",
+            "start": 236,
+            "end": 251
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 13,
+        "name": "胸骨圧迫交代の依頼",
+        "status": "met",
+        "model_status": "met",
+        "reason": "持参者に胸骨圧迫を代わるよう依頼している。",
+        "evidence": [
+          {
+            "segment_id": 20,
+            "quote": "胸骨圧迫を代わってください。",
+            "role": "participant",
+            "kind": "call",
+            "start": 281,
+            "end": 295
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 14,
+        "name": "合図による交代",
+        "status": "met",
+        "model_status": "met",
+        "reason": "合図を示して胸骨圧迫の交代を行っている。",
+        "evidence": [
+          {
+            "segment_id": 21,
+            "quote": "1、2、3で代わりましょう。",
+            "role": "participant",
+            "kind": "handoff",
+            "start": 295,
+            "end": 309
+          },
+          {
+            "segment_id": 22,
+            "quote": "1、2、3。",
+            "role": "participant",
+            "kind": "handoff",
+            "start": 309,
+            "end": 315
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 15,
+        "name": "ショック前の離隔指示",
+        "status": "met",
+        "model_status": "met",
+        "reason": "参加者が離れているか周囲を確認し離隔指示を行っているが、直後にショック実行・完了の発言や動作完了が示されず数唱に移っており、ショック実行/完了が確定できない。",
+        "evidence": [
+          {
+            "segment_id": 34,
+            "quote": "私は離れてます。",
+            "role": "participant",
+            "kind": "call",
+            "start": 457,
+            "end": 465
+          },
+          {
+            "segment_id": 35,
+            "quote": "あなたは離れています。",
+            "role": "participant",
+            "kind": "call",
+            "start": 465,
+            "end": 476
+          },
+          {
+            "segment_id": 36,
+            "quote": "みんな離れています。",
+            "role": "participant",
+            "kind": "call",
+            "start": 476,
+            "end": 486
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 37,
+            "quote": "ショックします。",
+            "role": "participant",
+            "kind": "shock",
+            "start": 486,
+            "end": 494
+          },
+          {
+            "segment_id": 39,
+            "quote": "ショックボタンを押してください。",
+            "role": "device",
+            "kind": "call",
+            "start": 502,
+            "end": 518
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "id": 16,
+        "name": "ショック後の数唱",
+        "status": "uncertain",
+        "model_status": "uncertain",
+        "reason": "数唱は存在するが、直前にAEDによる「ショックボタンを押してください」という指示音声があるのみでショック実行・完了の確認がなく、ショック終了後か判断が不確実である。",
+        "evidence": [
+          {
+            "segment_id": 41,
+            "quote": "1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。",
+            "role": "participant",
+            "kind": "count",
+            "start": 535,
+            "end": 598
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 38,
+            "quote": "ショックします。",
+            "role": "participant",
+            "kind": "shock",
+            "start": 494,
+            "end": 502
+          },
+          {
+            "segment_id": 39,
+            "quote": "ショックボタンを押してください。",
+            "role": "device",
+            "kind": "call",
+            "start": 502,
+            "end": 518
+          }
+        ],
+        "warnings": []
+      },
+      {
+        "id": 17,
+        "name": "救急隊への経緯説明",
+        "status": "met",
+        "model_status": "met",
+        "reason": "救急隊に対して倒れた時間や行なった処置などの経緯を説明している。",
+        "evidence": [
+          {
+            "segment_id": 43,
+            "quote": "あ、救急隊の方。",
+            "role": "participant",
+            "kind": "call",
+            "start": 618,
+            "end": 626
+          },
+          {
+            "segment_id": 44,
+            "quote": "えー、この方、えー、3分前に、えー、目の前に倒れるところを見ました。",
+            "role": "participant",
+            "kind": "call",
+            "start": 626,
+            "end": 660
+          },
+          {
+            "segment_id": 45,
+            "quote": "えー、胸骨圧迫をしてAEDで1回ショックしましたが、まだ意識は戻っていません。",
+            "role": "participant",
+            "kind": "call",
+            "start": 660,
+            "end": 699
+          }
+        ],
+        "context": [],
+        "warnings": []
+      },
+      {
+        "id": 18,
+        "name": "荷物の存在を知らせる",
+        "status": "met",
+        "model_status": "met",
+        "reason": "救急隊に引き継ぐ想定で傷病者の荷物の位置を知らせている。",
+        "evidence": [
+          {
+            "segment_id": 47,
+            "quote": "足元にこの方の荷物があります。",
+            "role": "participant",
+            "kind": "call",
+            "start": 714,
+            "end": 729
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 43,
+            "quote": "あ、救急隊の方。",
+            "role": "participant",
+            "kind": "call",
+            "start": 618,
+            "end": 626
+          }
+        ],
+        "warnings": []
+      }
+    ],
+    "rubric_version": "bls-18-v1",
+    "validator_version": "guards-v1"
+  },
+  "model_response": {
+    "items": [
+      {
+        "id": 1,
+        "status": "met",
+        "reason": "傷病者を発見したことを明確に発言している。",
+        "evidence": [
+          {
+            "segment_id": 1,
+            "quote": "傷病者発見。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 2,
+        "status": "met",
+        "reason": "周囲の安全を確認した旨を発言している。",
+        "evidence": [
+          {
+            "segment_id": 2,
+            "quote": "周囲の安全よし。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 3,
+        "status": "met",
+        "reason": "感染防御への配慮を発言している。",
+        "evidence": [
+          {
+            "segment_id": 3,
+            "quote": "感染防御に配慮します。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 4,
+        "status": "met",
+        "reason": "傷病者に対して大丈夫ですかと呼びかけ反応を確認している。",
+        "evidence": [
+          {
+            "segment_id": 4,
+            "quote": "大丈夫ですか？",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 5,
+        "status": "met",
+        "reason": "誰か来てくださいと周囲に応援を求めている。",
+        "evidence": [
+          {
+            "segment_id": 7,
+            "quote": "誰か、誰か、誰か来てください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 6,
+        "status": "met",
+        "reason": "他者に対して119番通報を具体的に指示している。",
+        "evidence": [
+          {
+            "segment_id": 8,
+            "quote": "あなた119番通報お願いします。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 7,
+        "status": "met",
+        "reason": "他者に対してAEDを持ってくるよう指示している。",
+        "evidence": [
+          {
+            "segment_id": 9,
+            "quote": "あなたAED持ってきてください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 8,
+        "status": "met",
+        "reason": "依頼相手に戻るよう明確に指示している。",
+        "evidence": [
+          {
+            "segment_id": 10,
+            "quote": "必ずここに戻ってきてください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 9,
+        "status": "met",
+        "reason": "呼吸の確認を行い、呼吸がないことを確認している。",
+        "evidence": [
+          {
+            "segment_id": 11,
+            "quote": "胸とおなかを見て呼吸の確認",
+            "role": "participant",
+            "kind": "call"
+          },
+          {
+            "segment_id": 12,
+            "quote": "呼吸、脈ありません。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 10,
+        "status": "met",
+        "reason": "脈の確認を行い、脈がないことを確認している。",
+        "evidence": [
+          {
+            "segment_id": 11,
+            "quote": "同時に脈の確認。",
+            "role": "participant",
+            "kind": "call"
+          },
+          {
+            "segment_id": 12,
+            "quote": "呼吸、脈ありません。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 11,
+        "status": "met",
+        "reason": "胸骨圧迫の開始時に回数を数唱している。",
+        "evidence": [
+          {
+            "segment_id": 14,
+            "quote": "1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。",
+            "role": "participant",
+            "kind": "count"
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 13,
+            "quote": "胸骨圧迫開始します。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "status": "met",
+        "reason": "持参者に対してAEDを使えるかどうか能力を確認している。",
+        "evidence": [
+          {
+            "segment_id": 17,
+            "quote": "えー、あなたAED使えますか？",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 13,
+        "status": "met",
+        "reason": "持参者に胸骨圧迫を代わるよう依頼している。",
+        "evidence": [
+          {
+            "segment_id": 20,
+            "quote": "胸骨圧迫を代わってください。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 14,
+        "status": "met",
+        "reason": "合図を示して胸骨圧迫の交代を行っている。",
+        "evidence": [
+          {
+            "segment_id": 21,
+            "quote": "1、2、3で代わりましょう。",
+            "role": "participant",
+            "kind": "handoff"
+          },
+          {
+            "segment_id": 22,
+            "quote": "1、2、3。",
+            "role": "participant",
+            "kind": "handoff"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 15,
+        "status": "met",
+        "reason": "参加者が離れているか周囲を確認し離隔指示を行っているが、直後にショック実行・完了の発言や動作完了が示されず数唱に移っており、ショック実行/完了が確定できない。",
+        "evidence": [
+          {
+            "segment_id": 34,
+            "quote": "私は離れてます。",
+            "role": "participant",
+            "kind": "call"
+          },
+          {
+            "segment_id": 35,
+            "quote": "あなたは離れています。",
+            "role": "participant",
+            "kind": "call"
+          },
+          {
+            "segment_id": 36,
+            "quote": "みんな離れています。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 37,
+            "quote": "ショックします。",
+            "role": "participant",
+            "kind": "shock"
+          },
+          {
+            "segment_id": 39,
+            "quote": "ショックボタンを押してください。",
+            "role": "device",
+            "kind": "call"
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "status": "uncertain",
+        "reason": "数唱は存在するが、直前にAEDによる「ショックボタンを押してください」という指示音声があるのみでショック実行・完了の確認がなく、ショック終了後か判断が不確実である。",
+        "evidence": [
+          {
+            "segment_id": 41,
+            "quote": "1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。",
+            "role": "participant",
+            "kind": "count"
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 38,
+            "quote": "ショックします。",
+            "role": "participant",
+            "kind": "shock"
+          },
+          {
+            "segment_id": 39,
+            "quote": "ショックボタンを押してください。",
+            "role": "device",
+            "kind": "call"
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "status": "met",
+        "reason": "救急隊に対して倒れた時間や行なった処置などの経緯を説明している。",
+        "evidence": [
+          {
+            "segment_id": 43,
+            "quote": "あ、救急隊の方。",
+            "role": "participant",
+            "kind": "call"
+          },
+          {
+            "segment_id": 44,
+            "quote": "えー、この方、えー、3分前に、えー、目の前に倒れるところを見ました。",
+            "role": "participant",
+            "kind": "call"
+          },
+          {
+            "segment_id": 45,
+            "quote": "えー、胸骨圧迫をしてAEDで1回ショックしましたが、まだ意識は戻っていません。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": []
+      },
+      {
+        "id": 18,
+        "status": "met",
+        "reason": "救急隊に引き継ぐ想定で傷病者の荷物の位置を知らせている。",
+        "evidence": [
+          {
+            "segment_id": 47,
+            "quote": "足元にこの方の荷物があります。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ],
+        "context": [
+          {
+            "segment_id": 43,
+            "quote": "あ、救急隊の方。",
+            "role": "participant",
+            "kind": "call"
+          }
+        ]
+      }
+    ]
+  },
+  "transcript": "傷病者発見。周囲の安全よし。感染防御に配慮します。大丈夫ですか？大丈夫ですか？大丈夫ですか？誰か、誰か、誰か来てください。あなた119番通報お願いします。あなたAED持ってきてください。必ずここに戻ってきてください。胸とおなかを見て呼吸の確認、同時に脈の確認。呼吸、脈ありません。胸骨圧迫開始します。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。AED到着しました。あ、ありがとうございます。えー、あなたAED使えますか？使えないです。じゃあ、AED、あの、頭の方に置いてください。胸骨圧迫を代わってください。1、2、3で代わりましょう。1、2、3。パッドを胸に装着してください。ランプが点滅しているソケットにパッドのコネクターを接続してください。パッドを装着してください。コネクターを接続してください。心電図を解析中です。体に触れないでください。離れてください。ショックが必要です。充電中です。体から離れてください。離れてください。私は離れてます。あなたは離れています。みんな離れています。ショックします。ショックします。ショックボタンを押してください。オレンジのボタンが点滅しています。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。直ちに胸骨圧迫と人工呼吸をしてください。あ、救急隊の方。えー、この方、えー、3分前に、えー、目の前に倒れるところを見ました。えー、胸骨圧迫をしてAEDで1回ショックしましたが、まだ意識は戻っていません。この方の身元は分かりませんか？足元にこの方の荷物があります。引き継ぎます。1、2、3。",
+  "transcript_sha256": "52945c9d71075f6ec170f077c9d3e1e0e8969189614d05a5113be8ad84d252ee",
+  "evaluation_model": "gemini-3.8-flash",
+  "cache_key": "5d1da35f6443a0a1800d1a66b375bf8d34728aa51786c3823afd57acd0e23fe0",
+  "response_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/cache/evaluation/5d1da35f6443a0a1800d1a66b375bf8d34728aa51786c3823afd57acd0e23fe0.json",
+  "created_at": "2026-09-09T02:37:22.299235+00:00",
+  "sample_id": "20260706_13回目",
+  "source_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_13回目.wav",
+  "source_kind": "audio",
+  "input_sha256": "06d2b83184fb3ba8eec8b29f5e54f5a58bb442c3bc8f74973134a064018c6d0c",
+  "transcription": {
+    "key": "f77a5858c7e08ac06c706fa82115567bf18faa8bc2f76f8c75fc29c0f9bac9fc",
+    "settings": {
+      "input_sha256": "06d2b83184fb3ba8eec8b29f5e54f5a58bb442c3bc8f74973134a064018c6d0c",
+      "model": "gemini-3.5-transcribe",
+      "config": {
+        "language_codes": [
+          "ja-JP"
+        ],
+        "custom_vocabulary": [
+          "傷病者発見",
+          "周囲の安全よし",
+          "感染防御",
+          "手袋",
+          "大丈夫ですか",
+          "誰か来てください",
+          "119番通報",
+          "救急車",
+          "AED",
+          "必ず戻ってきてください",
+          "呼吸の確認",
+          "呼吸なし",
+          "脈の確認",
+          "脈なし",
+          "頸動脈",
+          "胸骨圧迫",
+          "AEDを使えますか",
+          "胸骨圧迫を交代",
+          "合図",
+          "離れてください",
+          "電気ショック",
+          "胸骨圧迫再開",
+          "救急隊",
+          "経緯",
+          "引き継ぎ",
+          "荷物",
+          "かばん",
+          "気道確保",
+          "人工呼吸"
+        ],
+        "mode": {
+          "type": "verbatim"
+        }
+      },
+      "conversion": "original"
+    },
+    "source_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_13回目.wav",
+    "input_sha256": "06d2b83184fb3ba8eec8b29f5e54f5a58bb442c3bc8f74973134a064018c6d0c",
+    "created_at": "2026-09-09T02:37:11.888176+00:00",
+    "text": "傷病者発見。周囲の安全よし。感染防御に配慮します。大丈夫ですか？大丈夫ですか？大丈夫ですか？誰か、誰か、誰か来てください。あなた119番通報お願いします。あなたAED持ってきてください。必ずここに戻ってきてください。胸とおなかを見て呼吸の確認、同時に脈の確認。呼吸、脈ありません。胸骨圧迫開始します。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。AED到着しました。あ、ありがとうございます。えー、あなたAED使えますか？使えないです。じゃあ、AED、あの、頭の方に置いてください。胸骨圧迫を代わってください。1、2、3で代わりましょう。1、2、3。パッドを胸に装着してください。ランプが点滅しているソケットにパッドのコネクターを接続してください。パッドを装着してください。コネクターを接続してください。心電図を解析中です。体に触れないでください。離れてください。ショックが必要です。充電中です。体から離れてください。離れてください。私は離れてます。あなたは離れています。みんな離れています。ショックします。ショックします。ショックボタンを押してください。オレンジのボタンが点滅しています。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。直ちに胸骨圧迫と人工呼吸をしてください。あ、救急隊の方。えー、この方、えー、3分前に、えー、目の前に倒れるところを見ました。えー、胸骨圧迫をしてAEDで1回ショックしましたが、まだ意識は戻っていません。この方の身元は分かりませんか？足元にこの方の荷物があります。引き継ぎます。1、2、3。",
+    "raw_response": {
+      "status": "completed",
+      "created": "2026-09-09T02:37:08Z",
+      "id": "v1_ChdWTWFnYXFYWkQ5eUF2cjBQaTR2cXVBMBIXVk1hZ2FxWFpEOXlBdnIwUGk0dnF1QTA",
+      "model": "gemini-3.5-transcribe",
+      "output_text": "傷病者発見。周囲の安全よし。感染防御に配慮します。大丈夫ですか？大丈夫ですか？大丈夫ですか？誰か、誰か、誰か来てください。あなた119番通報お願いします。あなたAED持ってきてください。必ずここに戻ってきてください。胸とおなかを見て呼吸の確認、同時に脈の確認。呼吸、脈ありません。胸骨圧迫開始します。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。AED到着しました。あ、ありがとうございます。えー、あなたAED使えますか？使えないです。じゃあ、AED、あの、頭の方に置いてください。胸骨圧迫を代わってください。1、2、3で代わりましょう。1、2、3。パッドを胸に装着してください。ランプが点滅しているソケットにパッドのコネクターを接続してください。パッドを装着してください。コネクターを接続してください。心電図を解析中です。体に触れないでください。離れてください。ショックが必要です。充電中です。体から離れてください。離れてください。私は離れてます。あなたは離れています。みんな離れています。ショックします。ショックします。ショックボタンを押してください。オレンジのボタンが点滅しています。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。直ちに胸骨圧迫と人工呼吸をしてください。あ、救急隊の方。えー、この方、えー、3分前に、えー、目の前に倒れるところを見ました。えー、胸骨圧迫をしてAEDで1回ショックしましたが、まだ意識は戻っていません。この方の身元は分かりませんか？足元にこの方の荷物があります。引き継ぎます。1、2、3。",
+      "service_tier": "standard",
+      "steps": [
+        {
+          "content": [
+            {
+              "text": "傷病者発見。周囲の安全よし。感染防御に配慮します。大丈夫ですか？大丈夫ですか？大丈夫ですか？誰か、誰か、誰か来てください。あなた119番通報お願いします。あなたAED持ってきてください。必ずここに戻ってきてください。胸とおなかを見て呼吸の確認、同時に脈の確認。呼吸、脈ありません。胸骨圧迫開始します。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。AED到着しました。あ、ありがとうございます。えー、あなたAED使えますか？使えないです。じゃあ、AED、あの、頭の方に置いてください。胸骨圧迫を代わってください。1、2、3で代わりましょう。1、2、3。パッドを胸に装着してください。ランプが点滅しているソケットにパッドのコネクターを接続してください。パッドを装着してください。コネクターを接続してください。心電図を解析中です。体に触れないでください。離れてください。ショックが必要です。充電中です。体から離れてください。離れてください。私は離れてます。あなたは離れています。みんな離れています。ショックします。ショックします。ショックボタンを押してください。オレンジのボタンが点滅しています。1、2、3、4、5、6、7、8、9、10、2、2、3、4、5、6、7、8、9、10、3、2、3、4、5、6、7、8、9、10。直ちに胸骨圧迫と人工呼吸をしてください。あ、救急隊の方。えー、この方、えー、3分前に、えー、目の前に倒れるところを見ました。えー、胸骨圧迫をしてAEDで1回ショックしましたが、まだ意識は戻っていません。この方の身元は分かりませんか？足元にこの方の荷物があります。引き継ぎます。1、2、3。",
+              "type": "text"
+            }
+          ],
+          "type": "model_output"
+        }
+      ],
+      "updated": "2026-09-09T02:37:08Z",
+      "usage": {
+        "input_tokens_by_modality": [
+          {
+            "modality": "audio",
+            "tokens": 3950
+          },
+          {
+            "modality": "text",
+            "tokens": 1
+          }
+        ],
+        "total_cached_tokens": 0,
+        "total_input_tokens": 3951,
+        "total_output_tokens": 0,
+        "total_thought_tokens": 0,
+        "total_tokens": 3951,
+        "total_tool_use_tokens": 0
+      },
+      "object": "interaction"
+    }
+  },
+  "exported_at": "2026-09-09T02:37:22.413715+00:00"
+}

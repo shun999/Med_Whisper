@@ -1,5 +1,6 @@
 """Offline behavioral tests. Synthetic fixtures are not measured Gemini accuracy."""
 
+import argparse
 import copy
 from contextlib import redirect_stdout
 from datetime import datetime
@@ -186,6 +187,18 @@ class PipelineTests(unittest.TestCase):
 
     def pipeline(self, client, **kwargs):
         return BLSPipeline(client=client, budget=FakeBudget(), output_dir=self.base / "output", **kwargs)
+
+    def test_default_request_limits(self):
+        pipeline = self.pipeline(FakeClient([]))
+        self.assertEqual(pipeline.limits["transcription"], (2, 100))
+        self.assertEqual(pipeline.limits["evaluation"], (1000, 10_000))
+
+        from scripts.evaluate_bls import pipeline_arguments
+        parser = argparse.ArgumentParser()
+        pipeline_arguments(parser)
+        args = parser.parse_args([])
+        self.assertEqual((args.transcription_rpm, args.transcription_rpd), (2, 100))
+        self.assertEqual((args.evaluation_rpm, args.evaluation_rpd), (1000, 10_000))
 
     def test_text_cache_and_exports_need_no_second_request(self):
         source = self.base / "example.txt"
