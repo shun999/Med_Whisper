@@ -17,6 +17,7 @@ from src.bls_evaluation import (InvalidResponse, build_prompt, clean_vocabulary,
 from src.bls_pipeline import (BLSPipeline, MissingAPIKey, PACIFIC, QuotaExhausted, RequestBudget,
                              ROOT, create_gemini_client, digest, read_json, safe_output, write_json)
 from src.bls_benchmark import character_errors, init_manifest, report, run_references
+from src.bls_speech import separate_speech
 
 
 def empty_payload():
@@ -149,6 +150,98 @@ class JudgeTests(unittest.TestCase):
         self.assertEqual(clean_vocabulary(["ＡＥＤ\u200b", "AED", " "]), ["AED"])
 
 
+class SpeechSeparationTests(unittest.TestCase):
+    reference = ("パッドのコネクタを接続してください。充電中です。体から離れてください。"
+                 "ショックを実行中です。ショックが完了しました。"
+                 "ただちに胸骨圧迫と人工呼吸をしてください。")
+
+    def speech_quote(self, text, value, *, kind="call", source_role=None):
+        parts = separate_speech(text, self.reference)["segments"]
+        part = next(p for p in parts if value in p["text"] and
+                    (source_role is None or p["source_role"] == source_role))
+        return {"segment_id": part["id"], "quote": value, "role": "participant", "kind": kind}
+
+    def test_mixed_sentence_keeps_count_and_distinct_human_call(self):
+        text = "123充電中です。体から離れてください。離れてください。ショックが完了しました。4、5、6。"
+        speech = separate_speech(text, self.reference)
+        self.assertEqual(speech["human_candidate_text"], "123\n離れてください。\n4、5、6。")
+        for part in speech["segments"]:
+            self.assertEqual(text[part["start"]:part["end"]], part["text"])
+        payload = empty_payload()
+        completion = self.speech_quote(text, "ショックが完了しました", kind="shock_complete")
+        mark(payload, 15, [self.speech_quote(text, "離れてください", source_role="candidate")], [completion])
+        mark(payload, 16, [self.speech_quote(text, "4、5、6", kind="count")], [completion])
+        result = validate_response(text, payload, device_reference=self.reference)
+        self.assertEqual([result.items[i].status for i in (14, 15)], ["met", "met"])
+        self.assertEqual(result.items[15].context[0]["role"], "device")
+
+    def test_device_quote_cannot_be_reclassified_as_participant(self):
+        text = self.reference
+        payload = empty_payload()
+        mark(payload, 15, [self.speech_quote(text, "離れてください")],
+             [self.speech_quote(text, "ショックが完了しました", kind="shock_complete")])
+        mark(payload, 9, [self.speech_quote(text, "人工呼吸")])
+        result = validate_response(text, payload, device_reference=self.reference)
+        self.assertEqual(result.score, 0)
+        self.assertEqual(result.items[14].evidence[0]["role"], "device")
+        self.assertEqual(result.items[14].status, "uncertain")
+
+    def test_device_prompt_has_no_scoring_candidates_or_unheard_reference(self):
+        text = "充電中です。体から離れてください。"
+        prompt = json.loads(build_prompt(text, device_reference=self.reference))
+        self.assertEqual(prompt["transcript"], "")
+        self.assertEqual(prompt["segments"], [])
+        self.assertTrue(all(not candidates for candidates in prompt["rule_candidates"].values()))
+        self.assertEqual(len(prompt["device_context"]), 2)
+        self.assertNotIn("ショックが完了しました", json.dumps(prompt, ensure_ascii=False))
+
+    def test_spelling_normalization_preserves_original_offsets(self):
+        text = "ﾊﾟｯﾄﾞのコネクターを、接続してください。\n直ちに胸骨圧迫と人工呼吸をして\u200bください。"
+        speech = separate_speech(text, self.reference)
+        self.assertEqual(speech["human_candidate_text"], "")
+        self.assertIn("コネクター", speech["device_text"])
+        for part in speech["segments"]:
+            self.assertEqual(text[part["start"]:part["end"]], part["text"])
+
+    def test_reference_matching_prefers_longest_phrase_and_all_occurrences(self):
+        speech = separate_speech("パッドのコネクタを接続してください。コネクタを接続してください。",
+                                 "コネクタを接続してください。パッドのコネクタを接続してください。")
+        self.assertEqual(speech["human_candidate_text"], "")
+        self.assertEqual(len(speech["segments"]), 2)
+
+    def test_explicit_human_label_preserves_identical_device_phrase(self):
+        text = "AED: 充電中です。体から離れてください。\n参加者1: 体から離れてください。\nAED: ショックが完了しました。"
+        speech = separate_speech(text, self.reference)
+        self.assertEqual(speech["human_candidate_text"], "参加者1: 体から離れてください。")
+        payload = empty_payload()
+        mark(payload, 15, [self.speech_quote(text, "体から離れてください", source_role="participant")],
+             [self.speech_quote(text, "ショックが完了しました", kind="shock_complete")])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[14].status, "met")
+
+    def test_instructor_unknown_and_label_scope(self):
+        text = "指導者: 救急車を呼んでください。\n不明: AEDを持ってきてください。\n誰か来てください。"
+        speech = separate_speech(text, self.reference)
+        self.assertEqual(speech["human_candidate_text"], "誰か来てください。")
+        payload = empty_payload()
+        mark(payload, 6, [self.speech_quote(text, "救急車を呼んでください")])
+        mark(payload, 7, [self.speech_quote(text, "AEDを持ってきてください")])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).score, 0)
+
+    def test_unresolved_device_sequence_stays_uncertain(self):
+        text = "充電中です。離れてください。ショックを実行します。ショックが完了しました。"
+        payload = empty_payload()
+        mark(payload, 15, [self.speech_quote(text, "離れてください")],
+             [self.speech_quote(text, "ショックが完了しました", kind="shock_complete")])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[14].status, "uncertain")
+
+    def test_execution_is_not_shock_completion(self):
+        text = "ショックを実行中です。1、2、3。"
+        payload = empty_payload()
+        mark(payload, 16, [self.speech_quote(text, "1、2、3", kind="count")],
+             [self.speech_quote(text, "ショックを実行中です", kind="shock_complete")])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[15].status, "uncertain")
+
+
 class FakeBudget:
     def __init__(self):
         self.requests = []
@@ -184,8 +277,11 @@ class PipelineTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.base = Path(self.temp.name)
         self.addCleanup(self.temp.cleanup)
+        self.device_reference = self.base / "device.txt"
+        self.device_reference.write_text("装置を準備しています。", encoding="utf-8")
 
     def pipeline(self, client, **kwargs):
+        kwargs.setdefault("device_reference", self.device_reference)
         return BLSPipeline(client=client, budget=FakeBudget(), output_dir=self.base / "output", **kwargs)
 
     def test_default_request_limits(self):
@@ -217,6 +313,43 @@ class PipelineTests(unittest.TestCase):
         b = self.pipeline(client, evaluation_model="another-model").evaluate_text("発言")
         self.assertNotEqual(a["cache_key"], b["cache_key"])
 
+    def test_device_reference_invalidates_only_evaluation_and_exports_separation(self):
+        source = self.base / "synthetic.wav"
+        source.write_bytes(b"synthetic audio")
+        text = "装置を準備しています。誰か来てください。"
+        client = FakeClient([text, json.dumps(empty_payload()), json.dumps(empty_payload())])
+        pipeline = self.pipeline(client)
+        first = pipeline.evaluate_file(source)
+        cached = pipeline.evaluate_file(source)
+        self.assertEqual(len(client.calls), 2)
+        self.assertEqual(first["result_path"], cached["result_path"])
+        self.assertEqual(Path(first["result_path"]).with_suffix(".human.txt").read_text(), "誰か来てください。")
+        self.assertEqual(Path(first["result_path"]).with_suffix(".device.txt").read_text(), "装置を準備しています。")
+        self.device_reference.write_text("別の装置のアナウンスです。", encoding="utf-8")
+        second = pipeline.evaluate_file(source)
+        self.assertEqual(len(client.uploads), 1)
+        self.assertEqual(len(client.calls), 3)
+        self.assertNotEqual(first["cache_key"], second["cache_key"])
+        self.assertEqual(first["transcription"]["key"], second["transcription"]["key"])
+        # Benchmark uses the saved reference even after the live file changes.
+        manifest = {"samples": [{"sample_id": source.stem, "audio_sha256": first["input_sha256"],
+                                "split": "validation", "labels": {str(i): False for i in range(1, 19)}}]}
+        run = {"status": "completed", "results": [{k: first[k] for k in ("sample_id", "input_sha256", "result_path")}]}
+        self.assertEqual(report(manifest, run)["score_mae"], 0)
+
+    def test_missing_or_empty_device_reference_fails_before_api(self):
+        source = self.base / "synthetic.wav"
+        source.write_bytes(b"synthetic audio")
+        client = FakeClient([])
+        for reference in (self.base / "missing.txt", self.device_reference):
+            self.device_reference.write_text("。\n", encoding="utf-8")
+            pipeline = self.pipeline(client, device_reference=reference)
+            with self.assertRaises(ValueError):
+                pipeline.evaluate_file(source)
+            self.assertEqual(pipeline.budget.requests, [])
+        self.assertEqual(client.calls, [])
+        self.assertEqual(client.uploads, [])
+
     def test_cli_can_run_from_cache_without_credentials(self):
         from scripts.evaluate_bls import main
         source = self.base / "cached.txt"
@@ -224,7 +357,8 @@ class PipelineTests(unittest.TestCase):
         self.pipeline(FakeClient([json.dumps(empty_payload())])).evaluate_file(source)
         output = io.StringIO()
         with patch.dict("os.environ", {}, clear=True), redirect_stdout(output):
-            code = main(["--transcript", str(source), "--output-dir", str(self.base / "output")])
+            code = main(["--transcript", str(source), "--output-dir", str(self.base / "output"),
+                         "--device-reference", str(self.device_reference)])
         self.assertEqual(code, 0)
         self.assertIn("completed", output.getvalue())
 
@@ -384,7 +518,8 @@ class SDKContractTests(unittest.TestCase):
             client = create_gemini_client("offline-test-key", httpx_client=http)
             self.addCleanup(client.close)
             budget = FakeBudget()
-            pipeline = BLSPipeline(client=client, budget=budget, output_dir=Path(folder) / "out", sleep=lambda _: None)
+            pipeline = BLSPipeline(client=client, budget=budget, output_dir=Path(folder) / "out", sleep=lambda _: None,
+                                   device_reference=None)
             result = pipeline.evaluate_text("発言")
             self.assertEqual(result["evaluation"]["met_count"], 0)
             self.assertEqual(len(requests), 3)
@@ -415,7 +550,7 @@ class BenchmarkTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder)
             client = FakeClient([json.dumps(empty_payload()), json.dumps(empty_payload())])
-            pipeline = BLSPipeline(client=client, budget=FakeBudget(), output_dir=path / "output")
+            pipeline = BLSPipeline(client=client, budget=FakeBudget(), output_dir=path / "output", device_reference=None)
             text = "救急車を呼んでください。"
             document = pipeline.evaluate_text(text)
             record = pipeline.export(document, sample_id="sample", source_path="synthetic.wav", input_sha256="audiohash", source_kind="audio")

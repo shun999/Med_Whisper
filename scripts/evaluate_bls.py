@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.bls_pipeline import (  # noqa: E402
-    BLSPipeline, EVALUATION_MODEL, EVALUATION_RPD, EVALUATION_RPM, TRANSCRIBE_MODEL,
+    BLSPipeline, DEVICE_REFERENCE, EVALUATION_MODEL, EVALUATION_RPD, EVALUATION_RPM, TRANSCRIBE_MODEL,
     TRANSCRIPTION_RPD, TRANSCRIPTION_RPM, MIME_TYPES, VIDEO_TYPES, read_json,
 )
 
@@ -16,6 +16,8 @@ def pipeline_arguments(parser):
     parser.add_argument("--evaluation-model", default=EVALUATION_MODEL)
     parser.add_argument("--transcription-model", default=TRANSCRIBE_MODEL)
     parser.add_argument("--vocabulary", choices=["baseline", "revised"], default="revised")
+    parser.add_argument("--device-reference", type=Path, default=DEVICE_REFERENCE,
+                        help="機器音声の参照TXT（既定: data/LED音声人間文字起こし.txt）")
     parser.add_argument("--quota-scope", default="default", help="同じGoogleプロジェクトでは同じ値を使用")
     limits = {
         "transcription": (TRANSCRIPTION_RPM, TRANSCRIPTION_RPD),
@@ -28,7 +30,7 @@ def pipeline_arguments(parser):
 
 def make_pipeline(args):
     names = ("output_dir", "evaluation_model", "transcription_model", "vocabulary", "quota_scope",
-             "transcription_rpm", "transcription_rpd", "evaluation_rpm", "evaluation_rpd")
+             "transcription_rpm", "transcription_rpd", "evaluation_rpm", "evaluation_rpd", "device_reference")
     return BLSPipeline(**{name: getattr(args, name) for name in names})
 
 

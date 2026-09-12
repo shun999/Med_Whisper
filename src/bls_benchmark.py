@@ -5,6 +5,7 @@ from pathlib import Path
 
 from src.bls_evaluation import CRITERIA, normalize, validate_response
 from src.bls_pipeline import ROOT, digest, file_digest, now_iso, read_json, write_json
+from src.bls_speech import separate_speech
 
 
 def init_manifest(audio_dir: Path, destination: Path) -> dict:
@@ -58,7 +59,11 @@ def _load_run(run: dict) -> dict:
         record = read_json(Path(entry["result_path"]))
         if record["sample_id"] != sample_id or record["input_sha256"] != entry["input_sha256"]:
             raise ValueError("runと結果ファイルの対応が不正です")
-        verified = validate_response(record["transcript"], record["model_response"]).to_dict()
+        speech = record.get("speech_separation")
+        reference = speech["reference_text"] if speech is not None else None
+        if speech is not None and speech != separate_speech(record["transcript"], reference):
+            raise ValueError("保存済みの発言分離と現在の分離処理が一致しません。同じ文字起こしから再採点してください")
+        verified = validate_response(record["transcript"], record["model_response"], device_reference=reference).to_dict()
         if record["evaluation"] != verified:
             raise ValueError("採点結果と現在の検証器が一致しません。同じキャッシュから再採点してください")
         results[sample_id] = record

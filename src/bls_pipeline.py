@@ -21,8 +21,10 @@ from src.bls_evaluation import (
     SYSTEM_INSTRUCTION, RESPONSE_SCHEMA, VALIDATOR_VERSION, InvalidResponse,
     build_prompt, clean_vocabulary, validate_response,
 )
+from src.bls_speech import separate_speech
 
 ROOT = Path(__file__).resolve().parents[1]
+DEVICE_REFERENCE = ROOT / "data" / "LED音声人間文字起こし.txt"
 TRANSCRIBE_MODEL = "gemini-3.5-transcribe"
 EVALUATION_MODEL = "gemini-3.8-flash"
 TRANSCRIPTION_RPM = 2
@@ -146,9 +148,11 @@ class BLSPipeline:
                  transcription_model=TRANSCRIBE_MODEL, evaluation_model=EVALUATION_MODEL,
                  vocabulary="revised", transcription_rpm=TRANSCRIPTION_RPM,
                  transcription_rpd=TRANSCRIPTION_RPD, evaluation_rpm=EVALUATION_RPM,
-                 evaluation_rpd=EVALUATION_RPD, quota_scope="default", sleep=time.sleep):
+                 evaluation_rpd=EVALUATION_RPD, quota_scope="default", sleep=time.sleep,
+                 device_reference: Path | None = DEVICE_REFERENCE):
         self.output_dir = safe_output(output_dir or ROOT / "outputs" / "evaluation" / "bls")
         self.client = client
+        self.device_reference = Path(device_reference) if device_reference is not None else None
         self.budget = budget or RequestBudget(scope=quota_scope)
         self.transcription_model, self.evaluation_model = transcription_model, evaluation_model
         profiles = {"baseline": BASELINE_VOCABULARY, "revised": REVISED_VOCABULARY}
@@ -210,8 +214,19 @@ class BLSPipeline:
             return response.model_dump(mode="json")
         return {"output_text": response.output_text}
 
+    def _device_reference_text(self) -> str | None:
+        if self.device_reference is None:
+            return None
+        try:
+            text = self.device_reference.read_text(encoding="utf-8-sig")
+        except OSError as exc:
+            raise ValueError(f"機器音声の参照TXTを読めません: {self.device_reference}（--device-referenceで指定できます）") from exc
+        separate_speech("", text)  # Reject an empty reference before any paid call.
+        return text
+
     def evaluate_text(self, text: str) -> dict:
-        prompt = build_prompt(text)
+        reference = self._device_reference_text()
+        prompt = build_prompt(text, device_reference=reference)
         settings = {"model": self.evaluation_model, "rubric_version": RUBRIC_VERSION,
                     "prompt_version": PROMPT_VERSION, "system_instruction": SYSTEM_INSTRUCTION,
                     "prompt": prompt, "response_schema": RESPONSE_SCHEMA}
@@ -233,10 +248,11 @@ class BLSPipeline:
             payload = json.loads(cached["output_text"])
         except (ValueError, TypeError) as exc:
             raise InvalidResponse(f"採点応答がJSONではありません。応答保存先: {response_path}") from exc
-        result = validate_response(text, payload)
+        result = validate_response(text, payload, device_reference=reference)
         if not response_path.exists():
             write_json(response_path, cached)
-        return {"evaluation": result.to_dict(), "model_response": payload, "transcript": text,
+        extra = {"speech_separation": separate_speech(text, reference)} if reference is not None else {}
+        return {"evaluation": result.to_dict(), "model_response": payload, "transcript": text, **extra,
                 "transcript_sha256": digest(text.encode()), "evaluation_model": self.evaluation_model,
                 "cache_key": key, "response_path": str(response_path), "created_at": cached["created_at"]}
 
@@ -304,10 +320,16 @@ class BLSPipeline:
             writer.writerow({k: json.dumps(row[k], ensure_ascii=False) if isinstance(row[k], list) else row[k]
                              for k in writer.fieldnames})
         atomic_text(path.with_suffix(".csv"), "\ufeff" + stream.getvalue())
+        if "speech_separation" in record:
+            speech = record["speech_separation"]
+            for suffix, field in ((".human.txt", "human_candidate_text"), (".device.txt", "device_text"),
+                                  (".excluded.txt", "excluded_text")):
+                atomic_text(path.with_suffix(suffix), speech[field])
         return {**record, "result_path": str(path)}
 
     def evaluate_file(self, path: Path) -> dict:
         path = Path(path).resolve()
+        self._device_reference_text()  # Check before uploading/transcribing audio.
         is_text = path.suffix.lower() == ".txt"
         transcription = None if is_text else self.transcribe(path)
         text = path.read_text(encoding="utf-8") if is_text else transcription["text"]
@@ -319,6 +341,8 @@ class BLSPipeline:
     def run(self, paths: list[Path], *, transcription_only=False) -> dict:
         if not paths:
             raise ValueError("対象ファイルがありません")
+        if not transcription_only:
+            self._device_reference_text()
         # Validate before the first external call; preserve unprocessed paths on interruption.
         resolved = [Path(p).resolve() for p in paths]
         if len(set(resolved)) != len(resolved):

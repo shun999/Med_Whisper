@@ -6,6 +6,8 @@ BLS（一次救命処置）演習動画の音声を解析し、必要なコー�
 
 Geminiによる文字起こしと18項目の自動採点は [gemini.ipynb](gemini.ipynb) またはCLIから実行できます。保存済みTXTからの採点、音声・動画の一括処理、根拠付きJSON/CSV出力に対応します。採点仕様、API上限、精度検証手順は [BLS評価システム](docs/bls_evaluation.md) を参照してください。
 
+採点前に`data/LED音声人間文字起こし.txt`を参照し、一致する機器アナウンスを人間の発言候補から分離します。分離した機器音声は直接加点せず、ショック完了などの時点確認にだけ使用します。参照TXTはローカルに配置し、別の場所にある場合は`--device-reference PATH`で指定してください。
+
 ```bash
 # 通信せず対象とリクエスト数を確認
 uv run python scripts/evaluate_bls.py --transcript outputs/transcription/gemini/1回目_右前_gemini.txt --dry-run
