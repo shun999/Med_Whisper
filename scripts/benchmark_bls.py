@@ -6,7 +6,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.evaluate_bls import make_pipeline, pipeline_arguments  # noqa: E402
 from src.bls_benchmark import init_manifest, report, run_references  # noqa: E402
-from src.bls_pipeline import read_json, write_json  # noqa: E402
+from src.bls_pipeline import atomic_text, read_json, safe_output, write_json  # noqa: E402
+from src.bls_summary import HUMAN_SCORES_CSV, load_human_scores, render_score_summary  # noqa: E402
 
 
 def main(argv=None):
@@ -25,6 +26,11 @@ def main(argv=None):
     references.add_argument("--manifest", type=Path, required=True)
     references.add_argument("--output", type=Path, required=True)
     pipeline_arguments(references)
+    summary = commands.add_parser("summary", help="保存済み採点と人手CSVからスコアまとめTXTを作成（API不要）")
+    summary.add_argument("--run", type=Path, required=True)
+    summary.add_argument("--human-scores-csv", type=Path, default=HUMAN_SCORES_CSV)
+    summary.add_argument("--results-dir", type=Path, help="結果JSONの移動先（省略時は元の保存先の配下を検索）")
+    summary.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == "init":
@@ -34,6 +40,17 @@ def main(argv=None):
             result = run_references(read_json(args.manifest), make_pipeline(args), args.output)
             print(f"{result['status']}: {args.output}")
             return 0 if result["status"] == "completed" else 2
+        elif args.command == "summary":
+            destination = safe_output(args.output)
+            if destination.suffix.lower() != ".txt":
+                raise ValueError("スコアまとめの保存先にはTXTを指定してください")
+            if destination.exists():
+                raise FileExistsError("既存のスコアまとめは上書きしません。新しい保存先を指定してください")
+            run = read_json(args.run)
+            run["run_path"] = str(args.run.resolve())
+            summary_text = render_score_summary(run, load_human_scores(args.human_scores_csv), results_dir=args.results_dir)
+            atomic_text(destination, summary_text)
+            print(f"スコアまとめ: {destination}")
         else:
             if args.output.exists():
                 raise FileExistsError("既存レポートは上書きしません")

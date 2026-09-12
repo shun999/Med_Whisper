@@ -8,6 +8,8 @@ Geminiによる文字起こしと18項目の自動採点は [gemini.ipynb](gemin
 
 採点前に`data/LED音声人間文字起こし.txt`を参照し、一致する機器アナウンスを人間の発言候補から分離します。分離した機器音声は直接加点せず、ショック完了などの時点確認にだけ使用します。参照TXTはローカルに配置し、別の場所にある場合は`--device-reference PATH`で指定してください。
 
+採点実行後には、音声別の点数と`data/人間音声採点データ.csv`の模範点数との差、平均絶対誤差をまとめたTXTを`outputs/evaluation/bls/summaries/`に自動保存します。模範CSVは比較にだけ使用し、採点モデルには渡しません。
+
 ```bash
 # 通信せず対象とリクエスト数を確認
 uv run python scripts/evaluate_bls.py --transcript outputs/transcription/gemini/1回目_右前_gemini.txt --dry-run

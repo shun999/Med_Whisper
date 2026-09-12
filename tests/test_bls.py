@@ -282,6 +282,7 @@ class PipelineTests(unittest.TestCase):
 
     def pipeline(self, client, **kwargs):
         kwargs.setdefault("device_reference", self.device_reference)
+        kwargs.setdefault("human_scores_csv", None)
         return BLSPipeline(client=client, budget=FakeBudget(), output_dir=self.base / "output", **kwargs)
 
     def test_default_request_limits(self):
@@ -356,11 +357,12 @@ class PipelineTests(unittest.TestCase):
         source.write_text("傷病者発見。", encoding="utf-8")
         self.pipeline(FakeClient([json.dumps(empty_payload())])).evaluate_file(source)
         output = io.StringIO()
-        with patch.dict("os.environ", {}, clear=True), redirect_stdout(output):
+        with patch.dict("os.environ", {}, clear=True), patch("scripts.evaluate_bls.HUMAN_SCORES_CSV", None), redirect_stdout(output):
             code = main(["--transcript", str(source), "--output-dir", str(self.base / "output"),
                          "--device-reference", str(self.device_reference)])
         self.assertEqual(code, 0)
         self.assertIn("completed", output.getvalue())
+        self.assertIn("スコアまとめ:", output.getvalue())
 
     def test_equal_contents_reuse_inference_but_preserve_each_source_path(self):
         client = FakeClient([json.dumps(empty_payload())])
@@ -423,6 +425,10 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(first["status"], "interrupted")
         self.assertEqual(len(first["results"]), 1)
         self.assertEqual(first["pending"], [str(b)])
+        summary = Path(first["summary_path"]).read_text(encoding="utf-8")
+        self.assertIn("実行状態: interrupted", summary)
+        self.assertIn("b: エラー: QuotaExhausted", summary)
+        self.assertNotIn("b: Gemini=0.0", summary)
         second = pipeline.run([a, b])
         self.assertEqual(second["status"], "completed")
         self.assertEqual(len(client.calls), 3)

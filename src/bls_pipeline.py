@@ -22,6 +22,7 @@ from src.bls_evaluation import (
     build_prompt, clean_vocabulary, validate_response,
 )
 from src.bls_speech import separate_speech
+from src.bls_summary import HUMAN_SCORES_CSV, load_human_scores, render_score_summary
 
 ROOT = Path(__file__).resolve().parents[1]
 DEVICE_REFERENCE = ROOT / "data" / "LED音声人間文字起こし.txt"
@@ -149,10 +150,12 @@ class BLSPipeline:
                  vocabulary="revised", transcription_rpm=TRANSCRIPTION_RPM,
                  transcription_rpd=TRANSCRIPTION_RPD, evaluation_rpm=EVALUATION_RPM,
                  evaluation_rpd=EVALUATION_RPD, quota_scope="default", sleep=time.sleep,
-                 device_reference: Path | None = DEVICE_REFERENCE):
+                 device_reference: Path | None = DEVICE_REFERENCE,
+                 human_scores_csv: Path | None = HUMAN_SCORES_CSV):
         self.output_dir = safe_output(output_dir or ROOT / "outputs" / "evaluation" / "bls")
         self.client = client
         self.device_reference = Path(device_reference) if device_reference is not None else None
+        self.human_scores_csv = Path(human_scores_csv) if human_scores_csv is not None else None
         self.budget = budget or RequestBudget(scope=quota_scope)
         self.transcription_model, self.evaluation_model = transcription_model, evaluation_model
         profiles = {"baseline": BASELINE_VOCABULARY, "revised": REVISED_VOCABULARY}
@@ -343,6 +346,7 @@ class BLSPipeline:
             raise ValueError("対象ファイルがありません")
         if not transcription_only:
             self._device_reference_text()
+        gold = load_human_scores(self.human_scores_csv) if not transcription_only else None
         # Validate before the first external call; preserve unprocessed paths on interruption.
         resolved = [Path(p).resolve() for p in paths]
         if len(set(resolved)) != len(resolved):
@@ -356,6 +360,7 @@ class BLSPipeline:
                 raise ValueError("TXT入力に文字起こし専用モードは使えません")
         run_path = self.output_dir / "runs" / f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_{uuid.uuid4().hex[:12]}.json"
         run = {"created_at": now_iso(), "status": "running", "run_path": str(run_path),
+               "vocabulary": self.vocabulary_name,
                "stage": "transcription" if transcription_only else "evaluation",
                "inputs": [str(p) for p in resolved], "results": [], "errors": [], "pending": [str(p) for p in resolved]}
         write_json(run_path, run)
@@ -372,15 +377,24 @@ class BLSPipeline:
             except (QuotaExhausted, MissingAPIKey) as exc:
                 run["status"] = "interrupted"
                 run["errors"].append({"source_path": str(path), "type": type(exc).__name__, "message": str(exc)})
-                write_json(run_path, run)
+                self._finish_run(run, gold)
                 return run
             except Exception as exc:
                 run["errors"].append({"source_path": str(path), "type": type(exc).__name__, "message": str(exc)})
             run["pending"].remove(str(path))
             write_json(run_path, run)
         run["status"] = "completed" if not run["errors"] else "failed"
-        write_json(run_path, run)
+        self._finish_run(run, gold)
         return run
+
+    def _finish_run(self, run: dict, gold: dict | None) -> None:
+        # Preserve the run even if writing its summary subsequently fails.
+        write_json(Path(run["run_path"]), run)
+        if gold is not None:
+            path = self.output_dir / "summaries" / (Path(run["run_path"]).stem + ".txt")
+            atomic_text(path, render_score_summary(run, gold))
+            run["summary_path"] = str(path)
+            write_json(Path(run["run_path"]), run)
 
 
 def re_safe_stem(stem: str) -> str:

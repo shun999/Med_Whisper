@@ -9,6 +9,7 @@ from src.bls_pipeline import (  # noqa: E402
     BLSPipeline, DEVICE_REFERENCE, EVALUATION_MODEL, EVALUATION_RPD, EVALUATION_RPM, TRANSCRIBE_MODEL,
     TRANSCRIPTION_RPD, TRANSCRIPTION_RPM, MIME_TYPES, VIDEO_TYPES, read_json,
 )
+from src.bls_summary import HUMAN_SCORES_CSV  # noqa: E402
 
 
 def pipeline_arguments(parser):
@@ -18,6 +19,8 @@ def pipeline_arguments(parser):
     parser.add_argument("--vocabulary", choices=["baseline", "revised"], default="revised")
     parser.add_argument("--device-reference", type=Path, default=DEVICE_REFERENCE,
                         help="機器音声の参照TXT（既定: data/LED音声人間文字起こし.txt）")
+    parser.add_argument("--human-scores-csv", type=Path, default=HUMAN_SCORES_CSV,
+                        help="スコアまとめの比較用CSV（既定: data/人間音声採点データ.csv、採点モデルには渡しません）")
     parser.add_argument("--quota-scope", default="default", help="同じGoogleプロジェクトでは同じ値を使用")
     limits = {
         "transcription": (TRANSCRIPTION_RPM, TRANSCRIPTION_RPD),
@@ -30,7 +33,7 @@ def pipeline_arguments(parser):
 
 def make_pipeline(args):
     names = ("output_dir", "evaluation_model", "transcription_model", "vocabulary", "quota_scope",
-             "transcription_rpm", "transcription_rpd", "evaluation_rpm", "evaluation_rpd", "device_reference")
+             "transcription_rpm", "transcription_rpd", "evaluation_rpm", "evaluation_rpd", "device_reference", "human_scores_csv")
     return BLSPipeline(**{name: getattr(args, name) for name in names})
 
 
@@ -72,6 +75,8 @@ def main(argv=None):
             else:
                 print(f"{entry['sample_id']}: 文字起こし保存済み")
         print(f"実行記録: {run['run_path']} ({run['status']})")
+        if "summary_path" in run:
+            print(f"スコアまとめ: {run['summary_path']}")
         for error in run["errors"]:
             print(f"{error['source_path']}: {error['type']}: {error['message']}", file=sys.stderr)
         return 0 if run["status"] == "completed" else 2
