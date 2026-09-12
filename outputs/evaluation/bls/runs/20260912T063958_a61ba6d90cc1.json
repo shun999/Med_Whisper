@@ -1,0 +1,132 @@
+{
+  "created_at": "2026-09-12T06:39:58.086313+00:00",
+  "status": "completed",
+  "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260912T063958_a61ba6d90cc1.json",
+  "stage": "evaluation",
+  "inputs": [
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_10回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_11回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_12回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_13回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_14回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_15回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_16回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_17回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_18回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_19回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_1回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_20回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_2回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_3回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_4回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_5回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_6回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_7回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_8回目.wav",
+    "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_9回目.wav"
+  ],
+  "results": [
+    {
+      "sample_id": "20260706_10回目",
+      "input_sha256": "585f1bc377e18231e4eb30091c4f6219b63ce83cf3c7633cd979fe28f8535631",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_10回目_91675235ce5e2000de5404cc2af6747f87f18de9b2788d946e9aec83370b7d77.json"
+    },
+    {
+      "sample_id": "20260706_11回目",
+      "input_sha256": "b6b12a8b6b2beb8615ddbdf820219d07e88b33fb9725d4d03563cfaa2c5182b1",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_11回目_1f8946753ea8ad01a9584a84faeb248aedb8c0e668f555495fdd8e5eecd192d5.json"
+    },
+    {
+      "sample_id": "20260706_12回目",
+      "input_sha256": "bcf12fda0329a1e52add5faf99711c9bea1acdd83834e263d8b97819b201432d",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_12回目_ca710d14e5ddc858580fc2a8ce86faf60245c2b0c97bd25884378f9c57dfc8fb.json"
+    },
+    {
+      "sample_id": "20260706_13回目",
+      "input_sha256": "06d2b83184fb3ba8eec8b29f5e54f5a58bb442c3bc8f74973134a064018c6d0c",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_13回目_fbae6d691c55c40bd3f4d41e55af7d90215a3a54153610cd8350ed9192c02fda.json"
+    },
+    {
+      "sample_id": "20260706_14回目",
+      "input_sha256": "705779431add5a184bc5f58a07cef934b3a34e6c11a136ba8afaaa5efa71d79f",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_14回目_bc259b15101eaa6083ee5a324bd3ae19f5a4eb3c3cc2b4244210884600663dd2.json"
+    },
+    {
+      "sample_id": "20260706_15回目",
+      "input_sha256": "275472db9f3d0169e5d545446aff84f160a1b80954a1f028732467f5b5d73f74",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_15回目_3065beb110e4d71a20b7e00b676499baf7d26f0b9aa270e8ec90d8c56756be06.json"
+    },
+    {
+      "sample_id": "20260706_16回目",
+      "input_sha256": "b6e6036c07b02ddb7c239349efcfc4348f78c2e57c5107fc6a825113256dbe7c",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_16回目_2c28b5b48c84a6fc956e87e5d5ab47fdedab91972df5d9b44fd69795afef2090.json"
+    },
+    {
+      "sample_id": "20260706_17回目",
+      "input_sha256": "c4f9d3ae4ba79ca988c905c2f003653c5020c1520819c52e006fbb2051c621d8",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_17回目_229e83de2de5b6cbd3d7e91f091bb48c552618d25981545cb5885a60bed81fe7.json"
+    },
+    {
+      "sample_id": "20260706_18回目",
+      "input_sha256": "db4104fde63e29a6fdba45f702b2e63f78241459331b1dba7a6c0cd56b9dfdc2",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_18回目_157bd7a2bd562cf77996d0ed168ef58656f4cb045bd50408e7d316536fd4dfb1.json"
+    },
+    {
+      "sample_id": "20260706_19回目",
+      "input_sha256": "659628d7bceb6c192cb2f563713386868f44c996b0fe536e0f33631e4a357a6c",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_19回目_8e6b915e33c34ff901e1ba9cba2651e94e1d9f2deac3d6e6aca6e2a0aec9b98e.json"
+    },
+    {
+      "sample_id": "20260706_1回目",
+      "input_sha256": "5334558b67352c1951fb93d7389b8ad59fa7b89553c498d2d7ecfacd61638f8c",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_1回目_546e32690dde30b3847803c4ee987ea7cae1a539cd7c1c53f5bfa10f862e4eaa.json"
+    },
+    {
+      "sample_id": "20260706_20回目",
+      "input_sha256": "85991c88f3b0d79c54178b962bf4d26dc2bd8f01f96217aa1c467e0acf14692a",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_20回目_2679b11f49c9706b7265b38d76d6ff5a9212c90c39a0094a96a9b4f23576e501.json"
+    },
+    {
+      "sample_id": "20260706_2回目",
+      "input_sha256": "ae61d8e67fa06f1cc0dc0d970459c49c9d00f260d7f152561751f4a9c0264ff9",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_2回目_cce57f0c0255741d65a7820fb7af4da7a28760820bae6b9a611b55215c6cbc2f.json"
+    },
+    {
+      "sample_id": "20260706_3回目",
+      "input_sha256": "739bc3590c44bc2bcec790c4753f4ca16214cbe69fcfc9899c0fd4a6881604ee",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_3回目_a1bfc73552b32519d676b0148d81722407a2363d32935b0474dca8c25d5f08ea.json"
+    },
+    {
+      "sample_id": "20260706_4回目",
+      "input_sha256": "3c663d39984bcd14271a159f67acd12c576dfbf102caabbf7c0493cfd30dd954",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_4回目_8c2229c7b9fd2340638071bbdc448c8c04aea6a411034bc7c80284c5896510cb.json"
+    },
+    {
+      "sample_id": "20260706_5回目",
+      "input_sha256": "81e6ddf806d6b9273f973137d4d898f57e6937547016ada6dbf51f3c26e6b19d",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_5回目_9dbb4f0662bc7a3f204477f3254c8b320f3dc9bdb0d37857571906eda4645f5a.json"
+    },
+    {
+      "sample_id": "20260706_6回目",
+      "input_sha256": "ebd118c1c59a611fb10a9e52ed426d484279c7594071513938f77b052c3d37f9",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_6回目_a3f4a92146ff1643c27f799d1471af158a991e8d6d74be20c1390722fa4158ba.json"
+    },
+    {
+      "sample_id": "20260706_7回目",
+      "input_sha256": "df822a379c94a1336dfc58541a9dce1a116adca63afcdb4b283c00b7bafd4d8d",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_7回目_7872f0f00cbbc7c0f5b18afcd957520c10c2c88eec541a525831243bc1fc236a.json"
+    },
+    {
+      "sample_id": "20260706_8回目",
+      "input_sha256": "00be56263f4c60bd587384b3310d3ab787db9b59c322f1e508040296b6fcf13d",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_8回目_be4240359cf3e6ddea266b341bd36027f99189901518e8458a884fccf5af784d.json"
+    },
+    {
+      "sample_id": "20260706_9回目",
+      "input_sha256": "083b7e388bcc79ee1123763eb3b49f9ab1e2243c0446c83777f37f9e6812bd74",
+      "result_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/results/20260706_9回目_2d78704129cafdf45e8d7308dd82db6b6f4d740b960b3cae07dad8967d4e426b.json"
+    }
+  ],
+  "errors": [],
+  "pending": []
+}
