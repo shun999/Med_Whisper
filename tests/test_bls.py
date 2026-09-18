@@ -110,14 +110,25 @@ class JudgeTests(unittest.TestCase):
         mark(payload, 6, [quote(text, "救急車を呼ばないでください")])
         self.assertEqual(validate_response(text, payload).score, 0)
 
-    def test_count_after_shock_requires_order_and_completion(self):
-        text = "1、2、3、4。放電終了。5、6、7、8。"
-        for value, expected in (("1、2、3、4", "uncertain"), ("5、6、7、8", "met")):
+    def test_distinct_counts_do_not_require_shock_completion(self):
+        text = "胸骨圧迫、1、2、3、4。ショックします。5、6、7、8。"
+        payload = empty_payload()
+        mark(payload, 11, [quote(text, "1、2、3、4", kind="count")])
+        mark(payload, 16, [quote(text, "5、6、7、8", kind="count")])
+        result = validate_response(text, payload)
+        self.assertEqual([result.items[i].status for i in (10, 15)], ["met", "met"])
+
+    def test_one_continuous_count_cannot_be_split_between_items(self):
+        for text in ("1、2、3、4、5、6、7、8。", "1、2、3、4。5、6、7、8。"):
             payload = empty_payload()
-            mark(payload, 16, [quote(text, value, kind="count")],
-                 [quote(text, "放電終了", kind="shock_complete", role="device")])
-            self.assertEqual(validate_response(text, payload).items[15].status, expected)
-        payload["items"][15]["context"] = []
+            mark(payload, 11, [quote(text, "1、2、3、4", kind="count")])
+            mark(payload, 16, [quote(text, "5、6、7、8", kind="count")])
+            self.assertEqual(validate_response(text, payload).items[15].status, "uncertain")
+
+    def test_second_count_alone_does_not_prove_two_episodes(self):
+        text = "1、2、3、4。"
+        payload = empty_payload()
+        mark(payload, 16, [quote(text, "1、2、3、4", kind="count")])
         self.assertEqual(validate_response(text, payload).items[15].status, "uncertain")
 
     def test_shock_prediction_cannot_be_mislabeled_completion(self):
@@ -134,6 +145,18 @@ class JudgeTests(unittest.TestCase):
         mark(payload, 14, [quote(text, "1、2、3で交代", kind="handoff")])
         result = validate_response(text, payload)
         self.assertEqual((result.items[10].status, result.items[13].status), ("uncertain", "uncertain"))
+
+    def test_handoff_alone_cannot_be_mislabeled_as_compression_count(self):
+        for text in ("1、2、3で交代。", "引き継ぎます。1、2、3。"):
+            payload = empty_payload()
+            mark(payload, 11, [quote(text, "1、2、3", kind="count")])
+            self.assertEqual(validate_response(text, payload).items[10].status, "uncertain")
+
+    def test_longer_count_after_handoff_is_still_a_count(self):
+        text = "交代しました。1、2、3、4、5。"
+        payload = empty_payload()
+        mark(payload, 11, [quote(text, "1、2、3", kind="count")])
+        self.assertEqual(validate_response(text, payload).items[10].status, "met")
 
     def test_compression_declaration_without_count_does_not_pass(self):
         text = "胸骨圧迫を始めます。"
@@ -169,6 +192,7 @@ class SpeechSeparationTests(unittest.TestCase):
             self.assertEqual(text[part["start"]:part["end"]], part["text"])
         payload = empty_payload()
         completion = self.speech_quote(text, "ショックが完了しました", kind="shock_complete")
+        mark(payload, 11, [self.speech_quote(text, "123", kind="count")])
         mark(payload, 15, [self.speech_quote(text, "離れてください", source_role="candidate")], [completion])
         mark(payload, 16, [self.speech_quote(text, "4、5、6", kind="count")], [completion])
         result = validate_response(text, payload, device_reference=self.reference)
@@ -234,6 +258,38 @@ class SpeechSeparationTests(unittest.TestCase):
              [self.speech_quote(text, "ショックが完了しました", kind="shock_complete")])
         self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[14].status, "uncertain")
 
+    def test_device_directive_more_than_two_segments_away(self):
+        text = "離れてください。ショックが必要です。充電中です。体から離れてください。ショックが完了しました。"
+        payload = empty_payload()
+        mark(payload, 15, [self.speech_quote(text, "離れてください", source_role="candidate")],
+             [self.speech_quote(text, "ショックが完了しました", kind="shock_complete")])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[14].status, "met")
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference,
+                                          evaluation_profile="counts").items[14].status, "uncertain")
+
+    def test_polite_prefix_does_not_hide_distinct_directive(self):
+        text = "充電中です。はい、離れてください。体から離れてください。ショックが完了しました。"
+        payload = empty_payload()
+        mark(payload, 15, [self.speech_quote(text, "はい、離れてください")],
+             [self.speech_quote(text, "ショックが完了しました", kind="shock_complete")])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[14].status, "met")
+
+    def test_separate_shock_cycles_do_not_share_device_directive(self):
+        text = "体から離れてください。ショックが完了しました。充電中です。離れてください。ショックが完了しました。"
+        payload = empty_payload()
+        parts = separate_speech(text, self.reference)["segments"]
+        last = parts[-1]
+        mark(payload, 15, [self.speech_quote(text, "離れてください", source_role="candidate")],
+             [{"segment_id": last["id"], "quote": last["text"], "role": "device", "kind": "shock_complete"}])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[14].status, "uncertain")
+
+    def test_distant_device_announcement_does_not_reject_human_call(self):
+        text = "充電中です。私は離れています。あなたも離れていますか。皆さん離れてください。ショック。"
+        payload = empty_payload()
+        mark(payload, 15, [self.speech_quote(text, "皆さん離れてください")],
+             [self.speech_quote(text, "ショック。", kind="shock")])
+        self.assertEqual(validate_response(text, payload, device_reference=self.reference).items[14].status, "met")
+
     def test_execution_is_not_shock_completion(self):
         text = "ショックを実行中です。1、2、3。"
         payload = empty_payload()
@@ -287,6 +343,7 @@ class PipelineTests(unittest.TestCase):
 
     def test_default_request_limits(self):
         pipeline = self.pipeline(FakeClient([]))
+        self.assertEqual(pipeline.vocabulary_name, "targeted")
         self.assertEqual(pipeline.limits["transcription"], (2, 100))
         self.assertEqual(pipeline.limits["evaluation"], (1000, 10_000))
 
@@ -294,6 +351,7 @@ class PipelineTests(unittest.TestCase):
         parser = argparse.ArgumentParser()
         pipeline_arguments(parser)
         args = parser.parse_args([])
+        self.assertEqual(args.vocabulary, "targeted")
         self.assertEqual((args.transcription_rpm, args.transcription_rpd), (2, 100))
         self.assertEqual((args.evaluation_rpm, args.evaluation_rpd), (1000, 10_000))
 

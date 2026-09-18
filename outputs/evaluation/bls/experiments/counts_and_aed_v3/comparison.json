@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-09-17T08:48:05.913543+00:00",
+  "baseline_run": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260912T080745_203a5127bc81.json",
+  "manifest": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/gold_20260706_complete.json",
+  "stages": [
+    {
+      "stage": "counts",
+      "settings": {
+        "evaluation_profile": "counts",
+        "vocabulary": "revised"
+      },
+      "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260917T084805_0200c480a3fa.json",
+      "status": "failed",
+      "comparable": false,
+      "improves_baseline": false
+    }
+  ],
+  "limitations": "同一収録日で既に探索済みの20本。独立した汎化評価ではない。規則テストの合格も採用条件。"
+}

@@ -17,17 +17,18 @@ import warnings
 from zoneinfo import ZoneInfo
 
 from src.bls_evaluation import (
-    BASELINE_VOCABULARY, REVISED_VOCABULARY, PROMPT_VERSION, RUBRIC_VERSION,
+    BASELINE_VOCABULARY, REVISED_VOCABULARY, TARGETED_VOCABULARY, EVALUATION_PROFILES, PROMPT_VERSION, RUBRIC_VERSION,
     SYSTEM_INSTRUCTION, RESPONSE_SCHEMA, VALIDATOR_VERSION, InvalidResponse,
     build_prompt, clean_vocabulary, validate_response,
 )
-from src.bls_speech import separate_speech
+from src.bls_speech import extract_word_annotations, separate_speech
 from src.bls_summary import HUMAN_SCORES_CSV, load_human_scores, render_score_summary
 
 ROOT = Path(__file__).resolve().parents[1]
 DEVICE_REFERENCE = ROOT / "data" / "LED音声人間文字起こし.txt"
 TRANSCRIBE_MODEL = "gemini-3.5-transcribe"
 EVALUATION_MODEL = "gemini-3.8-flash"
+DEFAULT_VOCABULARY = "targeted"
 TRANSCRIPTION_RPM = 2
 TRANSCRIPTION_RPD = 100
 EVALUATION_RPM = 1000
@@ -147,25 +148,32 @@ class RequestBudget:
 class BLSPipeline:
     def __init__(self, *, client=None, output_dir: Path | None = None, budget=None,
                  transcription_model=TRANSCRIBE_MODEL, evaluation_model=EVALUATION_MODEL,
-                 vocabulary="revised", transcription_rpm=TRANSCRIPTION_RPM,
+                 vocabulary=DEFAULT_VOCABULARY, transcription_rpm=TRANSCRIPTION_RPM,
                  transcription_rpd=TRANSCRIPTION_RPD, evaluation_rpm=EVALUATION_RPM,
                  evaluation_rpd=EVALUATION_RPD, quota_scope="default", sleep=time.sleep,
                  device_reference: Path | None = DEVICE_REFERENCE,
-                 human_scores_csv: Path | None = HUMAN_SCORES_CSV):
+                 human_scores_csv: Path | None = HUMAN_SCORES_CSV,
+                 evaluation_profile="improved", transcription_profile="standard"):
         self.output_dir = safe_output(output_dir or ROOT / "outputs" / "evaluation" / "bls")
         self.client = client
         self.device_reference = Path(device_reference) if device_reference is not None else None
         self.human_scores_csv = Path(human_scores_csv) if human_scores_csv is not None else None
         self.budget = budget or RequestBudget(scope=quota_scope)
         self.transcription_model, self.evaluation_model = transcription_model, evaluation_model
-        profiles = {"baseline": BASELINE_VOCABULARY, "revised": REVISED_VOCABULARY}
+        if evaluation_profile not in EVALUATION_PROFILES or transcription_profile not in ("standard", "speakers"):
+            raise ValueError("採点設定または文字起こし設定が不正です")
+        self.evaluation_profile, self.transcription_profile = evaluation_profile, transcription_profile
+        profiles = {"baseline": BASELINE_VOCABULARY, "revised": REVISED_VOCABULARY,
+                    "targeted": TARGETED_VOCABULARY, "none": []}
         if isinstance(vocabulary, str):
             if vocabulary not in profiles:
-                raise ValueError("語彙はbaseline/revisedまたは文字列リストで指定してください")
+                raise ValueError("語彙はbaseline/revised/targeted/noneまたは文字列リストで指定してください")
             self.vocabulary_name, terms = vocabulary, profiles[vocabulary]
         else:
             self.vocabulary_name, terms = "custom", vocabulary
         self.vocabulary = clean_vocabulary(terms)
+        if transcription_profile == "speakers" and self.vocabulary:
+            raise ValueError("話者識別と語彙は併用できません。--vocabulary noneを指定してください")
         self.limits = {"transcription": (transcription_rpm, transcription_rpd),
                        "evaluation": (evaluation_rpm, evaluation_rpd)}
         if any(type(n) is not int or n <= 0 for pair in self.limits.values() for n in pair):
@@ -227,12 +235,14 @@ class BLSPipeline:
         separate_speech("", text)  # Reject an empty reference before any paid call.
         return text
 
-    def evaluate_text(self, text: str) -> dict:
+    def evaluate_text(self, text: str, *, word_annotations: list[dict] | None = None) -> dict:
         reference = self._device_reference_text()
-        prompt = build_prompt(text, device_reference=reference)
+        prompt = build_prompt(text, device_reference=reference, evaluation_profile=self.evaluation_profile,
+                              word_annotations=word_annotations)
         settings = {"model": self.evaluation_model, "rubric_version": RUBRIC_VERSION,
                     "prompt_version": PROMPT_VERSION, "system_instruction": SYSTEM_INSTRUCTION,
-                    "prompt": prompt, "response_schema": RESPONSE_SCHEMA}
+                    "prompt": prompt, "response_schema": RESPONSE_SCHEMA,
+                    "evaluation_profile": self.evaluation_profile}
         key = digest(settings)
         response_path = self.output_dir / "cache" / "evaluation" / f"{key}.json"
         if response_path.exists():
@@ -251,11 +261,12 @@ class BLSPipeline:
             payload = json.loads(cached["output_text"])
         except (ValueError, TypeError) as exc:
             raise InvalidResponse(f"採点応答がJSONではありません。応答保存先: {response_path}") from exc
-        result = validate_response(text, payload, device_reference=reference)
+        result = validate_response(text, payload, device_reference=reference, evaluation_profile=self.evaluation_profile)
         if not response_path.exists():
             write_json(response_path, cached)
         extra = {"speech_separation": separate_speech(text, reference)} if reference is not None else {}
         return {"evaluation": result.to_dict(), "model_response": payload, "transcript": text, **extra,
+                "evaluation_profile": self.evaluation_profile, "word_annotations": word_annotations or [],
                 "transcript_sha256": digest(text.encode()), "evaluation_model": self.evaluation_model,
                 "cache_key": key, "response_path": str(response_path), "created_at": cached["created_at"]}
 
@@ -266,6 +277,9 @@ class BLSPipeline:
         sha = file_digest(path)
         config = {"language_codes": ["ja-JP"], "custom_vocabulary": self.vocabulary,
                   "mode": {"type": "verbatim"}}
+        if self.transcription_profile == "speakers":
+            config.pop("custom_vocabulary")
+            config["mode"].update(diarization_mode="speaker", timestamp_granularities=["word"])
         settings = {"input_sha256": sha, "model": self.transcription_model, "config": config,
                     "conversion": "ffmpeg-mono-16k-pcm-v1" if path.suffix.lower() in VIDEO_TYPES else "original"}
         key = digest(settings)
@@ -274,6 +288,9 @@ class BLSPipeline:
             cached = read_json(cache_path)
             if cached["settings"] != settings or not cached.get("text", "").strip():
                 raise InvalidResponse("文字起こしキャッシュが不正です")
+            if (self.transcription_profile == "speakers" and cached.get("word_annotations") !=
+                    extract_word_annotations(cached["raw_response"], cached["text"])):
+                raise InvalidResponse("話者注釈のキャッシュが原応答と一致しません")
             return cached
         client = self._client()
         uploaded = None
@@ -299,6 +316,12 @@ class BLSPipeline:
                     warnings.warn("Gemini上の一時ファイルを削除できませんでした。Files APIで確認してください")
         cached = {"key": key, "settings": settings, "source_path": str(path), "input_sha256": sha,
                   "created_at": now_iso(), "text": response.output_text.strip(), "raw_response": self._raw(response)}
+        if self.transcription_profile == "speakers":
+            try:
+                cached["word_annotations"] = extract_word_annotations(cached["raw_response"], cached["text"])
+            except (ValueError, TypeError, KeyError):
+                write_json(self.output_dir / "responses" / f"transcription_{key}_{uuid.uuid4().hex}.json", cached)
+                raise
         write_json(cache_path, cached)
         atomic_text(cache_path.with_suffix(".txt"), cached["text"] + "\n")
         return cached
@@ -336,7 +359,7 @@ class BLSPipeline:
         is_text = path.suffix.lower() == ".txt"
         transcription = None if is_text else self.transcribe(path)
         text = path.read_text(encoding="utf-8") if is_text else transcription["text"]
-        document = self.evaluate_text(text)
+        document = self.evaluate_text(text, word_annotations=(transcription or {}).get("word_annotations"))
         return self.export(document, sample_id=path.stem, source_path=str(path),
                            input_sha256=file_digest(path), source_kind="text" if is_text else "audio",
                            transcription=transcription)
@@ -361,6 +384,7 @@ class BLSPipeline:
         run_path = self.output_dir / "runs" / f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_{uuid.uuid4().hex[:12]}.json"
         run = {"created_at": now_iso(), "status": "running", "run_path": str(run_path),
                "vocabulary": self.vocabulary_name,
+               "evaluation_profile": self.evaluation_profile, "transcription_profile": self.transcription_profile,
                "stage": "transcription" if transcription_only else "evaluation",
                "inputs": [str(p) for p in resolved], "results": [], "errors": [], "pending": [str(p) for p in resolved]}
         write_json(run_path, run)

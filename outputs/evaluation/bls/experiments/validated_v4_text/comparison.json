@@ -1,0 +1,84 @@
+{
+  "created_at": "2026-09-17T09:07:19.410041+00:00",
+  "baseline_run": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260912T080745_203a5127bc81.json",
+  "manifest": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/gold_20260706_complete.json",
+  "stages": [
+    {
+      "stage": "counts",
+      "settings": {
+        "evaluation_profile": "counts",
+        "vocabulary": "revised"
+      },
+      "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260917T090719_6b59f5d2aa1c.json",
+      "status": "completed",
+      "score_mae": 3.0649999999999977,
+      "micro": {
+        "tp": 342,
+        "fp": 0,
+        "fn": 11,
+        "tn": 7,
+        "uncertain": 5,
+        "validator_rejections": 5,
+        "precision": 1.0,
+        "recall": 0.9688385269121813,
+        "f1": 0.9841726618705036
+      },
+      "comparable": true,
+      "improves_baseline": true,
+      "mae_delta": -1.1150000000000002,
+      "false_positive_delta": 0
+    },
+    {
+      "stage": "improved",
+      "settings": {
+        "evaluation_profile": "improved",
+        "vocabulary": "revised"
+      },
+      "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260917T090724_17cd42cadfc0.json",
+      "status": "completed",
+      "score_mae": 2.789999999999998,
+      "micro": {
+        "tp": 343,
+        "fp": 0,
+        "fn": 10,
+        "tn": 7,
+        "uncertain": 4,
+        "validator_rejections": 3,
+        "precision": 1.0,
+        "recall": 0.9716713881019831,
+        "f1": 0.985632183908046
+      },
+      "comparable": true,
+      "improves_baseline": true,
+      "mae_delta": -1.3900000000000001,
+      "false_positive_delta": 0
+    },
+    {
+      "stage": "vocabulary",
+      "settings": {
+        "evaluation_profile": "improved",
+        "vocabulary": "targeted"
+      },
+      "run_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260917T090729_01517e7ac18c.json",
+      "status": "completed",
+      "score_mae": 1.6749999999999985,
+      "micro": {
+        "tp": 347,
+        "fp": 0,
+        "fn": 6,
+        "tn": 7,
+        "uncertain": 3,
+        "validator_rejections": 2,
+        "precision": 1.0,
+        "recall": 0.9830028328611898,
+        "f1": 0.9914285714285714
+      },
+      "comparable": true,
+      "improves_baseline": true,
+      "mae_delta": -2.5049999999999994,
+      "false_positive_delta": 0
+    }
+  ],
+  "limitations": "同一収録日で既に探索済みの20本。独立した汎化評価ではない。規則テストの合格も採用条件。",
+  "best_completed_stage": "vocabulary"
+}

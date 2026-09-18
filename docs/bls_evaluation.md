@@ -24,7 +24,7 @@ Geminiが出した状態を`model_status`に、検証後の状態を`status`に�
 - 「脈なし、呼吸なし」は9・10の両方の根拠にできます。
 - 11・16は圧迫回数の数唱があれば対象です。30回完遂や再開宣言は要求しません。
 - 14の交代合図を圧迫の数唱として重複加点しません。11・16も別の数唱を必要とします。
-- 15には後続のショック、16には先行するショック完了の根拠を要求します。
+- 15には後続のショックの根拠を要求します。16は11とは別場面の圧迫数唱を評価し、ショック完了の明示・ショックとの前後位置は要求しません。数唱が1場面だけの場合は11のみの対象です。同じ連続数唱を別々の引用に分割して11・16へ加点しません。
 - 17は救急隊へ引き継ぐ想定で経緯を説明できれば対象で、説明内容の正確性は問いません。
 - AED機器の音声・指導者の助言は加点せず、時間順序の補助根拠にだけ使用できます。
 
@@ -43,6 +43,16 @@ Geminiが出した状態を`model_status`に、検証後の状態を`status`に�
 人が音声を確認して作成したTXTでは、行頭の`参加者: `、`参加者1: `、`人間: `、`救助者: `、`AED: `、`LED: `、`機器: `、`指導者: `、`不明: `（`[参加者]`・`【参加者】`等も可）を優先します。ラベルはその行だけに適用します。`指導者`と`不明`の行は直接の加点に使いません。参照と一致しないだけでは人間だと確定せず、指導者などの除外は採点モデルでも続けます。
 根拠の`start`・`end`は原文の文字位置（Pythonの文字列添字、終了側を含まない）で、音声の秒数ではありません。
 欠落したコールを評価器が推測で補うことはありません。
+
+`--evaluation-profile improved`（既定）は、離隔指示と機器案内の対応を同じAED操作場面内で確認します。固定の前後2セグメントだけには限定せず、「はい、離れてください」の付加語も照合を妨げません。別のショック周期や圧迫再開後の機器案内は流用しません。機器のみの案内や話者不明の発言は引き続き加点しません。`counts`は項目16の変更を適用し、項目15には従来の照合を使用する比較設定です。
+
+### 語彙・話者識別の比較
+
+`--vocabulary targeted`はrevisedの9語に「傷病者発見」「AEDを使えますか」「使えません」を追加します。20本の比較で改善を確認したため、CLI・Python・ノートブックの既定値に採用しました。従来の9語は`--vocabulary revised`で再現できます。
+
+`--transcription-profile speakers --vocabulary none`では逐語モードで話者IDと単語時刻を取得します。カスタム語彙との併用はAPI呼び出し前にエラーにします。これは[公式仕様の制約](https://ai.google.dev/gemini-api/docs/transcribe#custom-vocabulary)です。単語時刻の取得自体が文字起こし精度を下げる場合もあるため、別実験として比較します。
+
+結果の`word_annotations`には原文の文字位置`start/end`と、音声の秒数`start_seconds/end_seconds`、`speaker`、取得元を保存します。原文に対応付けられない注釈や不正な時刻は採点せず、処理失敗として記録します。話者IDだけで参加者と断定せず、採点モデルへ役割判定の補助情報として渡します。参照一致による機器分類を話者IDだけで自動的に参加者へ変更することはありません。
 
 公式仕様: [文字起こし](https://ai.google.dev/gemini-api/docs/transcribe)、[構造化出力](https://ai.google.dev/gemini-api/docs/structured-output)。
 
@@ -204,6 +214,42 @@ uv run python scripts/benchmark_bls.py report --manifest outputs/evaluation/bls/
 全項目達成例だけでは誤加点を評価できないため、未達成のラベルと陰性の合成テストも必要です。
 既知4本の自動100点は精度目標であり、期待点への補正や人の修正を自動精度に混ぜません。
 同一収録日の20本であり、別の日・話者・環境への一般化精度を示すものではありません。
+
+## revised3からの段階比較
+
+2026-09-18時点の比較では、revised3のMAE 4.180点に対して、数唱変更のみ3.065点、離隔指示の改善込み2.790点、追加語彙込み1.675点でした。追加語彙設定は見逃し6件・誤加点0件、模範点数との一致は14/20本です。CLI・Python・ノートブックの既定値は`improved`＋`targeted`です。
+
+詳細は`outputs/evaluation/bls/experiments/final_20260918/comparison.md`、採用設定の点数一覧は`outputs/evaluation/bls/summaries/improved_scores_20260918.txt`です。話者識別設定は19本で採点できましたが、20回目の単語時刻が再取得でも逆転していたため全20本の比較は未完了で、既定値には採用していません。人手で確認した逐語録の作成は未実施で、残る6件の確認用マニフェストは`outputs/evaluation/bls/review_improved_20260706.json`です。
+
+次のコマンドは正解CSVを新しいマニフェストへ読み込み、旧結果を固定したまま4設定を比較します。既存ファイルを上書きしないため、再実行時は新しい実験ディレクトリを指定してください。推論キャッシュは標準の`outputs/evaluation/bls/cache/`で共有します。
+
+```bash
+uv run python scripts/benchmark_bls.py import-scores \
+  --manifest outputs/evaluation/bls/gold_20260706.json \
+  --output outputs/evaluation/bls/gold_20260706_complete.json
+
+uv run python scripts/compare_bls.py \
+  --manifest outputs/evaluation/bls/gold_20260706_complete.json \
+  --baseline-run outputs/evaluation/bls/runs/20260912T080745_203a5127bc81.json \
+  --output outputs/evaluation/bls/experiments/new_comparison
+```
+
+`--dry-run`は保存・API呼び出しを行いません。`--stages counts improved`なら文字起こしを固定した2設定、`--stages vocabulary speakers`なら語彙・話者情報の実験だけを実行します。全4設定では、キャッシュのない場合は文字起こし最大60回（counts/improvedの同じ文字起こしは共有）、採点最大80回です。既存revised文字起こしを使える場合、新たな文字起こしは最大40回です。再試行は別途上限に計上します。
+
+各段階のrun、項目別のFN/FP/F1・判定不能率・検証器の却下件数・点数MAEを保存します。`comparison.json`の`improves_baseline`は、全音声の比較が完了し、FPを増やさずMAEが基準より小さい場合だけtrueになります。設定の自動切り替えはせず、陰性の回帰テストも含めて採用します。
+
+旧版の結果を現在の検証コードで再判定せず集計するときは、`benchmark_bls.py report --saved-results`を使います。これは保存時点のスコア・項目・原文ハッシュの整合性を確認する比較用モードで、現在の検証器で検証済みという意味ではありません。通常のreportは従来どおり再検証します。
+
+人が音声を確認するための作業用マニフェストも作れます。
+
+```bash
+uv run python scripts/benchmark_bls.py review \
+  --manifest outputs/evaluation/bls/gold_20260706_complete.json \
+  --run outputs/evaluation/bls/runs/20260912T080745_203a5127bc81.json \
+  --output outputs/evaluation/bls/review_20260706.json
+```
+
+`review`には不一致項目とASR原文を保存し、`reference_text`は自動入力しません。人が音声を確認して全文逐語録と根拠を記入した後、既存の`references`と`report --reference-run`でASR由来か採点由来かを比較できます。模範CSV・人の逐語録を自動採点への点数補正に使いません。
 
 ## オフライン検証
 

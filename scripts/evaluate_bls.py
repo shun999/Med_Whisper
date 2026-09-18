@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.bls_pipeline import (  # noqa: E402
-    BLSPipeline, DEVICE_REFERENCE, EVALUATION_MODEL, EVALUATION_RPD, EVALUATION_RPM, TRANSCRIBE_MODEL,
+    BLSPipeline, DEFAULT_VOCABULARY, DEVICE_REFERENCE, EVALUATION_MODEL, EVALUATION_RPD, EVALUATION_RPM, TRANSCRIBE_MODEL,
     TRANSCRIPTION_RPD, TRANSCRIPTION_RPM, MIME_TYPES, VIDEO_TYPES, read_json,
 )
 from src.bls_summary import HUMAN_SCORES_CSV  # noqa: E402
@@ -16,7 +16,11 @@ def pipeline_arguments(parser):
     parser.add_argument("--output-dir", type=Path, default=None)
     parser.add_argument("--evaluation-model", default=EVALUATION_MODEL)
     parser.add_argument("--transcription-model", default=TRANSCRIBE_MODEL)
-    parser.add_argument("--vocabulary", choices=["baseline", "revised"], default="revised")
+    parser.add_argument("--vocabulary", choices=["baseline", "revised", "targeted", "none"], default=DEFAULT_VOCABULARY)
+    parser.add_argument("--evaluation-profile", choices=["counts", "improved"], default="improved",
+                        help="counts: 数唱基準のみ変更 / improved: AED操作場面の照合も変更")
+    parser.add_argument("--transcription-profile", choices=["standard", "speakers"], default="standard",
+                        help="speakersは話者ID・単語時刻を取得（--vocabulary none必須）")
     parser.add_argument("--device-reference", type=Path, default=DEVICE_REFERENCE,
                         help="機器音声の参照TXT（既定: data/LED音声人間文字起こし.txt）")
     parser.add_argument("--human-scores-csv", type=Path, default=HUMAN_SCORES_CSV,
@@ -33,7 +37,8 @@ def pipeline_arguments(parser):
 
 def make_pipeline(args):
     names = ("output_dir", "evaluation_model", "transcription_model", "vocabulary", "quota_scope",
-             "transcription_rpm", "transcription_rpd", "evaluation_rpm", "evaluation_rpd", "device_reference", "human_scores_csv")
+             "transcription_rpm", "transcription_rpd", "evaluation_rpm", "evaluation_rpd", "device_reference", "human_scores_csv",
+             "evaluation_profile", "transcription_profile")
     return BLSPipeline(**{name: getattr(args, name) for name in names})
 
 

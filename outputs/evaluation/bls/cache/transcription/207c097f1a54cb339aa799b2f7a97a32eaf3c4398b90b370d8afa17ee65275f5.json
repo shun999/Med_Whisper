@@ -1,0 +1,5377 @@
+{
+  "key": "207c097f1a54cb339aa799b2f7a97a32eaf3c4398b90b370d8afa17ee65275f5",
+  "settings": {
+    "input_sha256": "585f1bc377e18231e4eb30091c4f6219b63ce83cf3c7633cd979fe28f8535631",
+    "model": "gemini-3.5-transcribe",
+    "config": {
+      "language_codes": [
+        "ja-JP"
+      ],
+      "mode": {
+        "type": "verbatim",
+        "diarization_mode": "speaker",
+        "timestamp_granularities": [
+          "word"
+        ]
+      }
+    },
+    "conversion": "original"
+  },
+  "source_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/20260706/20260706_10回目.wav",
+  "input_sha256": "585f1bc377e18231e4eb30091c4f6219b63ce83cf3c7633cd979fe28f8535631",
+  "created_at": "2026-09-17T09:01:36.622947+00:00",
+  "text": "商業施設発見。周囲安全です。感染防護に入るします。大丈夫ですか。大丈夫ですか。大丈夫ですか。誰か誰か誰か来てください。はい。あなたは 119番通報お願いします。あなた AEDも来てください。必ずここに戻って来てください。胸とお腹を見て呼吸の確認、同時に脈の確認。呼吸脈ありません。胸骨圧迫開始します。 2 3 4 5 6 7 8 9 10 2 2 3 4 5 6 7 8 9 10 3 2 3 4 5 6 7 8 9 10AED持ってきました。ありがとうございます。あなた AED使いますか。使わないです。あ、じゃあ胸骨圧迫を代わってください。はい。あ、 AED頭の方に置いてください。はい。肘を 3で変わります。 1 2 3充電中、解析中です。体に触れないでください。じゃあ離れてください。ショックが必要です。充電中です。体から離れてください。ショックを実行します。ショックが完了しました。一時中断中です。5 6 7 8 9 10あなたの胸骨を圧迫と人工呼吸をしてください。2 3 5 6 7 8 9 10 3 2 3あ、救急隊隊員の方この方 3分前に目の前で倒れるのを見ました。えっと胸骨圧迫をして AEDで 1回ショックしましたけどもえっとまだ意識戻っていません。え、この方の身元は分からないんですけども足元にこの方の荷物あります。引き継ぎます。 1 2 3",
+  "raw_response": {
+    "status": "completed",
+    "created": "2026-09-17T09:01:32Z",
+    "id": "v1_ChdiS3lyYW9tekVLRGFyZmNQcGJxU3lRVRIXYkt5cmFvbXpFS0RhcmZjUHBicVN5UVU",
+    "model": "gemini-3.5-transcribe",
+    "output_text": "商業施設発見。周囲安全です。感染防護に入るします。大丈夫ですか。大丈夫ですか。大丈夫ですか。誰か誰か誰か来てください。はい。あなたは 119番通報お願いします。あなた AEDも来てください。必ずここに戻って来てください。胸とお腹を見て呼吸の確認、同時に脈の確認。呼吸脈ありません。胸骨圧迫開始します。 2 3 4 5 6 7 8 9 10 2 2 3 4 5 6 7 8 9 10 3 2 3 4 5 6 7 8 9 10AED持ってきました。ありがとうございます。あなた AED使いますか。使わないです。あ、じゃあ胸骨圧迫を代わってください。はい。あ、 AED頭の方に置いてください。はい。肘を 3で変わります。 1 2 3充電中、解析中です。体に触れないでください。じゃあ離れてください。ショックが必要です。充電中です。体から離れてください。ショックを実行します。ショックが完了しました。一時中断中です。5 6 7 8 9 10あなたの胸骨を圧迫と人工呼吸をしてください。2 3 5 6 7 8 9 10 3 2 3あ、救急隊隊員の方この方 3分前に目の前で倒れるのを見ました。えっと胸骨圧迫をして AEDで 1回ショックしましたけどもえっとまだ意識戻っていません。え、この方の身元は分からないんですけども足元にこの方の荷物あります。引き継ぎます。 1 2 3",
+    "service_tier": "standard",
+    "steps": [
+      {
+        "content": [
+          {
+            "text": "商業施設発見。周囲安全です。感染防護に入るします。大丈夫ですか。大丈夫ですか。大丈夫ですか。誰か誰か誰か来てください。はい。あなたは 119番通報お願いします。あなた AEDも来てください。必ずここに戻って来てください。胸とお腹を見て呼吸の確認、同時に脈の確認。呼吸脈ありません。胸骨圧迫開始します。 2 3 4 5 6 7 8 9 10 2 2 3 4 5 6 7 8 9 10 3 2 3 4 5 6 7 8 9 10AED持ってきました。ありがとうございます。あなた AED使いますか。使わないです。あ、じゃあ胸骨圧迫を代わってください。はい。あ、 AED頭の方に置いてください。はい。肘を 3で変わります。 1 2 3充電中、解析中です。体に触れないでください。じゃあ離れてください。ショックが必要です。充電中です。体から離れてください。ショックを実行します。ショックが完了しました。一時中断中です。5 6 7 8 9 10あなたの胸骨を圧迫と人工呼吸をしてください。2 3 5 6 7 8 9 10 3 2 3あ、救急隊隊員の方この方 3分前に目の前で倒れるのを見ました。えっと胸骨圧迫をして AEDで 1回ショックしましたけどもえっとまだ意識戻っていません。え、この方の身元は分からないんですけども足元にこの方の荷物あります。引き継ぎます。 1 2 3",
+            "annotations": [
+              {
+                "end_index": 6,
+                "end_offset": "1.900s",
+                "speaker": "spk:0",
+                "start_index": 0,
+                "start_offset": "1.800s",
+                "text": "商業",
+                "type": "word_info"
+              },
+              {
+                "end_index": 12,
+                "end_offset": "2.100s",
+                "speaker": "spk:0",
+                "start_index": 6,
+                "start_offset": "1.900s",
+                "text": "施設",
+                "type": "word_info"
+              },
+              {
+                "end_index": 21,
+                "end_offset": "2.600s",
+                "speaker": "spk:0",
+                "start_index": 12,
+                "start_offset": "2.100s",
+                "text": "発見。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 27,
+                "end_offset": "3.200s",
+                "speaker": "spk:0",
+                "start_index": 21,
+                "start_offset": "2.900s",
+                "text": "周囲",
+                "type": "word_info"
+              },
+              {
+                "end_index": 33,
+                "end_offset": "3.500s",
+                "speaker": "spk:0",
+                "start_index": 27,
+                "start_offset": "3.200s",
+                "text": "安全",
+                "type": "word_info"
+              },
+              {
+                "end_index": 42,
+                "end_offset": "3.800s",
+                "speaker": "spk:0",
+                "start_index": 33,
+                "start_offset": "3.500s",
+                "text": "です。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 48,
+                "end_offset": "4.200s",
+                "speaker": "spk:0",
+                "start_index": 42,
+                "start_offset": "3.900s",
+                "text": "感染",
+                "type": "word_info"
+              },
+              {
+                "end_index": 54,
+                "end_offset": "4.400s",
+                "speaker": "spk:0",
+                "start_index": 48,
+                "start_offset": "4.200s",
+                "text": "防護",
+                "type": "word_info"
+              },
+              {
+                "end_index": 57,
+                "end_offset": "4.500s",
+                "speaker": "spk:0",
+                "start_index": 54,
+                "start_offset": "4.400s",
+                "text": "に",
+                "type": "word_info"
+              },
+              {
+                "end_index": 63,
+                "end_offset": "4.900s",
+                "speaker": "spk:0",
+                "start_index": 57,
+                "start_offset": "4.500s",
+                "text": "入る",
+                "type": "word_info"
+              },
+              {
+                "end_index": 66,
+                "end_offset": "5s",
+                "speaker": "spk:0",
+                "start_index": 63,
+                "start_offset": "4.900s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 75,
+                "end_offset": "5.200s",
+                "speaker": "spk:0",
+                "start_index": 66,
+                "start_offset": "5s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 84,
+                "end_offset": "7.800s",
+                "speaker": "spk:0",
+                "start_index": 75,
+                "start_offset": "7.400s",
+                "text": "大丈夫",
+                "type": "word_info"
+              },
+              {
+                "end_index": 90,
+                "end_offset": "8s",
+                "speaker": "spk:0",
+                "start_index": 84,
+                "start_offset": "7.800s",
+                "text": "です",
+                "type": "word_info"
+              },
+              {
+                "end_index": 96,
+                "end_offset": "8.300s",
+                "speaker": "spk:0",
+                "start_index": 90,
+                "start_offset": "8s",
+                "text": "か。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 105,
+                "end_offset": "9.100s",
+                "speaker": "spk:0",
+                "start_index": 96,
+                "start_offset": "8.800s",
+                "text": "大丈夫",
+                "type": "word_info"
+              },
+              {
+                "end_index": 111,
+                "end_offset": "9.200s",
+                "speaker": "spk:0",
+                "start_index": 105,
+                "start_offset": "9.100s",
+                "text": "です",
+                "type": "word_info"
+              },
+              {
+                "end_index": 117,
+                "end_offset": "9.400s",
+                "speaker": "spk:0",
+                "start_index": 111,
+                "start_offset": "9.200s",
+                "text": "か。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 126,
+                "end_offset": "10.200s",
+                "speaker": "spk:0",
+                "start_index": 117,
+                "start_offset": "9.900s",
+                "text": "大丈夫",
+                "type": "word_info"
+              },
+              {
+                "end_index": 132,
+                "end_offset": "10.300s",
+                "speaker": "spk:0",
+                "start_index": 126,
+                "start_offset": "10.200s",
+                "text": "です",
+                "type": "word_info"
+              },
+              {
+                "end_index": 138,
+                "end_offset": "10.400s",
+                "speaker": "spk:0",
+                "start_index": 132,
+                "start_offset": "10.300s",
+                "text": "か。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 141,
+                "end_offset": "11.600s",
+                "speaker": "spk:0",
+                "start_index": 138,
+                "start_offset": "11.500s",
+                "text": "誰",
+                "type": "word_info"
+              },
+              {
+                "end_index": 144,
+                "end_offset": "11.700s",
+                "speaker": "spk:0",
+                "start_index": 141,
+                "start_offset": "11.600s",
+                "text": "か",
+                "type": "word_info"
+              },
+              {
+                "end_index": 147,
+                "end_offset": "11.900s",
+                "speaker": "spk:0",
+                "start_index": 144,
+                "start_offset": "11.700s",
+                "text": "誰",
+                "type": "word_info"
+              },
+              {
+                "end_index": 150,
+                "end_offset": "12s",
+                "speaker": "spk:0",
+                "start_index": 147,
+                "start_offset": "11.900s",
+                "text": "か",
+                "type": "word_info"
+              },
+              {
+                "end_index": 153,
+                "end_offset": "12.200s",
+                "speaker": "spk:0",
+                "start_index": 150,
+                "start_offset": "12s",
+                "text": "誰",
+                "type": "word_info"
+              },
+              {
+                "end_index": 156,
+                "end_offset": "12.300s",
+                "speaker": "spk:0",
+                "start_index": 153,
+                "start_offset": "12.200s",
+                "text": "か",
+                "type": "word_info"
+              },
+              {
+                "end_index": 159,
+                "end_offset": "12.400s",
+                "speaker": "spk:0",
+                "start_index": 156,
+                "start_offset": "12.300s",
+                "text": "来",
+                "type": "word_info"
+              },
+              {
+                "end_index": 162,
+                "end_offset": "12.500s",
+                "speaker": "spk:0",
+                "start_index": 159,
+                "start_offset": "12.400s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 177,
+                "end_offset": "12.900s",
+                "speaker": "spk:0",
+                "start_index": 162,
+                "start_offset": "12.500s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 186,
+                "end_offset": "13.200s",
+                "speaker": "spk:1",
+                "start_index": 177,
+                "start_offset": "13.100s",
+                "text": "はい。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 195,
+                "end_offset": "13.900s",
+                "speaker": "spk:0",
+                "start_index": 186,
+                "start_offset": "13.600s",
+                "text": "あなた",
+                "type": "word_info"
+              },
+              {
+                "end_index": 198,
+                "end_offset": "13.900s",
+                "speaker": "spk:0",
+                "start_index": 195,
+                "start_offset": "13.900s",
+                "text": "は",
+                "type": "word_info"
+              },
+              {
+                "end_index": 202,
+                "end_offset": "14.500s",
+                "speaker": "spk:0",
+                "start_index": 199,
+                "start_offset": "13.900s",
+                "text": "119",
+                "type": "word_info"
+              },
+              {
+                "end_index": 205,
+                "end_offset": "14.600s",
+                "speaker": "spk:0",
+                "start_index": 202,
+                "start_offset": "14.500s",
+                "text": "番",
+                "type": "word_info"
+              },
+              {
+                "end_index": 211,
+                "end_offset": "15s",
+                "speaker": "spk:0",
+                "start_index": 205,
+                "start_offset": "14.600s",
+                "text": "通報",
+                "type": "word_info"
+              },
+              {
+                "end_index": 214,
+                "end_offset": "15s",
+                "speaker": "spk:0",
+                "start_index": 211,
+                "start_offset": "15s",
+                "text": "お",
+                "type": "word_info"
+              },
+              {
+                "end_index": 220,
+                "end_offset": "15.300s",
+                "speaker": "spk:0",
+                "start_index": 214,
+                "start_offset": "15s",
+                "text": "願い",
+                "type": "word_info"
+              },
+              {
+                "end_index": 223,
+                "end_offset": "15.400s",
+                "speaker": "spk:0",
+                "start_index": 220,
+                "start_offset": "15.300s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 232,
+                "end_offset": "15.700s",
+                "speaker": "spk:0",
+                "start_index": 223,
+                "start_offset": "15.400s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 241,
+                "end_offset": "16.300s",
+                "speaker": "spk:0",
+                "start_index": 232,
+                "start_offset": "16s",
+                "text": "あなた",
+                "type": "word_info"
+              },
+              {
+                "end_index": 245,
+                "end_offset": "16.800s",
+                "speaker": "spk:0",
+                "start_index": 242,
+                "start_offset": "16.400s",
+                "text": "AED",
+                "type": "word_info"
+              },
+              {
+                "end_index": 248,
+                "end_offset": "16.900s",
+                "speaker": "spk:0",
+                "start_index": 245,
+                "start_offset": "16.800s",
+                "text": "も",
+                "type": "word_info"
+              },
+              {
+                "end_index": 251,
+                "end_offset": "17.100s",
+                "speaker": "spk:0",
+                "start_index": 248,
+                "start_offset": "16.900s",
+                "text": "来",
+                "type": "word_info"
+              },
+              {
+                "end_index": 254,
+                "end_offset": "17.200s",
+                "speaker": "spk:0",
+                "start_index": 251,
+                "start_offset": "17.100s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 269,
+                "end_offset": "17.600s",
+                "speaker": "spk:0",
+                "start_index": 254,
+                "start_offset": "17.200s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 275,
+                "end_offset": "18.200s",
+                "speaker": "spk:0",
+                "start_index": 269,
+                "start_offset": "17.800s",
+                "text": "必ず",
+                "type": "word_info"
+              },
+              {
+                "end_index": 281,
+                "end_offset": "18.400s",
+                "speaker": "spk:0",
+                "start_index": 275,
+                "start_offset": "18.200s",
+                "text": "ここ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 284,
+                "end_offset": "18.400s",
+                "speaker": "spk:0",
+                "start_index": 281,
+                "start_offset": "18.400s",
+                "text": "に",
+                "type": "word_info"
+              },
+              {
+                "end_index": 290,
+                "end_offset": "18.700s",
+                "speaker": "spk:0",
+                "start_index": 284,
+                "start_offset": "18.400s",
+                "text": "戻っ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 293,
+                "end_offset": "18.800s",
+                "speaker": "spk:0",
+                "start_index": 290,
+                "start_offset": "18.700s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 296,
+                "end_offset": "18.900s",
+                "speaker": "spk:0",
+                "start_index": 293,
+                "start_offset": "18.800s",
+                "text": "来",
+                "type": "word_info"
+              },
+              {
+                "end_index": 299,
+                "end_offset": "18.900s",
+                "speaker": "spk:0",
+                "start_index": 296,
+                "start_offset": "18.900s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 314,
+                "end_offset": "19.300s",
+                "speaker": "spk:0",
+                "start_index": 299,
+                "start_offset": "18.900s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 317,
+                "end_offset": "25.100s",
+                "speaker": "spk:0",
+                "start_index": 314,
+                "start_offset": "24.900s",
+                "text": "胸",
+                "type": "word_info"
+              },
+              {
+                "end_index": 320,
+                "end_offset": "25.200s",
+                "speaker": "spk:0",
+                "start_index": 317,
+                "start_offset": "25.100s",
+                "text": "と",
+                "type": "word_info"
+              },
+              {
+                "end_index": 323,
+                "end_offset": "25.300s",
+                "speaker": "spk:0",
+                "start_index": 320,
+                "start_offset": "25.200s",
+                "text": "お",
+                "type": "word_info"
+              },
+              {
+                "end_index": 326,
+                "end_offset": "25.600s",
+                "speaker": "spk:0",
+                "start_index": 323,
+                "start_offset": "25.300s",
+                "text": "腹",
+                "type": "word_info"
+              },
+              {
+                "end_index": 329,
+                "end_offset": "25.700s",
+                "speaker": "spk:0",
+                "start_index": 326,
+                "start_offset": "25.600s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 332,
+                "end_offset": "25.800s",
+                "speaker": "spk:0",
+                "start_index": 329,
+                "start_offset": "25.700s",
+                "text": "見",
+                "type": "word_info"
+              },
+              {
+                "end_index": 335,
+                "end_offset": "25.900s",
+                "speaker": "spk:0",
+                "start_index": 332,
+                "start_offset": "25.800s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 341,
+                "end_offset": "26.300s",
+                "speaker": "spk:0",
+                "start_index": 335,
+                "start_offset": "25.900s",
+                "text": "呼吸",
+                "type": "word_info"
+              },
+              {
+                "end_index": 344,
+                "end_offset": "26.400s",
+                "speaker": "spk:0",
+                "start_index": 341,
+                "start_offset": "26.300s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 353,
+                "end_offset": "26.800s",
+                "speaker": "spk:0",
+                "start_index": 344,
+                "start_offset": "26.400s",
+                "text": "確認、",
+                "type": "word_info"
+              },
+              {
+                "end_index": 359,
+                "end_offset": "27.200s",
+                "speaker": "spk:0",
+                "start_index": 353,
+                "start_offset": "26.800s",
+                "text": "同時",
+                "type": "word_info"
+              },
+              {
+                "end_index": 362,
+                "end_offset": "27.400s",
+                "speaker": "spk:0",
+                "start_index": 359,
+                "start_offset": "27.200s",
+                "text": "に",
+                "type": "word_info"
+              },
+              {
+                "end_index": 365,
+                "end_offset": "27.600s",
+                "speaker": "spk:0",
+                "start_index": 362,
+                "start_offset": "27.400s",
+                "text": "脈",
+                "type": "word_info"
+              },
+              {
+                "end_index": 368,
+                "end_offset": "27.800s",
+                "speaker": "spk:0",
+                "start_index": 365,
+                "start_offset": "27.600s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 377,
+                "end_offset": "28.300s",
+                "speaker": "spk:0",
+                "start_index": 368,
+                "start_offset": "27.800s",
+                "text": "確認。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 383,
+                "end_offset": "31s",
+                "speaker": "spk:0",
+                "start_index": 377,
+                "start_offset": "30.700s",
+                "text": "呼吸",
+                "type": "word_info"
+              },
+              {
+                "end_index": 386,
+                "end_offset": "31.300s",
+                "speaker": "spk:0",
+                "start_index": 383,
+                "start_offset": "31s",
+                "text": "脈",
+                "type": "word_info"
+              },
+              {
+                "end_index": 392,
+                "end_offset": "31.400s",
+                "speaker": "spk:0",
+                "start_index": 386,
+                "start_offset": "31.300s",
+                "text": "あり",
+                "type": "word_info"
+              },
+              {
+                "end_index": 398,
+                "end_offset": "31.700s",
+                "speaker": "spk:0",
+                "start_index": 392,
+                "start_offset": "31.400s",
+                "text": "ませ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 404,
+                "end_offset": "31.800s",
+                "speaker": "spk:0",
+                "start_index": 398,
+                "start_offset": "31.700s",
+                "text": "ん。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 410,
+                "end_offset": "32.400s",
+                "speaker": "spk:0",
+                "start_index": 404,
+                "start_offset": "32.100s",
+                "text": "胸骨",
+                "type": "word_info"
+              },
+              {
+                "end_index": 416,
+                "end_offset": "32.600s",
+                "speaker": "spk:0",
+                "start_index": 410,
+                "start_offset": "32.400s",
+                "text": "圧迫",
+                "type": "word_info"
+              },
+              {
+                "end_index": 422,
+                "end_offset": "32.800s",
+                "speaker": "spk:0",
+                "start_index": 416,
+                "start_offset": "32.600s",
+                "text": "開始",
+                "type": "word_info"
+              },
+              {
+                "end_index": 425,
+                "end_offset": "32.800s",
+                "speaker": "spk:0",
+                "start_index": 422,
+                "start_offset": "32.800s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 434,
+                "end_offset": "33s",
+                "speaker": "spk:0",
+                "start_index": 425,
+                "start_offset": "32.800s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 436,
+                "end_offset": "33.600s",
+                "speaker": "spk:0",
+                "start_index": 435,
+                "start_offset": "33.400s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 438,
+                "end_offset": "34.200s",
+                "speaker": "spk:0",
+                "start_index": 437,
+                "start_offset": "33.800s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 440,
+                "end_offset": "34.600s",
+                "speaker": "spk:0",
+                "start_index": 439,
+                "start_offset": "34.400s",
+                "text": "4",
+                "type": "word_info"
+              },
+              {
+                "end_index": 442,
+                "end_offset": "35.200s",
+                "speaker": "spk:0",
+                "start_index": 441,
+                "start_offset": "34.900s",
+                "text": "5",
+                "type": "word_info"
+              },
+              {
+                "end_index": 444,
+                "end_offset": "35.800s",
+                "speaker": "spk:0",
+                "start_index": 443,
+                "start_offset": "35.500s",
+                "text": "6",
+                "type": "word_info"
+              },
+              {
+                "end_index": 446,
+                "end_offset": "36.400s",
+                "speaker": "spk:0",
+                "start_index": 445,
+                "start_offset": "35.900s",
+                "text": "7",
+                "type": "word_info"
+              },
+              {
+                "end_index": 448,
+                "end_offset": "36.900s",
+                "speaker": "spk:0",
+                "start_index": 447,
+                "start_offset": "36.500s",
+                "text": "8",
+                "type": "word_info"
+              },
+              {
+                "end_index": 450,
+                "end_offset": "37.300s",
+                "speaker": "spk:0",
+                "start_index": 449,
+                "start_offset": "37s",
+                "text": "9",
+                "type": "word_info"
+              },
+              {
+                "end_index": 453,
+                "end_offset": "37.800s",
+                "speaker": "spk:0",
+                "start_index": 451,
+                "start_offset": "37.500s",
+                "text": "10",
+                "type": "word_info"
+              },
+              {
+                "end_index": 455,
+                "end_offset": "38.400s",
+                "speaker": "spk:0",
+                "start_index": 454,
+                "start_offset": "38.100s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 457,
+                "end_offset": "38.800s",
+                "speaker": "spk:0",
+                "start_index": 456,
+                "start_offset": "38.600s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 459,
+                "end_offset": "39.500s",
+                "speaker": "spk:0",
+                "start_index": 458,
+                "start_offset": "39.100s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 461,
+                "end_offset": "40s",
+                "speaker": "spk:0",
+                "start_index": 460,
+                "start_offset": "39.600s",
+                "text": "4",
+                "type": "word_info"
+              },
+              {
+                "end_index": 463,
+                "end_offset": "40.500s",
+                "speaker": "spk:0",
+                "start_index": 462,
+                "start_offset": "40.200s",
+                "text": "5",
+                "type": "word_info"
+              },
+              {
+                "end_index": 465,
+                "end_offset": "41s",
+                "speaker": "spk:0",
+                "start_index": 464,
+                "start_offset": "40.700s",
+                "text": "6",
+                "type": "word_info"
+              },
+              {
+                "end_index": 467,
+                "end_offset": "41.600s",
+                "speaker": "spk:0",
+                "start_index": 466,
+                "start_offset": "41.200s",
+                "text": "7",
+                "type": "word_info"
+              },
+              {
+                "end_index": 469,
+                "end_offset": "42.200s",
+                "speaker": "spk:0",
+                "start_index": 468,
+                "start_offset": "41.800s",
+                "text": "8",
+                "type": "word_info"
+              },
+              {
+                "end_index": 471,
+                "end_offset": "42.600s",
+                "speaker": "spk:0",
+                "start_index": 470,
+                "start_offset": "42.300s",
+                "text": "9",
+                "type": "word_info"
+              },
+              {
+                "end_index": 474,
+                "end_offset": "43.100s",
+                "speaker": "spk:0",
+                "start_index": 472,
+                "start_offset": "42.900s",
+                "text": "10",
+                "type": "word_info"
+              },
+              {
+                "end_index": 476,
+                "end_offset": "43.700s",
+                "speaker": "spk:0",
+                "start_index": 475,
+                "start_offset": "43.400s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 478,
+                "end_offset": "44.200s",
+                "speaker": "spk:0",
+                "start_index": 477,
+                "start_offset": "44s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 480,
+                "end_offset": "44.800s",
+                "speaker": "spk:0",
+                "start_index": 479,
+                "start_offset": "44.400s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 482,
+                "end_offset": "45.200s",
+                "speaker": "spk:0",
+                "start_index": 481,
+                "start_offset": "44.900s",
+                "text": "4",
+                "type": "word_info"
+              },
+              {
+                "end_index": 484,
+                "end_offset": "45.800s",
+                "speaker": "spk:0",
+                "start_index": 483,
+                "start_offset": "45.500s",
+                "text": "5",
+                "type": "word_info"
+              },
+              {
+                "end_index": 486,
+                "end_offset": "46.500s",
+                "speaker": "spk:0",
+                "start_index": 485,
+                "start_offset": "46.100s",
+                "text": "6",
+                "type": "word_info"
+              },
+              {
+                "end_index": 488,
+                "end_offset": "47s",
+                "speaker": "spk:0",
+                "start_index": 487,
+                "start_offset": "46.600s",
+                "text": "7",
+                "type": "word_info"
+              },
+              {
+                "end_index": 490,
+                "end_offset": "47.500s",
+                "speaker": "spk:0",
+                "start_index": 489,
+                "start_offset": "47.100s",
+                "text": "8",
+                "type": "word_info"
+              },
+              {
+                "end_index": 492,
+                "end_offset": "47.800s",
+                "speaker": "spk:0",
+                "start_index": 491,
+                "start_offset": "47.600s",
+                "text": "9",
+                "type": "word_info"
+              },
+              {
+                "end_index": 495,
+                "end_offset": "48.400s",
+                "speaker": "spk:0",
+                "start_index": 493,
+                "start_offset": "48.200s",
+                "text": "10",
+                "type": "word_info"
+              },
+              {
+                "end_index": 498,
+                "end_offset": "49.400s",
+                "speaker": "spk:1",
+                "start_index": 495,
+                "start_offset": "49.100s",
+                "text": "AED",
+                "type": "word_info"
+              },
+              {
+                "end_index": 504,
+                "end_offset": "49.600s",
+                "speaker": "spk:1",
+                "start_index": 498,
+                "start_offset": "49.400s",
+                "text": "持っ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 507,
+                "end_offset": "49.700s",
+                "speaker": "spk:1",
+                "start_index": 504,
+                "start_offset": "49.600s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 510,
+                "end_offset": "49.800s",
+                "speaker": "spk:1",
+                "start_index": 507,
+                "start_offset": "49.700s",
+                "text": "き",
+                "type": "word_info"
+              },
+              {
+                "end_index": 516,
+                "end_offset": "50s",
+                "speaker": "spk:1",
+                "start_index": 510,
+                "start_offset": "49.800s",
+                "text": "まし",
+                "type": "word_info"
+              },
+              {
+                "end_index": 522,
+                "end_offset": "50s",
+                "speaker": "spk:1",
+                "start_index": 516,
+                "start_offset": "50s",
+                "text": "た。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 537,
+                "end_offset": "50.600s",
+                "speaker": "spk:0",
+                "start_index": 522,
+                "start_offset": "50.300s",
+                "text": "ありがとう",
+                "type": "word_info"
+              },
+              {
+                "end_index": 546,
+                "end_offset": "50.800s",
+                "speaker": "spk:0",
+                "start_index": 537,
+                "start_offset": "50.600s",
+                "text": "ござい",
+                "type": "word_info"
+              },
+              {
+                "end_index": 555,
+                "end_offset": "51.200s",
+                "speaker": "spk:0",
+                "start_index": 546,
+                "start_offset": "50.800s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 564,
+                "end_offset": "51.500s",
+                "speaker": "spk:0",
+                "start_index": 555,
+                "start_offset": "51.200s",
+                "text": "あなた",
+                "type": "word_info"
+              },
+              {
+                "end_index": 568,
+                "end_offset": "51.800s",
+                "speaker": "spk:0",
+                "start_index": 565,
+                "start_offset": "51.500s",
+                "text": "AED",
+                "type": "word_info"
+              },
+              {
+                "end_index": 574,
+                "end_offset": "52s",
+                "speaker": "spk:0",
+                "start_index": 568,
+                "start_offset": "51.800s",
+                "text": "使い",
+                "type": "word_info"
+              },
+              {
+                "end_index": 580,
+                "end_offset": "52.200s",
+                "speaker": "spk:0",
+                "start_index": 574,
+                "start_offset": "52s",
+                "text": "ます",
+                "type": "word_info"
+              },
+              {
+                "end_index": 586,
+                "end_offset": "52.400s",
+                "speaker": "spk:0",
+                "start_index": 580,
+                "start_offset": "52.200s",
+                "text": "か。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 592,
+                "end_offset": "52.800s",
+                "speaker": "spk:1",
+                "start_index": 586,
+                "start_offset": "52.600s",
+                "text": "使わ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 598,
+                "end_offset": "53s",
+                "speaker": "spk:1",
+                "start_index": 592,
+                "start_offset": "52.800s",
+                "text": "ない",
+                "type": "word_info"
+              },
+              {
+                "end_index": 607,
+                "end_offset": "53.100s",
+                "speaker": "spk:1",
+                "start_index": 598,
+                "start_offset": "53s",
+                "text": "です。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 613,
+                "end_offset": "53.300s",
+                "speaker": "spk:0",
+                "start_index": 607,
+                "start_offset": "53.300s",
+                "text": "あ、",
+                "type": "word_info"
+              },
+              {
+                "end_index": 622,
+                "end_offset": "53.600s",
+                "speaker": "spk:0",
+                "start_index": 613,
+                "start_offset": "53.400s",
+                "text": "じゃあ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 628,
+                "end_offset": "53.900s",
+                "speaker": "spk:0",
+                "start_index": 622,
+                "start_offset": "53.600s",
+                "text": "胸骨",
+                "type": "word_info"
+              },
+              {
+                "end_index": 634,
+                "end_offset": "54.200s",
+                "speaker": "spk:0",
+                "start_index": 628,
+                "start_offset": "53.900s",
+                "text": "圧迫",
+                "type": "word_info"
+              },
+              {
+                "end_index": 637,
+                "end_offset": "54.300s",
+                "speaker": "spk:0",
+                "start_index": 634,
+                "start_offset": "54.200s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 646,
+                "end_offset": "54.500s",
+                "speaker": "spk:0",
+                "start_index": 637,
+                "start_offset": "54.300s",
+                "text": "代わっ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 649,
+                "end_offset": "54.600s",
+                "speaker": "spk:0",
+                "start_index": 646,
+                "start_offset": "54.500s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 664,
+                "end_offset": "55s",
+                "speaker": "spk:0",
+                "start_index": 649,
+                "start_offset": "54.600s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 673,
+                "end_offset": "55.200s",
+                "speaker": "spk:1",
+                "start_index": 664,
+                "start_offset": "55.100s",
+                "text": "はい。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 679,
+                "end_offset": "55.900s",
+                "speaker": "spk:0",
+                "start_index": 673,
+                "start_offset": "55.700s",
+                "text": "あ、",
+                "type": "word_info"
+              },
+              {
+                "end_index": 683,
+                "end_offset": "56.600s",
+                "speaker": "spk:0",
+                "start_index": 680,
+                "start_offset": "56.200s",
+                "text": "AED",
+                "type": "word_info"
+              },
+              {
+                "end_index": 686,
+                "end_offset": "56.900s",
+                "speaker": "spk:0",
+                "start_index": 683,
+                "start_offset": "56.600s",
+                "text": "頭",
+                "type": "word_info"
+              },
+              {
+                "end_index": 689,
+                "end_offset": "57s",
+                "speaker": "spk:0",
+                "start_index": 686,
+                "start_offset": "56.900s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 692,
+                "end_offset": "57.100s",
+                "speaker": "spk:0",
+                "start_index": 689,
+                "start_offset": "57s",
+                "text": "方",
+                "type": "word_info"
+              },
+              {
+                "end_index": 695,
+                "end_offset": "57.200s",
+                "speaker": "spk:0",
+                "start_index": 692,
+                "start_offset": "57.100s",
+                "text": "に",
+                "type": "word_info"
+              },
+              {
+                "end_index": 701,
+                "end_offset": "57.400s",
+                "speaker": "spk:0",
+                "start_index": 695,
+                "start_offset": "57.200s",
+                "text": "置い",
+                "type": "word_info"
+              },
+              {
+                "end_index": 704,
+                "end_offset": "57.400s",
+                "speaker": "spk:0",
+                "start_index": 701,
+                "start_offset": "57.400s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 719,
+                "end_offset": "57.700s",
+                "speaker": "spk:0",
+                "start_index": 704,
+                "start_offset": "57.400s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 728,
+                "end_offset": "58.100s",
+                "speaker": "spk:1",
+                "start_index": 719,
+                "start_offset": "58s",
+                "text": "はい。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 731,
+                "end_offset": "59.100s",
+                "speaker": "spk:0",
+                "start_index": 728,
+                "start_offset": "58.900s",
+                "text": "肘",
+                "type": "word_info"
+              },
+              {
+                "end_index": 734,
+                "end_offset": "59.200s",
+                "speaker": "spk:0",
+                "start_index": 731,
+                "start_offset": "59.100s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 736,
+                "end_offset": "59.400s",
+                "speaker": "spk:0",
+                "start_index": 735,
+                "start_offset": "59.200s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 739,
+                "end_offset": "59.500s",
+                "speaker": "spk:0",
+                "start_index": 736,
+                "start_offset": "59.400s",
+                "text": "で",
+                "type": "word_info"
+              },
+              {
+                "end_index": 748,
+                "end_offset": "59.700s",
+                "speaker": "spk:0",
+                "start_index": 739,
+                "start_offset": "59.500s",
+                "text": "変わり",
+                "type": "word_info"
+              },
+              {
+                "end_index": 757,
+                "end_offset": "59.900s",
+                "speaker": "spk:0",
+                "start_index": 748,
+                "start_offset": "59.700s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 759,
+                "end_offset": "60.700s",
+                "speaker": "spk:0",
+                "start_index": 758,
+                "start_offset": "60.300s",
+                "text": "1",
+                "type": "word_info"
+              },
+              {
+                "end_index": 761,
+                "end_offset": "61s",
+                "speaker": "spk:0",
+                "start_index": 760,
+                "start_offset": "60.800s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 763,
+                "end_offset": "61.500s",
+                "speaker": "spk:0",
+                "start_index": 762,
+                "start_offset": "61.300s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 769,
+                "end_offset": "94s",
+                "speaker": "spk:2",
+                "start_index": 763,
+                "start_offset": "93.500s",
+                "text": "充電",
+                "type": "word_info"
+              },
+              {
+                "end_index": 775,
+                "end_offset": "94.100s",
+                "speaker": "spk:2",
+                "start_index": 769,
+                "start_offset": "94s",
+                "text": "中、",
+                "type": "word_info"
+              },
+              {
+                "end_index": 781,
+                "end_offset": "94.600s",
+                "speaker": "spk:2",
+                "start_index": 775,
+                "start_offset": "94.200s",
+                "text": "解析",
+                "type": "word_info"
+              },
+              {
+                "end_index": 784,
+                "end_offset": "94.800s",
+                "speaker": "spk:2",
+                "start_index": 781,
+                "start_offset": "94.600s",
+                "text": "中",
+                "type": "word_info"
+              },
+              {
+                "end_index": 793,
+                "end_offset": "95.100s",
+                "speaker": "spk:2",
+                "start_index": 784,
+                "start_offset": "94.800s",
+                "text": "です。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 796,
+                "end_offset": "96.700s",
+                "speaker": "spk:2",
+                "start_index": 793,
+                "start_offset": "96.500s",
+                "text": "体",
+                "type": "word_info"
+              },
+              {
+                "end_index": 799,
+                "end_offset": "96.900s",
+                "speaker": "spk:2",
+                "start_index": 796,
+                "start_offset": "96.700s",
+                "text": "に",
+                "type": "word_info"
+              },
+              {
+                "end_index": 805,
+                "end_offset": "97.200s",
+                "speaker": "spk:2",
+                "start_index": 799,
+                "start_offset": "96.900s",
+                "text": "触れ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 811,
+                "end_offset": "97.300s",
+                "speaker": "spk:2",
+                "start_index": 805,
+                "start_offset": "97.200s",
+                "text": "ない",
+                "type": "word_info"
+              },
+              {
+                "end_index": 814,
+                "end_offset": "97.400s",
+                "speaker": "spk:2",
+                "start_index": 811,
+                "start_offset": "97.300s",
+                "text": "で",
+                "type": "word_info"
+              },
+              {
+                "end_index": 829,
+                "end_offset": "97.900s",
+                "speaker": "spk:2",
+                "start_index": 814,
+                "start_offset": "97.400s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 838,
+                "end_offset": "101.100s",
+                "speaker": "spk:0",
+                "start_index": 829,
+                "start_offset": "101s",
+                "text": "じゃあ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 844,
+                "end_offset": "101.400s",
+                "speaker": "spk:0",
+                "start_index": 838,
+                "start_offset": "101.100s",
+                "text": "離れ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 847,
+                "end_offset": "101.500s",
+                "speaker": "spk:0",
+                "start_index": 844,
+                "start_offset": "101.400s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 862,
+                "end_offset": "101.800s",
+                "speaker": "spk:0",
+                "start_index": 847,
+                "start_offset": "101.500s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 874,
+                "end_offset": "103s",
+                "speaker": "spk:2",
+                "start_index": 862,
+                "start_offset": "102.700s",
+                "text": "ショック",
+                "type": "word_info"
+              },
+              {
+                "end_index": 877,
+                "end_offset": "103.200s",
+                "speaker": "spk:2",
+                "start_index": 874,
+                "start_offset": "103s",
+                "text": "が",
+                "type": "word_info"
+              },
+              {
+                "end_index": 883,
+                "end_offset": "103.500s",
+                "speaker": "spk:2",
+                "start_index": 877,
+                "start_offset": "103.200s",
+                "text": "必要",
+                "type": "word_info"
+              },
+              {
+                "end_index": 892,
+                "end_offset": "103.800s",
+                "speaker": "spk:2",
+                "start_index": 883,
+                "start_offset": "103.500s",
+                "text": "です。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 898,
+                "end_offset": "105.200s",
+                "speaker": "spk:2",
+                "start_index": 892,
+                "start_offset": "104.800s",
+                "text": "充電",
+                "type": "word_info"
+              },
+              {
+                "end_index": 901,
+                "end_offset": "105.400s",
+                "speaker": "spk:2",
+                "start_index": 898,
+                "start_offset": "105.200s",
+                "text": "中",
+                "type": "word_info"
+              },
+              {
+                "end_index": 910,
+                "end_offset": "105.700s",
+                "speaker": "spk:2",
+                "start_index": 901,
+                "start_offset": "105.400s",
+                "text": "です。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 913,
+                "end_offset": "107.200s",
+                "speaker": "spk:2",
+                "start_index": 910,
+                "start_offset": "107s",
+                "text": "体",
+                "type": "word_info"
+              },
+              {
+                "end_index": 919,
+                "end_offset": "107.400s",
+                "speaker": "spk:2",
+                "start_index": 913,
+                "start_offset": "107.200s",
+                "text": "から",
+                "type": "word_info"
+              },
+              {
+                "end_index": 925,
+                "end_offset": "107.700s",
+                "speaker": "spk:2",
+                "start_index": 919,
+                "start_offset": "107.400s",
+                "text": "離れ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 928,
+                "end_offset": "107.800s",
+                "speaker": "spk:2",
+                "start_index": 925,
+                "start_offset": "107.700s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 943,
+                "end_offset": "108s",
+                "speaker": "spk:2",
+                "start_index": 928,
+                "start_offset": "107.800s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 955,
+                "end_offset": "111.300s",
+                "speaker": "spk:2",
+                "start_index": 943,
+                "start_offset": "111s",
+                "text": "ショック",
+                "type": "word_info"
+              },
+              {
+                "end_index": 958,
+                "end_offset": "111.400s",
+                "speaker": "spk:2",
+                "start_index": 955,
+                "start_offset": "111.300s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 964,
+                "end_offset": "111.800s",
+                "speaker": "spk:2",
+                "start_index": 958,
+                "start_offset": "111.400s",
+                "text": "実行",
+                "type": "word_info"
+              },
+              {
+                "end_index": 967,
+                "end_offset": "111.900s",
+                "speaker": "spk:2",
+                "start_index": 964,
+                "start_offset": "111.800s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 976,
+                "end_offset": "112.200s",
+                "speaker": "spk:2",
+                "start_index": 967,
+                "start_offset": "111.900s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 988,
+                "end_offset": "112.800s",
+                "speaker": "spk:2",
+                "start_index": 976,
+                "start_offset": "112.500s",
+                "text": "ショック",
+                "type": "word_info"
+              },
+              {
+                "end_index": 991,
+                "end_offset": "113s",
+                "speaker": "spk:2",
+                "start_index": 988,
+                "start_offset": "112.800s",
+                "text": "が",
+                "type": "word_info"
+              },
+              {
+                "end_index": 997,
+                "end_offset": "113.500s",
+                "speaker": "spk:2",
+                "start_index": 991,
+                "start_offset": "113s",
+                "text": "完了",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1000,
+                "end_offset": "113.600s",
+                "speaker": "spk:2",
+                "start_index": 997,
+                "start_offset": "113.500s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1006,
+                "end_offset": "113.800s",
+                "speaker": "spk:2",
+                "start_index": 1000,
+                "start_offset": "113.600s",
+                "text": "まし",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1012,
+                "end_offset": "113.900s",
+                "speaker": "spk:2",
+                "start_index": 1006,
+                "start_offset": "113.800s",
+                "text": "た。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1018,
+                "end_offset": "114.900s",
+                "speaker": "spk:2",
+                "start_index": 1012,
+                "start_offset": "114.600s",
+                "text": "一時",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1024,
+                "end_offset": "115.500s",
+                "speaker": "spk:2",
+                "start_index": 1018,
+                "start_offset": "115.100s",
+                "text": "中断",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1027,
+                "end_offset": "115.700s",
+                "speaker": "spk:2",
+                "start_index": 1024,
+                "start_offset": "115.500s",
+                "text": "中",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1036,
+                "end_offset": "115.900s",
+                "speaker": "spk:2",
+                "start_index": 1027,
+                "start_offset": "115.700s",
+                "text": "です。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1037,
+                "end_offset": "116.400s",
+                "speaker": "spk:0",
+                "start_index": 1036,
+                "start_offset": "116.100s",
+                "text": "5",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1039,
+                "end_offset": "117s",
+                "speaker": "spk:0",
+                "start_index": 1038,
+                "start_offset": "116.600s",
+                "text": "6",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1041,
+                "end_offset": "117.400s",
+                "speaker": "spk:0",
+                "start_index": 1040,
+                "start_offset": "117.100s",
+                "text": "7",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1043,
+                "end_offset": "117.800s",
+                "speaker": "spk:0",
+                "start_index": 1042,
+                "start_offset": "117.600s",
+                "text": "8",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1045,
+                "end_offset": "118.100s",
+                "speaker": "spk:0",
+                "start_index": 1044,
+                "start_offset": "118s",
+                "text": "9",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1048,
+                "end_offset": "118.200s",
+                "speaker": "spk:0",
+                "start_index": 1046,
+                "start_offset": "118.100s",
+                "text": "10",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1057,
+                "end_offset": "117.600s",
+                "speaker": "spk:2",
+                "start_index": 1048,
+                "start_offset": "117.400s",
+                "text": "あなた",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1060,
+                "end_offset": "117.700s",
+                "speaker": "spk:2",
+                "start_index": 1057,
+                "start_offset": "117.600s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1066,
+                "end_offset": "118.400s",
+                "speaker": "spk:2",
+                "start_index": 1060,
+                "start_offset": "117.700s",
+                "text": "胸骨",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1069,
+                "end_offset": "118.500s",
+                "speaker": "spk:2",
+                "start_index": 1066,
+                "start_offset": "118.400s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1075,
+                "end_offset": "118.800s",
+                "speaker": "spk:2",
+                "start_index": 1069,
+                "start_offset": "118.500s",
+                "text": "圧迫",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1078,
+                "end_offset": "118.900s",
+                "speaker": "spk:2",
+                "start_index": 1075,
+                "start_offset": "118.800s",
+                "text": "と",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1084,
+                "end_offset": "119.400s",
+                "speaker": "spk:2",
+                "start_index": 1078,
+                "start_offset": "118.900s",
+                "text": "人工",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1090,
+                "end_offset": "119.800s",
+                "speaker": "spk:2",
+                "start_index": 1084,
+                "start_offset": "119.400s",
+                "text": "呼吸",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1093,
+                "end_offset": "119.900s",
+                "speaker": "spk:2",
+                "start_index": 1090,
+                "start_offset": "119.800s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1096,
+                "end_offset": "120s",
+                "speaker": "spk:2",
+                "start_index": 1093,
+                "start_offset": "119.900s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1099,
+                "end_offset": "120.100s",
+                "speaker": "spk:2",
+                "start_index": 1096,
+                "start_offset": "120s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1114,
+                "end_offset": "120.500s",
+                "speaker": "spk:2",
+                "start_index": 1099,
+                "start_offset": "120.100s",
+                "text": "ください。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1115,
+                "end_offset": "120.300s",
+                "speaker": "spk:0",
+                "start_index": 1114,
+                "start_offset": "120.200s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1117,
+                "end_offset": "120.600s",
+                "speaker": "spk:0",
+                "start_index": 1116,
+                "start_offset": "120.500s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1119,
+                "end_offset": "121.400s",
+                "speaker": "spk:0",
+                "start_index": 1118,
+                "start_offset": "121.100s",
+                "text": "5",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1121,
+                "end_offset": "122s",
+                "speaker": "spk:0",
+                "start_index": 1120,
+                "start_offset": "121.600s",
+                "text": "6",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1123,
+                "end_offset": "122.500s",
+                "speaker": "spk:0",
+                "start_index": 1122,
+                "start_offset": "122.100s",
+                "text": "7",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1125,
+                "end_offset": "123s",
+                "speaker": "spk:0",
+                "start_index": 1124,
+                "start_offset": "122.600s",
+                "text": "8",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1127,
+                "end_offset": "123.400s",
+                "speaker": "spk:0",
+                "start_index": 1126,
+                "start_offset": "123.100s",
+                "text": "9",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1130,
+                "end_offset": "124s",
+                "speaker": "spk:0",
+                "start_index": 1128,
+                "start_offset": "123.600s",
+                "text": "10",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1132,
+                "end_offset": "124.400s",
+                "speaker": "spk:0",
+                "start_index": 1131,
+                "start_offset": "124.100s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1134,
+                "end_offset": "125s",
+                "speaker": "spk:0",
+                "start_index": 1133,
+                "start_offset": "124.600s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1136,
+                "end_offset": "125.300s",
+                "speaker": "spk:0",
+                "start_index": 1135,
+                "start_offset": "125.100s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1142,
+                "end_offset": "126.500s",
+                "speaker": "spk:0",
+                "start_index": 1136,
+                "start_offset": "126.200s",
+                "text": "あ、",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1148,
+                "end_offset": "126.900s",
+                "speaker": "spk:0",
+                "start_index": 1142,
+                "start_offset": "126.600s",
+                "text": "救急",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1151,
+                "end_offset": "127.100s",
+                "speaker": "spk:0",
+                "start_index": 1148,
+                "start_offset": "126.900s",
+                "text": "隊",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1157,
+                "end_offset": "127.800s",
+                "speaker": "spk:0",
+                "start_index": 1151,
+                "start_offset": "127.500s",
+                "text": "隊員",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1160,
+                "end_offset": "127.800s",
+                "speaker": "spk:0",
+                "start_index": 1157,
+                "start_offset": "127.800s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1163,
+                "end_offset": "128.200s",
+                "speaker": "spk:0",
+                "start_index": 1160,
+                "start_offset": "127.800s",
+                "text": "方",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1169,
+                "end_offset": "128.700s",
+                "speaker": "spk:0",
+                "start_index": 1163,
+                "start_offset": "128.500s",
+                "text": "この",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1172,
+                "end_offset": "128.900s",
+                "speaker": "spk:0",
+                "start_index": 1169,
+                "start_offset": "128.700s",
+                "text": "方",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1174,
+                "end_offset": "129.100s",
+                "speaker": "spk:0",
+                "start_index": 1173,
+                "start_offset": "128.900s",
+                "text": "3",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1177,
+                "end_offset": "129.300s",
+                "speaker": "spk:0",
+                "start_index": 1174,
+                "start_offset": "129.100s",
+                "text": "分",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1180,
+                "end_offset": "129.500s",
+                "speaker": "spk:0",
+                "start_index": 1177,
+                "start_offset": "129.300s",
+                "text": "前",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1183,
+                "end_offset": "129.600s",
+                "speaker": "spk:0",
+                "start_index": 1180,
+                "start_offset": "129.500s",
+                "text": "に",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1186,
+                "end_offset": "129.700s",
+                "speaker": "spk:0",
+                "start_index": 1183,
+                "start_offset": "129.600s",
+                "text": "目",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1189,
+                "end_offset": "129.800s",
+                "speaker": "spk:0",
+                "start_index": 1186,
+                "start_offset": "129.700s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1192,
+                "end_offset": "130s",
+                "speaker": "spk:0",
+                "start_index": 1189,
+                "start_offset": "129.800s",
+                "text": "前",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1195,
+                "end_offset": "130s",
+                "speaker": "spk:0",
+                "start_index": 1192,
+                "start_offset": "130s",
+                "text": "で",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1204,
+                "end_offset": "130.400s",
+                "speaker": "spk:0",
+                "start_index": 1195,
+                "start_offset": "130s",
+                "text": "倒れる",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1207,
+                "end_offset": "130.500s",
+                "speaker": "spk:0",
+                "start_index": 1204,
+                "start_offset": "130.400s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1210,
+                "end_offset": "130.600s",
+                "speaker": "spk:0",
+                "start_index": 1207,
+                "start_offset": "130.500s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1213,
+                "end_offset": "130.700s",
+                "speaker": "spk:0",
+                "start_index": 1210,
+                "start_offset": "130.600s",
+                "text": "見",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1219,
+                "end_offset": "130.900s",
+                "speaker": "spk:0",
+                "start_index": 1213,
+                "start_offset": "130.700s",
+                "text": "まし",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1225,
+                "end_offset": "131.100s",
+                "speaker": "spk:0",
+                "start_index": 1219,
+                "start_offset": "130.900s",
+                "text": "た。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1234,
+                "end_offset": "132.400s",
+                "speaker": "spk:0",
+                "start_index": 1225,
+                "start_offset": "131.800s",
+                "text": "えっと",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1240,
+                "end_offset": "132.700s",
+                "speaker": "spk:0",
+                "start_index": 1234,
+                "start_offset": "132.400s",
+                "text": "胸骨",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1246,
+                "end_offset": "133.100s",
+                "speaker": "spk:0",
+                "start_index": 1240,
+                "start_offset": "132.700s",
+                "text": "圧迫",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1249,
+                "end_offset": "133.200s",
+                "speaker": "spk:0",
+                "start_index": 1246,
+                "start_offset": "133.100s",
+                "text": "を",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1252,
+                "end_offset": "133.300s",
+                "speaker": "spk:0",
+                "start_index": 1249,
+                "start_offset": "133.200s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1255,
+                "end_offset": "133.400s",
+                "speaker": "spk:0",
+                "start_index": 1252,
+                "start_offset": "133.300s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1259,
+                "end_offset": "133.800s",
+                "speaker": "spk:0",
+                "start_index": 1256,
+                "start_offset": "133.400s",
+                "text": "AED",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1262,
+                "end_offset": "133.900s",
+                "speaker": "spk:0",
+                "start_index": 1259,
+                "start_offset": "133.800s",
+                "text": "で",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1264,
+                "end_offset": "134s",
+                "speaker": "spk:0",
+                "start_index": 1263,
+                "start_offset": "133.900s",
+                "text": "1",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1267,
+                "end_offset": "134.200s",
+                "speaker": "spk:0",
+                "start_index": 1264,
+                "start_offset": "134s",
+                "text": "回",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1279,
+                "end_offset": "134.400s",
+                "speaker": "spk:0",
+                "start_index": 1267,
+                "start_offset": "134.200s",
+                "text": "ショック",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1282,
+                "end_offset": "134.500s",
+                "speaker": "spk:0",
+                "start_index": 1279,
+                "start_offset": "134.400s",
+                "text": "し",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1288,
+                "end_offset": "134.600s",
+                "speaker": "spk:0",
+                "start_index": 1282,
+                "start_offset": "134.500s",
+                "text": "まし",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1291,
+                "end_offset": "134.700s",
+                "speaker": "spk:0",
+                "start_index": 1288,
+                "start_offset": "134.600s",
+                "text": "た",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1297,
+                "end_offset": "134.900s",
+                "speaker": "spk:0",
+                "start_index": 1291,
+                "start_offset": "134.700s",
+                "text": "けど",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1300,
+                "end_offset": "135.200s",
+                "speaker": "spk:0",
+                "start_index": 1297,
+                "start_offset": "134.900s",
+                "text": "も",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1309,
+                "end_offset": "136.600s",
+                "speaker": "spk:0",
+                "start_index": 1300,
+                "start_offset": "135.600s",
+                "text": "えっと",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1315,
+                "end_offset": "136.800s",
+                "speaker": "spk:0",
+                "start_index": 1309,
+                "start_offset": "136.600s",
+                "text": "まだ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1321,
+                "end_offset": "137.100s",
+                "speaker": "spk:0",
+                "start_index": 1315,
+                "start_offset": "136.800s",
+                "text": "意識",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1327,
+                "end_offset": "137.400s",
+                "speaker": "spk:0",
+                "start_index": 1321,
+                "start_offset": "137.100s",
+                "text": "戻っ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1330,
+                "end_offset": "137.500s",
+                "speaker": "spk:0",
+                "start_index": 1327,
+                "start_offset": "137.400s",
+                "text": "て",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1333,
+                "end_offset": "137.500s",
+                "speaker": "spk:0",
+                "start_index": 1330,
+                "start_offset": "137.500s",
+                "text": "い",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1339,
+                "end_offset": "137.800s",
+                "speaker": "spk:0",
+                "start_index": 1333,
+                "start_offset": "137.500s",
+                "text": "ませ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1345,
+                "end_offset": "137.900s",
+                "speaker": "spk:0",
+                "start_index": 1339,
+                "start_offset": "137.800s",
+                "text": "ん。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1351,
+                "end_offset": "138.700s",
+                "speaker": "spk:0",
+                "start_index": 1345,
+                "start_offset": "138.600s",
+                "text": "え、",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1357,
+                "end_offset": "139.300s",
+                "speaker": "spk:0",
+                "start_index": 1351,
+                "start_offset": "139.100s",
+                "text": "この",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1360,
+                "end_offset": "139.500s",
+                "speaker": "spk:0",
+                "start_index": 1357,
+                "start_offset": "139.300s",
+                "text": "方",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1363,
+                "end_offset": "139.600s",
+                "speaker": "spk:0",
+                "start_index": 1360,
+                "start_offset": "139.500s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1369,
+                "end_offset": "140s",
+                "speaker": "spk:0",
+                "start_index": 1363,
+                "start_offset": "139.600s",
+                "text": "身元",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1372,
+                "end_offset": "140s",
+                "speaker": "spk:0",
+                "start_index": 1369,
+                "start_offset": "140s",
+                "text": "は",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1381,
+                "end_offset": "140.300s",
+                "speaker": "spk:0",
+                "start_index": 1372,
+                "start_offset": "140s",
+                "text": "分から",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1387,
+                "end_offset": "140.400s",
+                "speaker": "spk:0",
+                "start_index": 1381,
+                "start_offset": "140.300s",
+                "text": "ない",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1390,
+                "end_offset": "140.400s",
+                "speaker": "spk:0",
+                "start_index": 1387,
+                "start_offset": "140.400s",
+                "text": "ん",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1396,
+                "end_offset": "140.600s",
+                "speaker": "spk:0",
+                "start_index": 1390,
+                "start_offset": "140.400s",
+                "text": "です",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1402,
+                "end_offset": "140.800s",
+                "speaker": "spk:0",
+                "start_index": 1396,
+                "start_offset": "140.600s",
+                "text": "けど",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1405,
+                "end_offset": "140.900s",
+                "speaker": "spk:0",
+                "start_index": 1402,
+                "start_offset": "140.800s",
+                "text": "も",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1411,
+                "end_offset": "141.400s",
+                "speaker": "spk:0",
+                "start_index": 1405,
+                "start_offset": "140.900s",
+                "text": "足元",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1414,
+                "end_offset": "141.500s",
+                "speaker": "spk:0",
+                "start_index": 1411,
+                "start_offset": "141.400s",
+                "text": "に",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1420,
+                "end_offset": "141.600s",
+                "speaker": "spk:0",
+                "start_index": 1414,
+                "start_offset": "141.500s",
+                "text": "この",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1423,
+                "end_offset": "141.800s",
+                "speaker": "spk:0",
+                "start_index": 1420,
+                "start_offset": "141.600s",
+                "text": "方",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1426,
+                "end_offset": "141.900s",
+                "speaker": "spk:0",
+                "start_index": 1423,
+                "start_offset": "141.800s",
+                "text": "の",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1432,
+                "end_offset": "142.300s",
+                "speaker": "spk:0",
+                "start_index": 1426,
+                "start_offset": "141.900s",
+                "text": "荷物",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1438,
+                "end_offset": "142.400s",
+                "speaker": "spk:0",
+                "start_index": 1432,
+                "start_offset": "142.300s",
+                "text": "あり",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1447,
+                "end_offset": "142.700s",
+                "speaker": "spk:0",
+                "start_index": 1438,
+                "start_offset": "142.400s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1459,
+                "end_offset": "143.600s",
+                "speaker": "spk:0",
+                "start_index": 1447,
+                "start_offset": "143.300s",
+                "text": "引き継ぎ",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1468,
+                "end_offset": "144.100s",
+                "speaker": "spk:0",
+                "start_index": 1459,
+                "start_offset": "143.600s",
+                "text": "ます。",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1470,
+                "end_offset": "144.600s",
+                "speaker": "spk:0",
+                "start_index": 1469,
+                "start_offset": "144.100s",
+                "text": "1",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1472,
+                "end_offset": "144.800s",
+                "speaker": "spk:0",
+                "start_index": 1471,
+                "start_offset": "144.600s",
+                "text": "2",
+                "type": "word_info"
+              },
+              {
+                "end_index": 1474,
+                "end_offset": "145.300s",
+                "speaker": "spk:0",
+                "start_index": 1473,
+                "start_offset": "145s",
+                "text": "3",
+                "type": "word_info"
+              }
+            ],
+            "type": "text"
+          }
+        ],
+        "type": "model_output"
+      }
+    ],
+    "updated": "2026-09-17T09:01:32Z",
+    "usage": {
+      "input_tokens_by_modality": [
+        {
+          "modality": "audio",
+          "tokens": 3650
+        },
+        {
+          "modality": "text",
+          "tokens": 1
+        }
+      ],
+      "total_cached_tokens": 0,
+      "total_input_tokens": 3651,
+      "total_output_tokens": 0,
+      "total_thought_tokens": 0,
+      "total_tokens": 3651,
+      "total_tool_use_tokens": 0
+    },
+    "object": "interaction"
+  },
+  "word_annotations": [
+    {
+      "text": "商業",
+      "speaker": "spk:0",
+      "start": 0,
+      "end": 2,
+      "start_seconds": 1.8,
+      "end_seconds": 1.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "施設",
+      "speaker": "spk:0",
+      "start": 2,
+      "end": 4,
+      "start_seconds": 1.9,
+      "end_seconds": 2.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "発見。",
+      "speaker": "spk:0",
+      "start": 4,
+      "end": 7,
+      "start_seconds": 2.1,
+      "end_seconds": 2.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "周囲",
+      "speaker": "spk:0",
+      "start": 7,
+      "end": 9,
+      "start_seconds": 2.9,
+      "end_seconds": 3.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "安全",
+      "speaker": "spk:0",
+      "start": 9,
+      "end": 11,
+      "start_seconds": 3.2,
+      "end_seconds": 3.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です。",
+      "speaker": "spk:0",
+      "start": 11,
+      "end": 14,
+      "start_seconds": 3.5,
+      "end_seconds": 3.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "感染",
+      "speaker": "spk:0",
+      "start": 14,
+      "end": 16,
+      "start_seconds": 3.9,
+      "end_seconds": 4.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "防護",
+      "speaker": "spk:0",
+      "start": 16,
+      "end": 18,
+      "start_seconds": 4.2,
+      "end_seconds": 4.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "に",
+      "speaker": "spk:0",
+      "start": 18,
+      "end": 19,
+      "start_seconds": 4.4,
+      "end_seconds": 4.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "入る",
+      "speaker": "spk:0",
+      "start": 19,
+      "end": 21,
+      "start_seconds": 4.5,
+      "end_seconds": 4.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:0",
+      "start": 21,
+      "end": 22,
+      "start_seconds": 4.9,
+      "end_seconds": 5.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:0",
+      "start": 22,
+      "end": 25,
+      "start_seconds": 5.0,
+      "end_seconds": 5.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "大丈夫",
+      "speaker": "spk:0",
+      "start": 25,
+      "end": 28,
+      "start_seconds": 7.4,
+      "end_seconds": 7.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です",
+      "speaker": "spk:0",
+      "start": 28,
+      "end": 30,
+      "start_seconds": 7.8,
+      "end_seconds": 8.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "か。",
+      "speaker": "spk:0",
+      "start": 30,
+      "end": 32,
+      "start_seconds": 8.0,
+      "end_seconds": 8.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "大丈夫",
+      "speaker": "spk:0",
+      "start": 32,
+      "end": 35,
+      "start_seconds": 8.8,
+      "end_seconds": 9.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です",
+      "speaker": "spk:0",
+      "start": 35,
+      "end": 37,
+      "start_seconds": 9.1,
+      "end_seconds": 9.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "か。",
+      "speaker": "spk:0",
+      "start": 37,
+      "end": 39,
+      "start_seconds": 9.2,
+      "end_seconds": 9.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "大丈夫",
+      "speaker": "spk:0",
+      "start": 39,
+      "end": 42,
+      "start_seconds": 9.9,
+      "end_seconds": 10.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です",
+      "speaker": "spk:0",
+      "start": 42,
+      "end": 44,
+      "start_seconds": 10.2,
+      "end_seconds": 10.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "か。",
+      "speaker": "spk:0",
+      "start": 44,
+      "end": 46,
+      "start_seconds": 10.3,
+      "end_seconds": 10.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "誰",
+      "speaker": "spk:0",
+      "start": 46,
+      "end": 47,
+      "start_seconds": 11.5,
+      "end_seconds": 11.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "か",
+      "speaker": "spk:0",
+      "start": 47,
+      "end": 48,
+      "start_seconds": 11.6,
+      "end_seconds": 11.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "誰",
+      "speaker": "spk:0",
+      "start": 48,
+      "end": 49,
+      "start_seconds": 11.7,
+      "end_seconds": 11.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "か",
+      "speaker": "spk:0",
+      "start": 49,
+      "end": 50,
+      "start_seconds": 11.9,
+      "end_seconds": 12.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "誰",
+      "speaker": "spk:0",
+      "start": 50,
+      "end": 51,
+      "start_seconds": 12.0,
+      "end_seconds": 12.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "か",
+      "speaker": "spk:0",
+      "start": 51,
+      "end": 52,
+      "start_seconds": 12.2,
+      "end_seconds": 12.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "来",
+      "speaker": "spk:0",
+      "start": 52,
+      "end": 53,
+      "start_seconds": 12.3,
+      "end_seconds": 12.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 53,
+      "end": 54,
+      "start_seconds": 12.4,
+      "end_seconds": 12.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:0",
+      "start": 54,
+      "end": 59,
+      "start_seconds": 12.5,
+      "end_seconds": 12.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "はい。",
+      "speaker": "spk:1",
+      "start": 59,
+      "end": 62,
+      "start_seconds": 13.1,
+      "end_seconds": 13.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あなた",
+      "speaker": "spk:0",
+      "start": 62,
+      "end": 65,
+      "start_seconds": 13.6,
+      "end_seconds": 13.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "は",
+      "speaker": "spk:0",
+      "start": 65,
+      "end": 66,
+      "start_seconds": 13.9,
+      "end_seconds": 13.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "119",
+      "speaker": "spk:0",
+      "start": 67,
+      "end": 70,
+      "start_seconds": 13.9,
+      "end_seconds": 14.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "番",
+      "speaker": "spk:0",
+      "start": 70,
+      "end": 71,
+      "start_seconds": 14.5,
+      "end_seconds": 14.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "通報",
+      "speaker": "spk:0",
+      "start": 71,
+      "end": 73,
+      "start_seconds": 14.6,
+      "end_seconds": 15.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "お",
+      "speaker": "spk:0",
+      "start": 73,
+      "end": 74,
+      "start_seconds": 15.0,
+      "end_seconds": 15.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "願い",
+      "speaker": "spk:0",
+      "start": 74,
+      "end": 76,
+      "start_seconds": 15.0,
+      "end_seconds": 15.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:0",
+      "start": 76,
+      "end": 77,
+      "start_seconds": 15.3,
+      "end_seconds": 15.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:0",
+      "start": 77,
+      "end": 80,
+      "start_seconds": 15.4,
+      "end_seconds": 15.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あなた",
+      "speaker": "spk:0",
+      "start": 80,
+      "end": 83,
+      "start_seconds": 16.0,
+      "end_seconds": 16.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "AED",
+      "speaker": "spk:0",
+      "start": 84,
+      "end": 87,
+      "start_seconds": 16.4,
+      "end_seconds": 16.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "も",
+      "speaker": "spk:0",
+      "start": 87,
+      "end": 88,
+      "start_seconds": 16.8,
+      "end_seconds": 16.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "来",
+      "speaker": "spk:0",
+      "start": 88,
+      "end": 89,
+      "start_seconds": 16.9,
+      "end_seconds": 17.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 89,
+      "end": 90,
+      "start_seconds": 17.1,
+      "end_seconds": 17.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:0",
+      "start": 90,
+      "end": 95,
+      "start_seconds": 17.2,
+      "end_seconds": 17.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "必ず",
+      "speaker": "spk:0",
+      "start": 95,
+      "end": 97,
+      "start_seconds": 17.8,
+      "end_seconds": 18.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ここ",
+      "speaker": "spk:0",
+      "start": 97,
+      "end": 99,
+      "start_seconds": 18.2,
+      "end_seconds": 18.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "に",
+      "speaker": "spk:0",
+      "start": 99,
+      "end": 100,
+      "start_seconds": 18.4,
+      "end_seconds": 18.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "戻っ",
+      "speaker": "spk:0",
+      "start": 100,
+      "end": 102,
+      "start_seconds": 18.4,
+      "end_seconds": 18.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 102,
+      "end": 103,
+      "start_seconds": 18.7,
+      "end_seconds": 18.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "来",
+      "speaker": "spk:0",
+      "start": 103,
+      "end": 104,
+      "start_seconds": 18.8,
+      "end_seconds": 18.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 104,
+      "end": 105,
+      "start_seconds": 18.9,
+      "end_seconds": 18.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:0",
+      "start": 105,
+      "end": 110,
+      "start_seconds": 18.9,
+      "end_seconds": 19.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "胸",
+      "speaker": "spk:0",
+      "start": 110,
+      "end": 111,
+      "start_seconds": 24.9,
+      "end_seconds": 25.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "と",
+      "speaker": "spk:0",
+      "start": 111,
+      "end": 112,
+      "start_seconds": 25.1,
+      "end_seconds": 25.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "お",
+      "speaker": "spk:0",
+      "start": 112,
+      "end": 113,
+      "start_seconds": 25.2,
+      "end_seconds": 25.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "腹",
+      "speaker": "spk:0",
+      "start": 113,
+      "end": 114,
+      "start_seconds": 25.3,
+      "end_seconds": 25.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:0",
+      "start": 114,
+      "end": 115,
+      "start_seconds": 25.6,
+      "end_seconds": 25.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "見",
+      "speaker": "spk:0",
+      "start": 115,
+      "end": 116,
+      "start_seconds": 25.7,
+      "end_seconds": 25.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 116,
+      "end": 117,
+      "start_seconds": 25.8,
+      "end_seconds": 25.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "呼吸",
+      "speaker": "spk:0",
+      "start": 117,
+      "end": 119,
+      "start_seconds": 25.9,
+      "end_seconds": 26.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 119,
+      "end": 120,
+      "start_seconds": 26.3,
+      "end_seconds": 26.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "確認、",
+      "speaker": "spk:0",
+      "start": 120,
+      "end": 123,
+      "start_seconds": 26.4,
+      "end_seconds": 26.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "同時",
+      "speaker": "spk:0",
+      "start": 123,
+      "end": 125,
+      "start_seconds": 26.8,
+      "end_seconds": 27.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "に",
+      "speaker": "spk:0",
+      "start": 125,
+      "end": 126,
+      "start_seconds": 27.2,
+      "end_seconds": 27.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "脈",
+      "speaker": "spk:0",
+      "start": 126,
+      "end": 127,
+      "start_seconds": 27.4,
+      "end_seconds": 27.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 127,
+      "end": 128,
+      "start_seconds": 27.6,
+      "end_seconds": 27.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "確認。",
+      "speaker": "spk:0",
+      "start": 128,
+      "end": 131,
+      "start_seconds": 27.8,
+      "end_seconds": 28.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "呼吸",
+      "speaker": "spk:0",
+      "start": 131,
+      "end": 133,
+      "start_seconds": 30.7,
+      "end_seconds": 31.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "脈",
+      "speaker": "spk:0",
+      "start": 133,
+      "end": 134,
+      "start_seconds": 31.0,
+      "end_seconds": 31.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あり",
+      "speaker": "spk:0",
+      "start": 134,
+      "end": 136,
+      "start_seconds": 31.3,
+      "end_seconds": 31.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ませ",
+      "speaker": "spk:0",
+      "start": 136,
+      "end": 138,
+      "start_seconds": 31.4,
+      "end_seconds": 31.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ん。",
+      "speaker": "spk:0",
+      "start": 138,
+      "end": 140,
+      "start_seconds": 31.7,
+      "end_seconds": 31.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "胸骨",
+      "speaker": "spk:0",
+      "start": 140,
+      "end": 142,
+      "start_seconds": 32.1,
+      "end_seconds": 32.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "圧迫",
+      "speaker": "spk:0",
+      "start": 142,
+      "end": 144,
+      "start_seconds": 32.4,
+      "end_seconds": 32.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "開始",
+      "speaker": "spk:0",
+      "start": 144,
+      "end": 146,
+      "start_seconds": 32.6,
+      "end_seconds": 32.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:0",
+      "start": 146,
+      "end": 147,
+      "start_seconds": 32.8,
+      "end_seconds": 32.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:0",
+      "start": 147,
+      "end": 150,
+      "start_seconds": 32.8,
+      "end_seconds": 33.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 151,
+      "end": 152,
+      "start_seconds": 33.4,
+      "end_seconds": 33.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 153,
+      "end": 154,
+      "start_seconds": 33.8,
+      "end_seconds": 34.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "4",
+      "speaker": "spk:0",
+      "start": 155,
+      "end": 156,
+      "start_seconds": 34.4,
+      "end_seconds": 34.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "5",
+      "speaker": "spk:0",
+      "start": 157,
+      "end": 158,
+      "start_seconds": 34.9,
+      "end_seconds": 35.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "6",
+      "speaker": "spk:0",
+      "start": 159,
+      "end": 160,
+      "start_seconds": 35.5,
+      "end_seconds": 35.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "7",
+      "speaker": "spk:0",
+      "start": 161,
+      "end": 162,
+      "start_seconds": 35.9,
+      "end_seconds": 36.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "8",
+      "speaker": "spk:0",
+      "start": 163,
+      "end": 164,
+      "start_seconds": 36.5,
+      "end_seconds": 36.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "9",
+      "speaker": "spk:0",
+      "start": 165,
+      "end": 166,
+      "start_seconds": 37.0,
+      "end_seconds": 37.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "10",
+      "speaker": "spk:0",
+      "start": 167,
+      "end": 169,
+      "start_seconds": 37.5,
+      "end_seconds": 37.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 170,
+      "end": 171,
+      "start_seconds": 38.1,
+      "end_seconds": 38.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 172,
+      "end": 173,
+      "start_seconds": 38.6,
+      "end_seconds": 38.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 174,
+      "end": 175,
+      "start_seconds": 39.1,
+      "end_seconds": 39.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "4",
+      "speaker": "spk:0",
+      "start": 176,
+      "end": 177,
+      "start_seconds": 39.6,
+      "end_seconds": 40.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "5",
+      "speaker": "spk:0",
+      "start": 178,
+      "end": 179,
+      "start_seconds": 40.2,
+      "end_seconds": 40.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "6",
+      "speaker": "spk:0",
+      "start": 180,
+      "end": 181,
+      "start_seconds": 40.7,
+      "end_seconds": 41.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "7",
+      "speaker": "spk:0",
+      "start": 182,
+      "end": 183,
+      "start_seconds": 41.2,
+      "end_seconds": 41.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "8",
+      "speaker": "spk:0",
+      "start": 184,
+      "end": 185,
+      "start_seconds": 41.8,
+      "end_seconds": 42.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "9",
+      "speaker": "spk:0",
+      "start": 186,
+      "end": 187,
+      "start_seconds": 42.3,
+      "end_seconds": 42.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "10",
+      "speaker": "spk:0",
+      "start": 188,
+      "end": 190,
+      "start_seconds": 42.9,
+      "end_seconds": 43.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 191,
+      "end": 192,
+      "start_seconds": 43.4,
+      "end_seconds": 43.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 193,
+      "end": 194,
+      "start_seconds": 44.0,
+      "end_seconds": 44.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 195,
+      "end": 196,
+      "start_seconds": 44.4,
+      "end_seconds": 44.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "4",
+      "speaker": "spk:0",
+      "start": 197,
+      "end": 198,
+      "start_seconds": 44.9,
+      "end_seconds": 45.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "5",
+      "speaker": "spk:0",
+      "start": 199,
+      "end": 200,
+      "start_seconds": 45.5,
+      "end_seconds": 45.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "6",
+      "speaker": "spk:0",
+      "start": 201,
+      "end": 202,
+      "start_seconds": 46.1,
+      "end_seconds": 46.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "7",
+      "speaker": "spk:0",
+      "start": 203,
+      "end": 204,
+      "start_seconds": 46.6,
+      "end_seconds": 47.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "8",
+      "speaker": "spk:0",
+      "start": 205,
+      "end": 206,
+      "start_seconds": 47.1,
+      "end_seconds": 47.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "9",
+      "speaker": "spk:0",
+      "start": 207,
+      "end": 208,
+      "start_seconds": 47.6,
+      "end_seconds": 47.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "10",
+      "speaker": "spk:0",
+      "start": 209,
+      "end": 211,
+      "start_seconds": 48.2,
+      "end_seconds": 48.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "AED",
+      "speaker": "spk:1",
+      "start": 211,
+      "end": 214,
+      "start_seconds": 49.1,
+      "end_seconds": 49.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "持っ",
+      "speaker": "spk:1",
+      "start": 214,
+      "end": 216,
+      "start_seconds": 49.4,
+      "end_seconds": 49.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:1",
+      "start": 216,
+      "end": 217,
+      "start_seconds": 49.6,
+      "end_seconds": 49.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "き",
+      "speaker": "spk:1",
+      "start": 217,
+      "end": 218,
+      "start_seconds": 49.7,
+      "end_seconds": 49.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "まし",
+      "speaker": "spk:1",
+      "start": 218,
+      "end": 220,
+      "start_seconds": 49.8,
+      "end_seconds": 50.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "た。",
+      "speaker": "spk:1",
+      "start": 220,
+      "end": 222,
+      "start_seconds": 50.0,
+      "end_seconds": 50.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ありがとう",
+      "speaker": "spk:0",
+      "start": 222,
+      "end": 227,
+      "start_seconds": 50.3,
+      "end_seconds": 50.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ござい",
+      "speaker": "spk:0",
+      "start": 227,
+      "end": 230,
+      "start_seconds": 50.6,
+      "end_seconds": 50.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:0",
+      "start": 230,
+      "end": 233,
+      "start_seconds": 50.8,
+      "end_seconds": 51.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あなた",
+      "speaker": "spk:0",
+      "start": 233,
+      "end": 236,
+      "start_seconds": 51.2,
+      "end_seconds": 51.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "AED",
+      "speaker": "spk:0",
+      "start": 237,
+      "end": 240,
+      "start_seconds": 51.5,
+      "end_seconds": 51.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "使い",
+      "speaker": "spk:0",
+      "start": 240,
+      "end": 242,
+      "start_seconds": 51.8,
+      "end_seconds": 52.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます",
+      "speaker": "spk:0",
+      "start": 242,
+      "end": 244,
+      "start_seconds": 52.0,
+      "end_seconds": 52.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "か。",
+      "speaker": "spk:0",
+      "start": 244,
+      "end": 246,
+      "start_seconds": 52.2,
+      "end_seconds": 52.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "使わ",
+      "speaker": "spk:1",
+      "start": 246,
+      "end": 248,
+      "start_seconds": 52.6,
+      "end_seconds": 52.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ない",
+      "speaker": "spk:1",
+      "start": 248,
+      "end": 250,
+      "start_seconds": 52.8,
+      "end_seconds": 53.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です。",
+      "speaker": "spk:1",
+      "start": 250,
+      "end": 253,
+      "start_seconds": 53.0,
+      "end_seconds": 53.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あ、",
+      "speaker": "spk:0",
+      "start": 253,
+      "end": 255,
+      "start_seconds": 53.3,
+      "end_seconds": 53.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "じゃあ",
+      "speaker": "spk:0",
+      "start": 255,
+      "end": 258,
+      "start_seconds": 53.4,
+      "end_seconds": 53.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "胸骨",
+      "speaker": "spk:0",
+      "start": 258,
+      "end": 260,
+      "start_seconds": 53.6,
+      "end_seconds": 53.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "圧迫",
+      "speaker": "spk:0",
+      "start": 260,
+      "end": 262,
+      "start_seconds": 53.9,
+      "end_seconds": 54.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:0",
+      "start": 262,
+      "end": 263,
+      "start_seconds": 54.2,
+      "end_seconds": 54.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "代わっ",
+      "speaker": "spk:0",
+      "start": 263,
+      "end": 266,
+      "start_seconds": 54.3,
+      "end_seconds": 54.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 266,
+      "end": 267,
+      "start_seconds": 54.5,
+      "end_seconds": 54.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:0",
+      "start": 267,
+      "end": 272,
+      "start_seconds": 54.6,
+      "end_seconds": 55.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "はい。",
+      "speaker": "spk:1",
+      "start": 272,
+      "end": 275,
+      "start_seconds": 55.1,
+      "end_seconds": 55.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あ、",
+      "speaker": "spk:0",
+      "start": 275,
+      "end": 277,
+      "start_seconds": 55.7,
+      "end_seconds": 55.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "AED",
+      "speaker": "spk:0",
+      "start": 278,
+      "end": 281,
+      "start_seconds": 56.2,
+      "end_seconds": 56.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "頭",
+      "speaker": "spk:0",
+      "start": 281,
+      "end": 282,
+      "start_seconds": 56.6,
+      "end_seconds": 56.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 282,
+      "end": 283,
+      "start_seconds": 56.9,
+      "end_seconds": 57.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "方",
+      "speaker": "spk:0",
+      "start": 283,
+      "end": 284,
+      "start_seconds": 57.0,
+      "end_seconds": 57.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "に",
+      "speaker": "spk:0",
+      "start": 284,
+      "end": 285,
+      "start_seconds": 57.1,
+      "end_seconds": 57.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "置い",
+      "speaker": "spk:0",
+      "start": 285,
+      "end": 287,
+      "start_seconds": 57.2,
+      "end_seconds": 57.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 287,
+      "end": 288,
+      "start_seconds": 57.4,
+      "end_seconds": 57.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:0",
+      "start": 288,
+      "end": 293,
+      "start_seconds": 57.4,
+      "end_seconds": 57.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "はい。",
+      "speaker": "spk:1",
+      "start": 293,
+      "end": 296,
+      "start_seconds": 58.0,
+      "end_seconds": 58.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "肘",
+      "speaker": "spk:0",
+      "start": 296,
+      "end": 297,
+      "start_seconds": 58.9,
+      "end_seconds": 59.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:0",
+      "start": 297,
+      "end": 298,
+      "start_seconds": 59.1,
+      "end_seconds": 59.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 299,
+      "end": 300,
+      "start_seconds": 59.2,
+      "end_seconds": 59.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "で",
+      "speaker": "spk:0",
+      "start": 300,
+      "end": 301,
+      "start_seconds": 59.4,
+      "end_seconds": 59.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "変わり",
+      "speaker": "spk:0",
+      "start": 301,
+      "end": 304,
+      "start_seconds": 59.5,
+      "end_seconds": 59.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:0",
+      "start": 304,
+      "end": 307,
+      "start_seconds": 59.7,
+      "end_seconds": 59.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "1",
+      "speaker": "spk:0",
+      "start": 308,
+      "end": 309,
+      "start_seconds": 60.3,
+      "end_seconds": 60.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 310,
+      "end": 311,
+      "start_seconds": 60.8,
+      "end_seconds": 61.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 312,
+      "end": 313,
+      "start_seconds": 61.3,
+      "end_seconds": 61.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "充電",
+      "speaker": "spk:2",
+      "start": 313,
+      "end": 315,
+      "start_seconds": 93.5,
+      "end_seconds": 94.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "中、",
+      "speaker": "spk:2",
+      "start": 315,
+      "end": 317,
+      "start_seconds": 94.0,
+      "end_seconds": 94.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "解析",
+      "speaker": "spk:2",
+      "start": 317,
+      "end": 319,
+      "start_seconds": 94.2,
+      "end_seconds": 94.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "中",
+      "speaker": "spk:2",
+      "start": 319,
+      "end": 320,
+      "start_seconds": 94.6,
+      "end_seconds": 94.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です。",
+      "speaker": "spk:2",
+      "start": 320,
+      "end": 323,
+      "start_seconds": 94.8,
+      "end_seconds": 95.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "体",
+      "speaker": "spk:2",
+      "start": 323,
+      "end": 324,
+      "start_seconds": 96.5,
+      "end_seconds": 96.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "に",
+      "speaker": "spk:2",
+      "start": 324,
+      "end": 325,
+      "start_seconds": 96.7,
+      "end_seconds": 96.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "触れ",
+      "speaker": "spk:2",
+      "start": 325,
+      "end": 327,
+      "start_seconds": 96.9,
+      "end_seconds": 97.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ない",
+      "speaker": "spk:2",
+      "start": 327,
+      "end": 329,
+      "start_seconds": 97.2,
+      "end_seconds": 97.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "で",
+      "speaker": "spk:2",
+      "start": 329,
+      "end": 330,
+      "start_seconds": 97.3,
+      "end_seconds": 97.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:2",
+      "start": 330,
+      "end": 335,
+      "start_seconds": 97.4,
+      "end_seconds": 97.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "じゃあ",
+      "speaker": "spk:0",
+      "start": 335,
+      "end": 338,
+      "start_seconds": 101.0,
+      "end_seconds": 101.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "離れ",
+      "speaker": "spk:0",
+      "start": 338,
+      "end": 340,
+      "start_seconds": 101.1,
+      "end_seconds": 101.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 340,
+      "end": 341,
+      "start_seconds": 101.4,
+      "end_seconds": 101.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:0",
+      "start": 341,
+      "end": 346,
+      "start_seconds": 101.5,
+      "end_seconds": 101.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ショック",
+      "speaker": "spk:2",
+      "start": 346,
+      "end": 350,
+      "start_seconds": 102.7,
+      "end_seconds": 103.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "が",
+      "speaker": "spk:2",
+      "start": 350,
+      "end": 351,
+      "start_seconds": 103.0,
+      "end_seconds": 103.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "必要",
+      "speaker": "spk:2",
+      "start": 351,
+      "end": 353,
+      "start_seconds": 103.2,
+      "end_seconds": 103.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です。",
+      "speaker": "spk:2",
+      "start": 353,
+      "end": 356,
+      "start_seconds": 103.5,
+      "end_seconds": 103.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "充電",
+      "speaker": "spk:2",
+      "start": 356,
+      "end": 358,
+      "start_seconds": 104.8,
+      "end_seconds": 105.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "中",
+      "speaker": "spk:2",
+      "start": 358,
+      "end": 359,
+      "start_seconds": 105.2,
+      "end_seconds": 105.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です。",
+      "speaker": "spk:2",
+      "start": 359,
+      "end": 362,
+      "start_seconds": 105.4,
+      "end_seconds": 105.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "体",
+      "speaker": "spk:2",
+      "start": 362,
+      "end": 363,
+      "start_seconds": 107.0,
+      "end_seconds": 107.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "から",
+      "speaker": "spk:2",
+      "start": 363,
+      "end": 365,
+      "start_seconds": 107.2,
+      "end_seconds": 107.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "離れ",
+      "speaker": "spk:2",
+      "start": 365,
+      "end": 367,
+      "start_seconds": 107.4,
+      "end_seconds": 107.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:2",
+      "start": 367,
+      "end": 368,
+      "start_seconds": 107.7,
+      "end_seconds": 107.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:2",
+      "start": 368,
+      "end": 373,
+      "start_seconds": 107.8,
+      "end_seconds": 108.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ショック",
+      "speaker": "spk:2",
+      "start": 373,
+      "end": 377,
+      "start_seconds": 111.0,
+      "end_seconds": 111.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:2",
+      "start": 377,
+      "end": 378,
+      "start_seconds": 111.3,
+      "end_seconds": 111.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "実行",
+      "speaker": "spk:2",
+      "start": 378,
+      "end": 380,
+      "start_seconds": 111.4,
+      "end_seconds": 111.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:2",
+      "start": 380,
+      "end": 381,
+      "start_seconds": 111.8,
+      "end_seconds": 111.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:2",
+      "start": 381,
+      "end": 384,
+      "start_seconds": 111.9,
+      "end_seconds": 112.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ショック",
+      "speaker": "spk:2",
+      "start": 384,
+      "end": 388,
+      "start_seconds": 112.5,
+      "end_seconds": 112.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "が",
+      "speaker": "spk:2",
+      "start": 388,
+      "end": 389,
+      "start_seconds": 112.8,
+      "end_seconds": 113.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "完了",
+      "speaker": "spk:2",
+      "start": 389,
+      "end": 391,
+      "start_seconds": 113.0,
+      "end_seconds": 113.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:2",
+      "start": 391,
+      "end": 392,
+      "start_seconds": 113.5,
+      "end_seconds": 113.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "まし",
+      "speaker": "spk:2",
+      "start": 392,
+      "end": 394,
+      "start_seconds": 113.6,
+      "end_seconds": 113.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "た。",
+      "speaker": "spk:2",
+      "start": 394,
+      "end": 396,
+      "start_seconds": 113.8,
+      "end_seconds": 113.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "一時",
+      "speaker": "spk:2",
+      "start": 396,
+      "end": 398,
+      "start_seconds": 114.6,
+      "end_seconds": 114.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "中断",
+      "speaker": "spk:2",
+      "start": 398,
+      "end": 400,
+      "start_seconds": 115.1,
+      "end_seconds": 115.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "中",
+      "speaker": "spk:2",
+      "start": 400,
+      "end": 401,
+      "start_seconds": 115.5,
+      "end_seconds": 115.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です。",
+      "speaker": "spk:2",
+      "start": 401,
+      "end": 404,
+      "start_seconds": 115.7,
+      "end_seconds": 115.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "5",
+      "speaker": "spk:0",
+      "start": 404,
+      "end": 405,
+      "start_seconds": 116.1,
+      "end_seconds": 116.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "6",
+      "speaker": "spk:0",
+      "start": 406,
+      "end": 407,
+      "start_seconds": 116.6,
+      "end_seconds": 117.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "7",
+      "speaker": "spk:0",
+      "start": 408,
+      "end": 409,
+      "start_seconds": 117.1,
+      "end_seconds": 117.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "8",
+      "speaker": "spk:0",
+      "start": 410,
+      "end": 411,
+      "start_seconds": 117.6,
+      "end_seconds": 117.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "9",
+      "speaker": "spk:0",
+      "start": 412,
+      "end": 413,
+      "start_seconds": 118.0,
+      "end_seconds": 118.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "10",
+      "speaker": "spk:0",
+      "start": 414,
+      "end": 416,
+      "start_seconds": 118.1,
+      "end_seconds": 118.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あなた",
+      "speaker": "spk:2",
+      "start": 416,
+      "end": 419,
+      "start_seconds": 117.4,
+      "end_seconds": 117.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:2",
+      "start": 419,
+      "end": 420,
+      "start_seconds": 117.6,
+      "end_seconds": 117.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "胸骨",
+      "speaker": "spk:2",
+      "start": 420,
+      "end": 422,
+      "start_seconds": 117.7,
+      "end_seconds": 118.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:2",
+      "start": 422,
+      "end": 423,
+      "start_seconds": 118.4,
+      "end_seconds": 118.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "圧迫",
+      "speaker": "spk:2",
+      "start": 423,
+      "end": 425,
+      "start_seconds": 118.5,
+      "end_seconds": 118.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "と",
+      "speaker": "spk:2",
+      "start": 425,
+      "end": 426,
+      "start_seconds": 118.8,
+      "end_seconds": 118.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "人工",
+      "speaker": "spk:2",
+      "start": 426,
+      "end": 428,
+      "start_seconds": 118.9,
+      "end_seconds": 119.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "呼吸",
+      "speaker": "spk:2",
+      "start": 428,
+      "end": 430,
+      "start_seconds": 119.4,
+      "end_seconds": 119.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:2",
+      "start": 430,
+      "end": 431,
+      "start_seconds": 119.8,
+      "end_seconds": 119.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:2",
+      "start": 431,
+      "end": 432,
+      "start_seconds": 119.9,
+      "end_seconds": 120.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:2",
+      "start": 432,
+      "end": 433,
+      "start_seconds": 120.0,
+      "end_seconds": 120.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ください。",
+      "speaker": "spk:2",
+      "start": 433,
+      "end": 438,
+      "start_seconds": 120.1,
+      "end_seconds": 120.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 438,
+      "end": 439,
+      "start_seconds": 120.2,
+      "end_seconds": 120.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 440,
+      "end": 441,
+      "start_seconds": 120.5,
+      "end_seconds": 120.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "5",
+      "speaker": "spk:0",
+      "start": 442,
+      "end": 443,
+      "start_seconds": 121.1,
+      "end_seconds": 121.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "6",
+      "speaker": "spk:0",
+      "start": 444,
+      "end": 445,
+      "start_seconds": 121.6,
+      "end_seconds": 122.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "7",
+      "speaker": "spk:0",
+      "start": 446,
+      "end": 447,
+      "start_seconds": 122.1,
+      "end_seconds": 122.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "8",
+      "speaker": "spk:0",
+      "start": 448,
+      "end": 449,
+      "start_seconds": 122.6,
+      "end_seconds": 123.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "9",
+      "speaker": "spk:0",
+      "start": 450,
+      "end": 451,
+      "start_seconds": 123.1,
+      "end_seconds": 123.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "10",
+      "speaker": "spk:0",
+      "start": 452,
+      "end": 454,
+      "start_seconds": 123.6,
+      "end_seconds": 124.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 455,
+      "end": 456,
+      "start_seconds": 124.1,
+      "end_seconds": 124.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 457,
+      "end": 458,
+      "start_seconds": 124.6,
+      "end_seconds": 125.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 459,
+      "end": 460,
+      "start_seconds": 125.1,
+      "end_seconds": 125.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あ、",
+      "speaker": "spk:0",
+      "start": 460,
+      "end": 462,
+      "start_seconds": 126.2,
+      "end_seconds": 126.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "救急",
+      "speaker": "spk:0",
+      "start": 462,
+      "end": 464,
+      "start_seconds": 126.6,
+      "end_seconds": 126.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "隊",
+      "speaker": "spk:0",
+      "start": 464,
+      "end": 465,
+      "start_seconds": 126.9,
+      "end_seconds": 127.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "隊員",
+      "speaker": "spk:0",
+      "start": 465,
+      "end": 467,
+      "start_seconds": 127.5,
+      "end_seconds": 127.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 467,
+      "end": 468,
+      "start_seconds": 127.8,
+      "end_seconds": 127.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "方",
+      "speaker": "spk:0",
+      "start": 468,
+      "end": 469,
+      "start_seconds": 127.8,
+      "end_seconds": 128.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "この",
+      "speaker": "spk:0",
+      "start": 469,
+      "end": 471,
+      "start_seconds": 128.5,
+      "end_seconds": 128.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "方",
+      "speaker": "spk:0",
+      "start": 471,
+      "end": 472,
+      "start_seconds": 128.7,
+      "end_seconds": 128.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 473,
+      "end": 474,
+      "start_seconds": 128.9,
+      "end_seconds": 129.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "分",
+      "speaker": "spk:0",
+      "start": 474,
+      "end": 475,
+      "start_seconds": 129.1,
+      "end_seconds": 129.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "前",
+      "speaker": "spk:0",
+      "start": 475,
+      "end": 476,
+      "start_seconds": 129.3,
+      "end_seconds": 129.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "に",
+      "speaker": "spk:0",
+      "start": 476,
+      "end": 477,
+      "start_seconds": 129.5,
+      "end_seconds": 129.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "目",
+      "speaker": "spk:0",
+      "start": 477,
+      "end": 478,
+      "start_seconds": 129.6,
+      "end_seconds": 129.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 478,
+      "end": 479,
+      "start_seconds": 129.7,
+      "end_seconds": 129.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "前",
+      "speaker": "spk:0",
+      "start": 479,
+      "end": 480,
+      "start_seconds": 129.8,
+      "end_seconds": 130.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "で",
+      "speaker": "spk:0",
+      "start": 480,
+      "end": 481,
+      "start_seconds": 130.0,
+      "end_seconds": 130.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "倒れる",
+      "speaker": "spk:0",
+      "start": 481,
+      "end": 484,
+      "start_seconds": 130.0,
+      "end_seconds": 130.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 484,
+      "end": 485,
+      "start_seconds": 130.4,
+      "end_seconds": 130.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:0",
+      "start": 485,
+      "end": 486,
+      "start_seconds": 130.5,
+      "end_seconds": 130.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "見",
+      "speaker": "spk:0",
+      "start": 486,
+      "end": 487,
+      "start_seconds": 130.6,
+      "end_seconds": 130.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "まし",
+      "speaker": "spk:0",
+      "start": 487,
+      "end": 489,
+      "start_seconds": 130.7,
+      "end_seconds": 130.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "た。",
+      "speaker": "spk:0",
+      "start": 489,
+      "end": 491,
+      "start_seconds": 130.9,
+      "end_seconds": 131.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "えっと",
+      "speaker": "spk:0",
+      "start": 491,
+      "end": 494,
+      "start_seconds": 131.8,
+      "end_seconds": 132.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "胸骨",
+      "speaker": "spk:0",
+      "start": 494,
+      "end": 496,
+      "start_seconds": 132.4,
+      "end_seconds": 132.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "圧迫",
+      "speaker": "spk:0",
+      "start": 496,
+      "end": 498,
+      "start_seconds": 132.7,
+      "end_seconds": 133.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "を",
+      "speaker": "spk:0",
+      "start": 498,
+      "end": 499,
+      "start_seconds": 133.1,
+      "end_seconds": 133.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:0",
+      "start": 499,
+      "end": 500,
+      "start_seconds": 133.2,
+      "end_seconds": 133.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 500,
+      "end": 501,
+      "start_seconds": 133.3,
+      "end_seconds": 133.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "AED",
+      "speaker": "spk:0",
+      "start": 502,
+      "end": 505,
+      "start_seconds": 133.4,
+      "end_seconds": 133.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "で",
+      "speaker": "spk:0",
+      "start": 505,
+      "end": 506,
+      "start_seconds": 133.8,
+      "end_seconds": 133.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "1",
+      "speaker": "spk:0",
+      "start": 507,
+      "end": 508,
+      "start_seconds": 133.9,
+      "end_seconds": 134.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "回",
+      "speaker": "spk:0",
+      "start": 508,
+      "end": 509,
+      "start_seconds": 134.0,
+      "end_seconds": 134.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ショック",
+      "speaker": "spk:0",
+      "start": 509,
+      "end": 513,
+      "start_seconds": 134.2,
+      "end_seconds": 134.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "し",
+      "speaker": "spk:0",
+      "start": 513,
+      "end": 514,
+      "start_seconds": 134.4,
+      "end_seconds": 134.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "まし",
+      "speaker": "spk:0",
+      "start": 514,
+      "end": 516,
+      "start_seconds": 134.5,
+      "end_seconds": 134.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "た",
+      "speaker": "spk:0",
+      "start": 516,
+      "end": 517,
+      "start_seconds": 134.6,
+      "end_seconds": 134.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "けど",
+      "speaker": "spk:0",
+      "start": 517,
+      "end": 519,
+      "start_seconds": 134.7,
+      "end_seconds": 134.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "も",
+      "speaker": "spk:0",
+      "start": 519,
+      "end": 520,
+      "start_seconds": 134.9,
+      "end_seconds": 135.2,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "えっと",
+      "speaker": "spk:0",
+      "start": 520,
+      "end": 523,
+      "start_seconds": 135.6,
+      "end_seconds": 136.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "まだ",
+      "speaker": "spk:0",
+      "start": 523,
+      "end": 525,
+      "start_seconds": 136.6,
+      "end_seconds": 136.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "意識",
+      "speaker": "spk:0",
+      "start": 525,
+      "end": 527,
+      "start_seconds": 136.8,
+      "end_seconds": 137.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "戻っ",
+      "speaker": "spk:0",
+      "start": 527,
+      "end": 529,
+      "start_seconds": 137.1,
+      "end_seconds": 137.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "て",
+      "speaker": "spk:0",
+      "start": 529,
+      "end": 530,
+      "start_seconds": 137.4,
+      "end_seconds": 137.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "い",
+      "speaker": "spk:0",
+      "start": 530,
+      "end": 531,
+      "start_seconds": 137.5,
+      "end_seconds": 137.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ませ",
+      "speaker": "spk:0",
+      "start": 531,
+      "end": 533,
+      "start_seconds": 137.5,
+      "end_seconds": 137.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ん。",
+      "speaker": "spk:0",
+      "start": 533,
+      "end": 535,
+      "start_seconds": 137.8,
+      "end_seconds": 137.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "え、",
+      "speaker": "spk:0",
+      "start": 535,
+      "end": 537,
+      "start_seconds": 138.6,
+      "end_seconds": 138.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "この",
+      "speaker": "spk:0",
+      "start": 537,
+      "end": 539,
+      "start_seconds": 139.1,
+      "end_seconds": 139.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "方",
+      "speaker": "spk:0",
+      "start": 539,
+      "end": 540,
+      "start_seconds": 139.3,
+      "end_seconds": 139.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 540,
+      "end": 541,
+      "start_seconds": 139.5,
+      "end_seconds": 139.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "身元",
+      "speaker": "spk:0",
+      "start": 541,
+      "end": 543,
+      "start_seconds": 139.6,
+      "end_seconds": 140.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "は",
+      "speaker": "spk:0",
+      "start": 543,
+      "end": 544,
+      "start_seconds": 140.0,
+      "end_seconds": 140.0,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "分から",
+      "speaker": "spk:0",
+      "start": 544,
+      "end": 547,
+      "start_seconds": 140.0,
+      "end_seconds": 140.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ない",
+      "speaker": "spk:0",
+      "start": 547,
+      "end": 549,
+      "start_seconds": 140.3,
+      "end_seconds": 140.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ん",
+      "speaker": "spk:0",
+      "start": 549,
+      "end": 550,
+      "start_seconds": 140.4,
+      "end_seconds": 140.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "です",
+      "speaker": "spk:0",
+      "start": 550,
+      "end": 552,
+      "start_seconds": 140.4,
+      "end_seconds": 140.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "けど",
+      "speaker": "spk:0",
+      "start": 552,
+      "end": 554,
+      "start_seconds": 140.6,
+      "end_seconds": 140.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "も",
+      "speaker": "spk:0",
+      "start": 554,
+      "end": 555,
+      "start_seconds": 140.8,
+      "end_seconds": 140.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "足元",
+      "speaker": "spk:0",
+      "start": 555,
+      "end": 557,
+      "start_seconds": 140.9,
+      "end_seconds": 141.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "に",
+      "speaker": "spk:0",
+      "start": 557,
+      "end": 558,
+      "start_seconds": 141.4,
+      "end_seconds": 141.5,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "この",
+      "speaker": "spk:0",
+      "start": 558,
+      "end": 560,
+      "start_seconds": 141.5,
+      "end_seconds": 141.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "方",
+      "speaker": "spk:0",
+      "start": 560,
+      "end": 561,
+      "start_seconds": 141.6,
+      "end_seconds": 141.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "の",
+      "speaker": "spk:0",
+      "start": 561,
+      "end": 562,
+      "start_seconds": 141.8,
+      "end_seconds": 141.9,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "荷物",
+      "speaker": "spk:0",
+      "start": 562,
+      "end": 564,
+      "start_seconds": 141.9,
+      "end_seconds": 142.3,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "あり",
+      "speaker": "spk:0",
+      "start": 564,
+      "end": 566,
+      "start_seconds": 142.3,
+      "end_seconds": 142.4,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:0",
+      "start": 566,
+      "end": 569,
+      "start_seconds": 142.4,
+      "end_seconds": 142.7,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "引き継ぎ",
+      "speaker": "spk:0",
+      "start": 569,
+      "end": 573,
+      "start_seconds": 143.3,
+      "end_seconds": 143.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "ます。",
+      "speaker": "spk:0",
+      "start": 573,
+      "end": 576,
+      "start_seconds": 143.6,
+      "end_seconds": 144.1,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "1",
+      "speaker": "spk:0",
+      "start": 577,
+      "end": 578,
+      "start_seconds": 144.1,
+      "end_seconds": 144.6,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "2",
+      "speaker": "spk:0",
+      "start": 579,
+      "end": 580,
+      "start_seconds": 144.6,
+      "end_seconds": 144.8,
+      "source": "transcription_word_info"
+    },
+    {
+      "text": "3",
+      "speaker": "spk:0",
+      "start": 581,
+      "end": 582,
+      "start_seconds": 145.0,
+      "end_seconds": 145.3,
+      "source": "transcription_word_info"
+    }
+  ]
+}

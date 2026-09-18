@@ -10,6 +10,8 @@ Geminiによる文字起こしと18項目の自動採点は [gemini.ipynb](gemin
 
 採点実行後には、音声別の点数と`data/人間音声採点データ.csv`の模範点数との差、平均絶対誤差をまとめたTXTを`outputs/evaluation/bls/summaries/`に自動保存します。模範CSVは比較にだけ使用し、採点モデルには渡しません。
 
+項目16は、項目11とは別場面の圧迫数唱があれば対象です。ショック完了の明示は要求せず、同じ連続数唱や交代合図の二重加点は防ぎます。採点設定の段階比較、語彙追加、話者ID・音声時刻を使う実験は[精度比較の手順](docs/bls_evaluation.md#revised3からの段階比較)を参照してください。
+
 ```bash
 # 通信せず対象とリクエスト数を確認
 uv run python scripts/evaluate_bls.py --transcript outputs/transcription/gemini/1回目_右前_gemini.txt --dry-run

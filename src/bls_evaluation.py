@@ -8,9 +8,10 @@ from typing import Callable
 
 from src.bls_speech import separate_speech, segments
 
-RUBRIC_VERSION = "bls-18-v1"
-PROMPT_VERSION = "evidence-device-reference-v2"
-VALIDATOR_VERSION = "guards-device-reference-v2"
+RUBRIC_VERSION = "bls-18-distinct-counts-v2"
+PROMPT_VERSION = "evidence-aed-scene-v3"
+VALIDATOR_VERSION = "guards-aed-scene-v4"
+EVALUATION_PROFILES = ("counts", "improved")
 
 CRITERIA = [
     ("傷病者発見", "倒れている人など、傷病者を発見したことを発言する。", "傷病者|倒れ|人が"),
@@ -28,7 +29,7 @@ CRITERIA = [
     ("胸骨圧迫交代の依頼", "AED持参者に胸骨圧迫の交代を依頼する。使えない条件は常に成立し、条件の発言は不要。", "交代|代わ|替わ|圧迫"),
     ("合図による交代", "1、2、3等の合図で胸骨圧迫を交代する。単なる圧迫中の数唱は不可。", "交代|せーの|合図|[123一二三]"),
     ("ショック前の離隔指示", "参加者がショック前に他者に離れるよう指示する。ショック実行/完了の後続根拠をcontextに含める。AEDの自動音声は不可。", "離れ|触れ|下が"),
-    ("ショック後の数唱", "ショック終了後に胸骨圧迫の回数を数えれば成立。再開宣言は不要。先行するショック完了の根拠をcontextに含める。終了時点不明ならuncertain。", "圧迫|[0-9一二三四五六七八九十]|いち|さん"),
+    ("別場面の胸骨圧迫の数唱", "11とは別の場面で胸骨圧迫の回数を数えれば成立。ショック完了の明示・ショックとの前後位置・再開宣言は不要。同じ連続数唱を分割して11と16に使わない。交代合図だけは不可。", "圧迫|[0-9一二三四五六七八九十]|いち|さん"),
     ("救急隊への経緯説明", "救急隊に引き継ぐ想定で経緯を説明する。内容の正確性・実際の救急隊到着は不問。単なる独り言は不可。", "救急|倒れ|発見|経緯|引き継|引継"),
     ("荷物の存在を知らせる", "救急隊に引き継ぐ想定で傷病者の荷物の存在を知らせる。単なる荷物を取る依頼は不可。", "荷物|かばん|鞄|バッグ"),
 ]
@@ -42,6 +43,7 @@ REVISED_VOCABULARY = [
     "傷病者", "感染防御", "119番", "AED", "呼吸なし", "脈なし", "胸骨圧迫",
     "救急隊", "荷物"
 ]
+TARGETED_VOCABULARY = REVISED_VOCABULARY + ["傷病者発見", "AEDを使えますか", "使えません"]
 
 
 def normalize(text: str) -> str:
@@ -110,25 +112,41 @@ evidenceは加点の直接根拠、contextは前後関係の補助根拠。quote
 一意に位置を特定できる最小限の連続引用を、そのままコピーする（表記正規化しない）。
 数唱はkind=count、交代の合図はhandoff、ショック実行はshock、終了確認はshock_complete。
 ショックが必要・充電中・ショックしますという予告は完了の証拠ではない。
-15には指示の後にあるショック実行/完了をcontextに、16には数唱の前にあるショック完了をcontextに含める。
-11と16で同じ数唱を使い回さず、14の交代合図を11/16の数唱に使わない。
+15には指示の後にあるショック実行/完了をcontextに含める。
+16は11とは別場面の圧迫数唱を評価する。ショック完了の明示やショックとの前後位置は要求しない。
+16のためにショック完了を推測・補完しない。数唱が1場面だけなら11に割り当て16はnot_detected。
+11と16で同じ連続数唱を分割して使い回さず、14や救急隊への交代合図を11/16の数唱に使わない。
 数唱に再開宣言や30回完遂を要求しない。17は経緯の正確さを問わない。
 日本語で簡潔なreasonを付ける。根拠がない場合のevidence/contextは空配列にする。
 """
 
 
-def build_prompt(text: str, *, device_reference: str | None = None) -> str:
+def build_prompt(text: str, *, device_reference: str | None = None,
+                 evaluation_profile="improved", word_annotations: list[dict] | None = None) -> str:
+    if evaluation_profile not in EVALUATION_PROFILES:
+        raise ValueError("採点設定はcounts/improvedで指定してください")
     if not text.strip():
         raise ValueError("空の文字起こしは採点できません")
     parts = segments(text)
     extra = {}
+    if evaluation_profile == "improved":
+        extra["speaker_guidance"] = (
+            "15の話者判定は近傍2文だけでなく同じAED操作場面全体を読む。"
+            "機器の離隔案内と別にある参加者の呼びかけを検討し、はい等の付加語で別の意味としない。"
+            "機器の発言しかない場合や話者を区別できない場合は加点しない。")
+    if word_annotations:
+        extra["word_annotations"] = word_annotations
+        extra["annotation_guidance"] = (
+            "speakerは声の識別IDであり参加者役の確定ラベルではない。"
+            "機器の定型案内、会話上の役割を照合し、指導者や不明話者は直接の根拠にしない。"
+            "音声時刻は補助情報。quoteは必ずsegments内の原文から引用する。")
     if device_reference is not None:
         speech = separate_speech(text, device_reference)
         parts = [p for p in speech["segments"] if p["source_role"] in ("candidate", "participant")]
         text = speech["human_candidate_text"]
-        extra = {"device_context": [p for p in speech["segments"] if p["source_role"] == "device"],
+        extra.update({"device_context": [p for p in speech["segments"] if p["source_role"] == "device"],
                  "excluded_context": [p for p in speech["segments"] if p["source_role"] in ("instructor", "unknown")],
-                 "separation_version": speech["version"], "device_reference_sha256": speech["reference_sha256"]}
+                 "separation_version": speech["version"], "device_reference_sha256": speech["reference_sha256"]})
     return json.dumps({"rubric": [{"id": i, "name": n, "rule": r}
                                   for i, (n, r, _) in enumerate(CRITERIA, 1)],
                        "transcript": text, "segments": parts,
@@ -195,7 +213,58 @@ NEGATED_DIRECTIVE = re.compile(r"呼ばない|呼ばなく|通報しない|持�
 SPOKEN_NUMBER = re.compile(r"[0-9一二三四五六七八九十零]|いち|にい|さん|しー|しい|ごー|ろく|しち|はち|きゅう|じゅう|ゼロ")
 
 
-def validate_response(text: str, payload: dict, *, device_reference: str | None = None) -> EvaluationResult:
+def _same_count_episode(text: str, left: dict, right: dict) -> bool:
+    """Separate quotes in an uninterrupted count are still one performance."""
+    a, b = sorted((left, right), key=lambda e: e["start"])
+    if a["end"] > b["start"]:
+        return True
+    gap = SPOKEN_NUMBER.sub("", normalize(text[a["end"]:b["start"]]))
+    return not any(c.isalnum() for c in gap)
+
+
+def _handoff_only(parts: dict, evidence: dict) -> bool:
+    part = parts[evidence["segment_id"]]
+    # Inspect the complete utterance, so a short quote from a longer count is not rejected.
+    numbers = re.findall(r"[0-9一二三四五六七八九十]", normalize(part["text"]))
+    if "".join(numbers) not in ("123", "一二三"):
+        return False
+    previous = parts.get(evidence["segment_id"] - 1, {})
+    return bool(re.search(r"交代|代わ|替わ|引き継|引継|合図|せーの",
+                          normalize(previous.get("text", "") + part["text"])))
+
+
+def _aed_scene(parts: dict, center: int) -> list[dict]:
+    ordered = list(parts.values())
+    index = next(i for i, s in enumerate(ordered) if s["id"] == center)
+
+    def boundary(part):
+        value = normalize(part["text"])
+        return (re.search(r"ショック.*(?:完了|終了)|放電.*終了|救急隊|引き継|引継|胸骨圧迫.{0,3}(?:開始|再開)", value)
+                or (len(re.findall(r"[0-9一二三四五六七八九十]", value)) >= 4
+                    and not any(c.isalpha() for c in re.sub(r"[一二三四五六七八九十]", "", value))))
+
+    lo, hi = index, index
+    while lo > 0 and not boundary(ordered[lo - 1]):
+        lo -= 1
+    while hi + 1 < len(ordered):
+        hi += 1
+        if boundary(ordered[hi]):
+            break
+    return ordered[lo:hi + 1]
+
+
+def _distinct_device_directive(scene: list[dict], evidence: dict) -> bool:
+    """Compare the directive within its source utterance, ignoring polite prefixes."""
+    directive = re.search(r"離れてください|触れないでください|触らないでください", normalize(evidence["quote"]))
+    return bool(directive and any(
+        s.get("source_role") == "device" and s["id"] != evidence["segment_id"]
+        and directive.group() in normalize(s["text"]) for s in scene))
+
+
+def validate_response(text: str, payload: dict, *, device_reference: str | None = None,
+                      evaluation_profile="improved") -> EvaluationResult:
+    if evaluation_profile not in EVALUATION_PROFILES:
+        raise ValueError("採点設定はcounts/improvedで指定してください")
     if not text.strip():
         raise ValueError("空の文字起こしは採点できません")
     if not isinstance(payload, dict) or set(payload) != {"items"} or not isinstance(payload["items"], list):
@@ -230,8 +299,11 @@ def validate_response(text: str, payload: dict, *, device_reference: str | None 
                     warnings.append("使用意思の質問だけでは使用能力を確認できません")
                 if i == 15 and re.search(r"離れ|触れ", quote):
                     neighbors = [s for sid, s in parts.items() if abs(sid - e["segment_id"]) <= 2]
-                    separate_device_call = any(s.get("source_role") == "device" and quote.rstrip("。!?！？") in normalize(s["text"])
-                                               for s in neighbors if s["id"] != e["segment_id"])
+                    # Widen the search for corroborating device speech, not the
+                    # suspicion radius: a distant announcement cannot disqualify a call.
+                    separate_device_call = (_distinct_device_directive(_aed_scene(parts, e["segment_id"]), e) if evaluation_profile == "improved" else
+                                            any(s.get("source_role") == "device" and quote.rstrip("。!?！？") in normalize(s["text"])
+                                                for s in neighbors if s["id"] != e["segment_id"]))
                     if (not explicit_participant and not separate_device_call
                             and any(DEVICE_MARKER.search(normalize(s["text"])) for s in neighbors)):
                         warnings.append("近接するAED案内と参加者の離隔指示を区別できません")
@@ -239,14 +311,13 @@ def validate_response(text: str, payload: dict, *, device_reference: str | None 
                 warnings.append("圧迫中の数唱の根拠がありません")
             if i in (11, 16) and any(e["kind"] == "count" and not SPOKEN_NUMBER.search(normalize(e["quote"])) for e in evidence):
                 warnings.append("数唱の引用に数の表現がありません")
+            if i in (11, 16) and any(e["kind"] == "count" and _handoff_only(parts, e) for e in evidence):
+                warnings.append("交代の合図だけでは圧迫中の数唱になりません")
             if i == 14 and not any(e["kind"] == "handoff" for e in evidence):
                 warnings.append("交代の合図の根拠がありません")
             if i == 15 and not any(c["kind"] in ("shock", "shock_complete") and c["start"] >= e["end"]
                                    for c in context for e in evidence):
                 warnings.append("指示の後のショックを確認できません")
-            if i == 16 and not any(c["kind"] == "shock_complete" and c["end"] <= e["start"]
-                                   for c in context for e in evidence if e["kind"] == "count"):
-                warnings.append("数唱の前のショック完了を確認できません")
         status = "uncertain" if warnings else row["status"]
         items.append(ItemResult(i, CRITERIA[i - 1][0], status, row["status"], row["reason"],
                                 evidence, context, list(dict.fromkeys(warnings))))
@@ -254,13 +325,18 @@ def validate_response(text: str, payload: dict, *, device_reference: str | None 
     for a, b in ((11, 14), (11, 16), (14, 16)):
         left, right = items[a - 1], items[b - 1]
         if left.model_status == right.model_status == "met" and any(
-                max(x["start"], y["start"]) < min(x["end"], y["end"])
+                (_same_count_episode(text, x, y) if (a, b) == (11, 16) else
+                 max(x["start"], y["start"]) < min(x["end"], y["end"]))
                 for x in left.evidence for y in right.evidence):
             for item in (left, right):
                 item.status = "uncertain"
                 item.warnings.append("同じ数唱・合図を異なる場面に重複使用しています")
+    if items[15].model_status == "met" and items[10].status != "met":
+        items[15].status = "uncertain"
+        items[15].warnings.append("11とは別の場面の数唱であることを確認できません")
     met = sum(i.status == "met" for i in items)
-    return EvaluationResult(round(met / 18 * 100, 1), met, sum(i.status == "uncertain" for i in items), items)
+    return EvaluationResult(round(met / 18 * 100, 1), met, sum(i.status == "uncertain" for i in items), items,
+                            validator_version=f"{VALIDATOR_VERSION}:{evaluation_profile}")
 
 
 def evaluate_transcript(text: str, *, judge: Callable[[str], dict] | None = None) -> EvaluationResult:

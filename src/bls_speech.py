@@ -1,10 +1,48 @@
 """Reference-based text separation; this does not identify voices from a waveform."""
 
 import hashlib
+import math
 import re
 import unicodedata
 
 SEPARATION_VERSION = "device-reference-v1"
+
+
+def extract_word_annotations(raw: dict, text: str) -> list[dict]:
+    """Keep acoustic time and original-text offsets separate; never invent alignment."""
+    result, cursor = [], 0
+    for step in raw.get("steps", []) or []:
+        for content in step.get("content", []) or []:
+            for word in content.get("annotations", []) or []:
+                if word.get("type") != "word_info":
+                    continue
+                value = word.get("text")
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError("話者注釈の単語が空です")
+                start = text.find(value, cursor)
+                if start < 0:
+                    raise ValueError("話者注釈を原文に対応付けできません")
+                times = []
+                for key in ("start_offset", "end_offset"):
+                    raw_time = word.get(key)
+                    if raw_time is None:
+                        raise ValueError("話者注釈に音声時刻がありません")
+                    seconds = float(str(raw_time).removesuffix("s"))
+                    if not math.isfinite(seconds) or seconds < 0:
+                        raise ValueError("話者注釈の音声時刻が不正です")
+                    times.append(seconds)
+                if times[1] < times[0]:
+                    raise ValueError("話者注釈の音声時刻が逆転しています")
+                speaker = word.get("speaker")
+                if speaker is not None and not isinstance(speaker, str):
+                    raise ValueError("話者IDが不正です")
+                cursor = start + len(value)
+                result.append({"text": value, "speaker": speaker, "start": start, "end": cursor,
+                               "start_seconds": times[0], "end_seconds": times[1],
+                               "source": "transcription_word_info"})
+    if not result:
+        raise ValueError("話者識別を要求しましたが単語注釈が返されませんでした")
+    return result
 
 
 def segments(text: str) -> list[dict]:

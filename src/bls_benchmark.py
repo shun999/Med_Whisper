@@ -1,11 +1,47 @@
 """Gold-label templates and explicit-coverage benchmark reports; never infer gold."""
 
 import re
+import copy
 from pathlib import Path
 
 from src.bls_evaluation import CRITERIA, normalize, validate_response
 from src.bls_pipeline import ROOT, digest, file_digest, now_iso, read_json, write_json
 from src.bls_speech import separate_speech
+from src.bls_summary import load_human_scores, _load_result
+
+
+def import_human_scores(manifest: dict, csv_path: Path) -> dict:
+    """Import explicit human labels without fabricating reference transcripts."""
+    result = copy.deepcopy(manifest)
+    samples = validate_manifest(result)
+    gold = load_human_scores(csv_path)
+    if set(gold["samples"]) != {s["sample_id"] for s in samples}:
+        raise ValueError("模範CSVとマニフェストの音声一覧が一致しません")
+    for sample in samples:
+        labels = {str(i): v for i, v in enumerate(gold["samples"][sample["sample_id"]]["labels"], 1)}
+        if any(v is not None and v != labels[k] for k, v in sample["labels"].items()):
+            raise ValueError(f"既存の正解ラベルとCSVが矛盾しています: {sample['sample_id']}")
+        sample["labels"] = labels
+        sample["label_source"] = "human_scores_csv"
+    result.update(created_at=now_iso(), human_scores_csv={"path": gold["path"], "sha256": gold["sha256"]})
+    return result
+
+
+def review_manifest(manifest: dict, run: dict) -> dict:
+    """Prepare an audit worklist; ASR text is explicitly not a human reference."""
+    result = copy.deepcopy(manifest)
+    measured = report(manifest, run, split="all", saved_results=True)
+    records = _load_run(run, saved_results=True)
+    for sample in result["samples"]:
+        errors = [e for e in measured["errors"] if e["sample_id"] == sample["sample_id"]]
+        if errors:
+            record = records[sample["sample_id"]]
+            sample["review"] = {"status": "pending", "items": errors,
+                                "asr_text_for_review": record["transcript"],
+                                "word_annotations": record.get("word_annotations", []),
+                                "instructions": "音声を人が確認後、reference_textへ全文逐語録、reference_evidenceへ各項目の根拠を記入。ASR原文をそのまま正解として転記しない。"}
+    result["review_source_run"] = run.get("run_path")
+    return result
 
 
 def init_manifest(audio_dir: Path, destination: Path) -> dict:
@@ -48,7 +84,7 @@ def validate_manifest(manifest: dict) -> list[dict]:
     return samples
 
 
-def _load_run(run: dict) -> dict:
+def _load_run(run: dict, *, saved_results=False) -> dict:
     if run.get("stage") == "transcription":
         raise ValueError("文字起こし専用runは採点精度の比較に使えません")
     results = {}
@@ -56,14 +92,25 @@ def _load_run(run: dict) -> dict:
         sample_id = entry["sample_id"]
         if sample_id in results:
             raise ValueError(f"runに同じsample_idが複数あります: {sample_id}")
-        record = read_json(Path(entry["result_path"]))
+        record = _load_result(entry, None)
         if record["sample_id"] != sample_id or record["input_sha256"] != entry["input_sha256"]:
             raise ValueError("runと結果ファイルの対応が不正です")
+        ev = record["evaluation"]
+        if (any(type(i["id"]) is not int for i in ev["items"])
+                or sorted(i["id"] for i in ev["items"]) != list(range(1, 19))
+                or any(i["status"] not in ("met", "uncertain", "not_detected") for i in ev["items"])
+                or ev["score"] != round(sum(i["status"] == "met" for i in ev["items"]) / 18 * 100, 1)
+                or record["transcript_sha256"] != digest(record["transcript"].encode())):
+            raise ValueError("保存済み採点結果の項目・点数・原文ハッシュが不正です")
+        if saved_results:
+            results[sample_id] = record
+            continue
         speech = record.get("speech_separation")
         reference = speech["reference_text"] if speech is not None else None
         if speech is not None and speech != separate_speech(record["transcript"], reference):
             raise ValueError("保存済みの発言分離と現在の分離処理が一致しません。同じ文字起こしから再採点してください")
-        verified = validate_response(record["transcript"], record["model_response"], device_reference=reference).to_dict()
+        verified = validate_response(record["transcript"], record["model_response"], device_reference=reference,
+                                     evaluation_profile=record.get("evaluation_profile", "improved")).to_dict()
         if record["evaluation"] != verified:
             raise ValueError("採点結果と現在の検証器が一致しません。同じキャッシュから再採点してください")
         results[sample_id] = record
@@ -89,11 +136,11 @@ def _metrics(counts):
             "f1": 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else None}
 
 
-def report(manifest: dict, run: dict, *, reference_run: dict | None = None, split="validation") -> dict:
+def report(manifest: dict, run: dict, *, reference_run: dict | None = None, split="validation", saved_results=False) -> dict:
     samples = [s for s in validate_manifest(manifest) if split == "all" or s["split"] == split]
-    results = _load_run(run)
-    references = _load_run(reference_run) if reference_run else {}
-    counts = [{"tp": 0, "fp": 0, "fn": 0, "tn": 0, "uncertain": 0} for _ in CRITERIA]
+    results = _load_run(run, saved_results=saved_results)
+    references = _load_run(reference_run, saved_results=saved_results) if reference_run else {}
+    counts = [{"tp": 0, "fp": 0, "fn": 0, "tn": 0, "uncertain": 0, "validator_rejections": 0} for _ in CRITERIA]
     errors, scores, coverage = [], [], []
     edit_count = reference_chars = 0
     cer_samples = 0
@@ -128,6 +175,7 @@ def report(manifest: dict, run: dict, *, reference_run: dict | None = None, spli
             key = "tp" if truth and predicted else "fn" if truth else "fp" if predicted else "tn"
             counts[i - 1][key] += 1
             counts[i - 1]["uncertain"] += item["status"] == "uncertain"
+            counts[i - 1]["validator_rejections"] += item["model_status"] == "met" and item["status"] != "met"
             ref_correct = None
             if reference is not None:
                 ref_predicted = reference["evaluation"]["items"][i - 1]["status"] == "met"
@@ -137,6 +185,7 @@ def report(manifest: dict, run: dict, *, reference_run: dict | None = None, spli
             if predicted != truth:
                 errors.append({"sample_id": sid, "id": i, "gold": truth, "status": item["status"],
                                "reason": item["reason"], "warnings": item["warnings"],
+                               "model_status": item["model_status"], "evidence": item["evidence"], "context": item["context"],
                                "stage_hint": "unresolved" if ref_correct is None else
                                    "asr_or_asr_context" if ref_correct else "evaluator_also_failed"})
         if labeled == 18:
@@ -149,6 +198,9 @@ def report(manifest: dict, run: dict, *, reference_run: dict | None = None, spli
     if not n:
         raise ValueError("比較できる注釈済み項目がありません。未注釈を未実施として補完しません")
     return {"created_at": now_iso(), "split": split, "run_status": run["status"],
+            "verification": "saved_snapshot" if saved_results else "current_validator",
+            "rubric_versions": sorted({r["evaluation"].get("rubric_version", "unknown") for r in results.values()}),
+            "validator_versions": sorted({r["evaluation"].get("validator_version", "unknown") for r in results.values()}),
             "coverage": coverage, "evaluated_labeled_items": n,
             "micro": _metrics(totals), "uncertain_rate": totals["uncertain"] / n,
             "per_item": [{"id": i + 1, "name": CRITERIA[i][0], **_metrics(c)} for i, c in enumerate(counts)],

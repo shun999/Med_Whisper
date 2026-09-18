@@ -1,0 +1,747 @@
+{
+  "created_at": "2026-09-17T08:54:29.720701+00:00",
+  "split": "all",
+  "run_status": "completed",
+  "verification": "current_validator",
+  "coverage": [
+    {
+      "sample_id": "20260706_10回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_11回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_12回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_13回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_14回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_15回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_16回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_17回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_18回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_19回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_1回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_20回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_2回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_3回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_4回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_5回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_6回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_7回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_8回目",
+      "labeled_items": 18,
+      "evaluated": true
+    },
+    {
+      "sample_id": "20260706_9回目",
+      "labeled_items": 18,
+      "evaluated": true
+    }
+  ],
+  "evaluated_labeled_items": 360,
+  "micro": {
+    "tp": 342,
+    "fp": 0,
+    "fn": 11,
+    "tn": 7,
+    "uncertain": 5,
+    "validator_rejections": 5,
+    "precision": 1.0,
+    "recall": 0.9688385269121813,
+    "f1": 0.9841726618705036
+  },
+  "uncertain_rate": 0.013888888888888888,
+  "per_item": [
+    {
+      "id": 1,
+      "name": "傷病者発見",
+      "tp": 19,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 0.95,
+      "f1": 0.9743589743589743
+    },
+    {
+      "id": 2,
+      "name": "周囲の安全",
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 3,
+      "name": "感染防御",
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 4,
+      "name": "反応の確認",
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 5,
+      "name": "応援を呼ぶ",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 6,
+      "name": "119番通報の指示",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 7,
+      "name": "AED持参の指示",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 8,
+      "name": "戻るよう指示",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 9,
+      "name": "呼吸の確認",
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 10,
+      "name": "脈の確認",
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 11,
+      "name": "胸骨圧迫の数唱",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 12,
+      "name": "AED使用能力の確認",
+      "tp": 17,
+      "fp": 0,
+      "fn": 3,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 0.85,
+      "f1": 0.918918918918919
+    },
+    {
+      "id": 13,
+      "name": "胸骨圧迫交代の依頼",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 14,
+      "name": "合図による交代",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 15,
+      "name": "ショック前の離隔指示",
+      "tp": 15,
+      "fp": 0,
+      "fn": 5,
+      "tn": 0,
+      "uncertain": 5,
+      "validator_rejections": 5,
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1": 0.8571428571428571
+    },
+    {
+      "id": 16,
+      "name": "別場面の胸骨圧迫の数唱",
+      "tp": 17,
+      "fp": 0,
+      "fn": 2,
+      "tn": 1,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 0.8947368421052632,
+      "f1": 0.9444444444444444
+    },
+    {
+      "id": 17,
+      "name": "救急隊への経緯説明",
+      "tp": 20,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    {
+      "id": 18,
+      "name": "荷物の存在を知らせる",
+      "tp": 19,
+      "fp": 0,
+      "fn": 0,
+      "tn": 1,
+      "uncertain": 0,
+      "validator_rejections": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  ],
+  "scores": [
+    {
+      "sample_id": "20260706_10回目",
+      "expected": 100.0,
+      "actual": 94.4,
+      "absolute_error": 5.599999999999994
+    },
+    {
+      "sample_id": "20260706_11回目",
+      "expected": 100.0,
+      "actual": 94.4,
+      "absolute_error": 5.599999999999994
+    },
+    {
+      "sample_id": "20260706_12回目",
+      "expected": 100.0,
+      "actual": 88.9,
+      "absolute_error": 11.099999999999994
+    },
+    {
+      "sample_id": "20260706_13回目",
+      "expected": 100.0,
+      "actual": 100.0,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_14回目",
+      "expected": 100.0,
+      "actual": 100.0,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_15回目",
+      "expected": 100.0,
+      "actual": 94.4,
+      "absolute_error": 5.599999999999994
+    },
+    {
+      "sample_id": "20260706_16回目",
+      "expected": 100.0,
+      "actual": 100.0,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_17回目",
+      "expected": 100.0,
+      "actual": 100.0,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_18回目",
+      "expected": 100.0,
+      "actual": 94.4,
+      "absolute_error": 5.599999999999994
+    },
+    {
+      "sample_id": "20260706_19回目",
+      "expected": 100.0,
+      "actual": 100.0,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_1回目",
+      "expected": 94.4,
+      "actual": 88.9,
+      "absolute_error": 5.5
+    },
+    {
+      "sample_id": "20260706_20回目",
+      "expected": 100.0,
+      "actual": 88.9,
+      "absolute_error": 11.099999999999994
+    },
+    {
+      "sample_id": "20260706_2回目",
+      "expected": 100.0,
+      "actual": 100.0,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_3回目",
+      "expected": 100.0,
+      "actual": 100.0,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_4回目",
+      "expected": 100.0,
+      "actual": 94.4,
+      "absolute_error": 5.599999999999994
+    },
+    {
+      "sample_id": "20260706_5回目",
+      "expected": 100.0,
+      "actual": 94.4,
+      "absolute_error": 5.599999999999994
+    },
+    {
+      "sample_id": "20260706_6回目",
+      "expected": 88.9,
+      "actual": 88.9,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_7回目",
+      "expected": 94.4,
+      "actual": 94.4,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_8回目",
+      "expected": 88.9,
+      "actual": 88.9,
+      "absolute_error": 0.0
+    },
+    {
+      "sample_id": "20260706_9回目",
+      "expected": 94.4,
+      "actual": 94.4,
+      "absolute_error": 0.0
+    }
+  ],
+  "score_mae": 3.0649999999999977,
+  "cer": null,
+  "cer_samples": 0,
+  "reference_evaluated_items": 0,
+  "reference_evaluator_errors": null,
+  "errors": [
+    {
+      "sample_id": "20260706_10回目",
+      "id": 15,
+      "gold": true,
+      "status": "uncertain",
+      "reason": "ショック前に他者に離れるよう指示し、その後にショックが実行されている。",
+      "warnings": [
+        "近接するAED案内と参加者の離隔指示を区別できません"
+      ],
+      "model_status": "met",
+      "evidence": [
+        {
+          "segment_id": 22,
+          "quote": "離れてください。",
+          "role": "participant",
+          "kind": "call",
+          "source_role": "candidate",
+          "start": 312,
+          "end": 320
+        }
+      ],
+      "context": [
+        {
+          "segment_id": 26,
+          "quote": "ショックを実行します。",
+          "role": "participant",
+          "kind": "shock",
+          "source_role": "candidate",
+          "start": 347,
+          "end": 358
+        },
+        {
+          "segment_id": 27,
+          "quote": "ショックが完了しました。",
+          "role": "device",
+          "kind": "shock_complete",
+          "source_role": "device",
+          "start": 358,
+          "end": 370
+        }
+      ],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_11回目",
+      "id": 12,
+      "gold": true,
+      "status": "not_detected",
+      "reason": "「使いますか」という使用意思の確認にとどまり、AEDを使用できるかという能力の確認は検出されない。",
+      "warnings": [],
+      "model_status": "not_detected",
+      "evidence": [],
+      "context": [],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_12回目",
+      "id": 1,
+      "gold": true,
+      "status": "not_detected",
+      "reason": "傷病者を発見した旨の発言が確認できない。",
+      "warnings": [],
+      "model_status": "not_detected",
+      "evidence": [],
+      "context": [],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_12回目",
+      "id": 15,
+      "gold": true,
+      "status": "uncertain",
+      "reason": "ショック前に他者へ離れるよう指示し、その後にショックが完了している。",
+      "warnings": [
+        "近接するAED案内と参加者の離隔指示を区別できません"
+      ],
+      "model_status": "met",
+      "evidence": [
+        {
+          "segment_id": 31,
+          "quote": "はい、離れてください。",
+          "role": "participant",
+          "kind": "call",
+          "source_role": "candidate",
+          "start": 407,
+          "end": 418
+        }
+      ],
+      "context": [
+        {
+          "segment_id": 38,
+          "quote": "ショックが完了しました。",
+          "role": "device",
+          "kind": "shock_complete",
+          "source_role": "device",
+          "start": 473,
+          "end": 485
+        }
+      ],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_15回目",
+      "id": 15,
+      "gold": true,
+      "status": "uncertain",
+      "reason": "ショック前に周囲に離れるよう指示している。",
+      "warnings": [
+        "近接するAED案内と参加者の離隔指示を区別できません"
+      ],
+      "model_status": "met",
+      "evidence": [
+        {
+          "segment_id": 31,
+          "quote": "私離れてます、あなた離れてます、みんな離れてます。",
+          "role": "participant",
+          "kind": "call",
+          "source_role": "candidate",
+          "start": 438,
+          "end": 463
+        }
+      ],
+      "context": [
+        {
+          "segment_id": 32,
+          "quote": "ショックします。",
+          "role": "participant",
+          "kind": "shock",
+          "source_role": "candidate",
+          "start": 463,
+          "end": 471
+        },
+        {
+          "segment_id": 33,
+          "quote": "ショックが完了しました。",
+          "role": "device",
+          "kind": "shock_complete",
+          "source_role": "device",
+          "start": 471,
+          "end": 483
+        }
+      ],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_18回目",
+      "id": 16,
+      "gold": true,
+      "status": "not_detected",
+      "reason": "11とは別場面での胸骨圧迫の数唱が検出されない。",
+      "warnings": [],
+      "model_status": "not_detected",
+      "evidence": [],
+      "context": [],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_1回目",
+      "id": 12,
+      "gold": true,
+      "status": "not_detected",
+      "reason": "「AED使いました？」と発言しており、推測修正が禁止されているため使用能力（使えるか）の確認としては検出されない。",
+      "warnings": [],
+      "model_status": "not_detected",
+      "evidence": [],
+      "context": [],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_20回目",
+      "id": 15,
+      "gold": true,
+      "status": "uncertain",
+      "reason": "ショック前に離れるよう指示し、その後にショックが実行されている。",
+      "warnings": [
+        "近接するAED案内と参加者の離隔指示を区別できません"
+      ],
+      "model_status": "met",
+      "evidence": [
+        {
+          "segment_id": 41,
+          "quote": "離れてください。",
+          "role": "participant",
+          "kind": "call",
+          "source_role": "candidate",
+          "start": 543,
+          "end": 551
+        }
+      ],
+      "context": [
+        {
+          "segment_id": 44,
+          "quote": "ショックが完了しました。",
+          "role": "device",
+          "kind": "shock_complete",
+          "source_role": "device",
+          "start": 566,
+          "end": 578
+        }
+      ],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_20回目",
+      "id": 16,
+      "gold": true,
+      "status": "not_detected",
+      "reason": "項目11とは別場面での胸骨圧迫の数唱は確認されない。",
+      "warnings": [],
+      "model_status": "not_detected",
+      "evidence": [],
+      "context": [],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_4回目",
+      "id": 12,
+      "gold": true,
+      "status": "not_detected",
+      "reason": "「使いますか」という使用意思の確認にとどまり、能力確認の明確な発言が検出されない。",
+      "warnings": [],
+      "model_status": "not_detected",
+      "evidence": [],
+      "context": [],
+      "stage_hint": "unresolved"
+    },
+    {
+      "sample_id": "20260706_5回目",
+      "id": 15,
+      "gold": true,
+      "status": "uncertain",
+      "reason": "ショック前に離れるよう指示しており、ショック完了の文脈が存在する。",
+      "warnings": [
+        "近接するAED案内と参加者の離隔指示を区別できません"
+      ],
+      "model_status": "met",
+      "evidence": [
+        {
+          "segment_id": 27,
+          "quote": "離れてください。",
+          "role": "participant",
+          "kind": "call",
+          "source_role": "candidate",
+          "start": 384,
+          "end": 392
+        }
+      ],
+      "context": [
+        {
+          "segment_id": 36,
+          "quote": "ショックが完了しました。",
+          "role": "device",
+          "kind": "shock_complete",
+          "source_role": "device",
+          "start": 462,
+          "end": 474
+        }
+      ],
+      "stage_hint": "unresolved"
+    }
+  ],
+  "limitations": "同一収録日の初期検証。未注釈・未処理は分母に入れずcoverageに表示。stage_hintは切り分けの手掛かりで、ASR原因の断定ではない。"
+}

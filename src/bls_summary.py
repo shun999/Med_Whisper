@@ -115,7 +115,7 @@ def render_score_summary(run: dict, gold: dict, *, results_dir: Path | None = No
             if truth != predicted or item["status"] == "uncertain":
                 ideal = "達成" if truth else "未達成"
                 status = {"met": "達成", "not_detected": "未検出", "uncertain": "判定不能"}[item["status"]]
-                item_differences.append(f"{i}.{CRITERIA[i - 1][0]}（模範:{ideal} / Gemini:{status}）")
+                item_differences.append(f"{i}.{item.get('name', CRITERIA[i - 1][0])}（模範:{ideal} / Gemini:{status}）")
         if item_differences:
             mismatches.append(f"{sid}: " + "、".join(item_differences))
 
