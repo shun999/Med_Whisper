@@ -1,0 +1,73 @@
+{
+  "key": "92341fba085a8648eaddfba9ef779f1b0e55d344b5bef86c17f0720cdd72219b",
+  "settings": {
+    "input_sha256": "463f586f56cc3d3796cb8b03b1e1acee9c62d8adb397ff3768855c81ec3fe92a",
+    "model": "gemini-3.5-transcribe",
+    "config": {
+      "language_codes": [
+        "ja-JP"
+      ],
+      "custom_vocabulary": [
+        "傷病者",
+        "感染防御",
+        "119番",
+        "AED",
+        "呼吸なし",
+        "脈なし",
+        "胸骨圧迫",
+        "救急隊",
+        "荷物",
+        "傷病者発見",
+        "AEDを使えますか",
+        "使えません"
+      ],
+      "mode": {
+        "type": "verbatim"
+      }
+    },
+    "conversion": "original"
+  },
+  "source_path": "/media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/0604data/1回目_右前.wav",
+  "input_sha256": "463f586f56cc3d3796cb8b03b1e1acee9c62d8adb397ff3768855c81ec3fe92a",
+  "created_at": "2026-09-30T05:27:59.499069+00:00",
+  "text": "傷病者発見、周囲の安全確認よし。大丈夫ですか、大丈夫ですか。呼吸なし、脈なし。これから胸骨圧迫を開始します。すいません、誰か来てください。あなたは救急車を呼んでください。あなたはAEDを持ってきてください。必ずここに戻ってきてください。胸骨圧迫を開始します。あなたはAEDを使いますか。私の横に置いてください。胸骨圧迫を123で。動画撮ります。電気ショックが必要です。充電中です。体から離れてください。ショックを実行します。ショックが完了しました。一時中断中です。直ちに胸骨圧迫と人工呼吸をしてください。救急隊です。どうされましたか。",
+  "raw_response": {
+    "status": "completed",
+    "created": "2026-09-30T05:27:55Z",
+    "id": "v1_ChcycDI4YXFPYkJZN0pyZmNQbzh2dHdRcxIXMnAyOGFxT2JCWTdKcmZjUG84dnR3UXM",
+    "model": "gemini-3.5-transcribe",
+    "output_text": "傷病者発見、周囲の安全確認よし。大丈夫ですか、大丈夫ですか。呼吸なし、脈なし。これから胸骨圧迫を開始します。すいません、誰か来てください。あなたは救急車を呼んでください。あなたはAEDを持ってきてください。必ずここに戻ってきてください。胸骨圧迫を開始します。あなたはAEDを使いますか。私の横に置いてください。胸骨圧迫を123で。動画撮ります。電気ショックが必要です。充電中です。体から離れてください。ショックを実行します。ショックが完了しました。一時中断中です。直ちに胸骨圧迫と人工呼吸をしてください。救急隊です。どうされましたか。",
+    "service_tier": "standard",
+    "steps": [
+      {
+        "content": [
+          {
+            "text": "傷病者発見、周囲の安全確認よし。大丈夫ですか、大丈夫ですか。呼吸なし、脈なし。これから胸骨圧迫を開始します。すいません、誰か来てください。あなたは救急車を呼んでください。あなたはAEDを持ってきてください。必ずここに戻ってきてください。胸骨圧迫を開始します。あなたはAEDを使いますか。私の横に置いてください。胸骨圧迫を123で。動画撮ります。電気ショックが必要です。充電中です。体から離れてください。ショックを実行します。ショックが完了しました。一時中断中です。直ちに胸骨圧迫と人工呼吸をしてください。救急隊です。どうされましたか。",
+            "type": "text"
+          }
+        ],
+        "type": "model_output"
+      }
+    ],
+    "updated": "2026-09-30T05:27:55Z",
+    "usage": {
+      "input_tokens_by_modality": [
+        {
+          "modality": "text",
+          "tokens": 1
+        },
+        {
+          "modality": "audio",
+          "tokens": 4063
+        }
+      ],
+      "total_cached_tokens": 0,
+      "total_input_tokens": 4064,
+      "total_output_tokens": 0,
+      "total_thought_tokens": 0,
+      "total_tokens": 4064,
+      "total_tool_use_tokens": 0
+    },
+    "object": "interaction"
+  }
+}

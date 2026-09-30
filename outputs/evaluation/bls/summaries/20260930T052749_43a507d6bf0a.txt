@@ -1,0 +1,19 @@
+BLS採点スコアと模範解答との差
+実行日時: 2026-09-30T05:27:49.009931+00:00
+実行記録: /media/dl-box/ADATA SE800/med/MedWhisper_nachi/outputs/evaluation/bls/runs/20260930T052749_43a507d6bf0a.json
+実行状態: completed
+採点モデル: gemini-3.8-flash
+語彙設定: targeted（結果内のカスタム語彙: 1種類）
+模範CSV: /media/dl-box/ADATA SE800/med/MedWhisper_nachi/data/人間音声採点データ.csv
+模範CSV SHA-256: 89a7451fd1e2fafc63b1a3d1daa541aff7819c90091ce0c152dc0be041a54230
+採点済み: 1本 / 比較可能: 0本 / 模範なし: 1本
+差 = Gemini点数 − 模範点数（負: 過小評価、正: 過大評価）。点数を小数1桁に丸めて比較。
+模範CSVは集計だけに使用し、Geminiの採点には渡していません。
+
+音声別スコア（番号順）
+1回目_右前: Gemini=55.6点 / 模範=なし / 差=比較不可 / 判定不能=0項目
+
+全体の乖離: 比較対象がないため算出不可
+
+不一致・判定不能の項目
+比較不可
