@@ -21,3 +21,5 @@ __pycache__/
 outputs/.bls_state/
 
 .DS_Store
+
+AGENTS.md
