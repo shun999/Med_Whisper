@@ -1,0 +1,17 @@
+generation_config={
+            "transcription_config": {
+                "language_codes": ["ja-JP"],
+                "custom_vocabulary": [
+                    "傷病者", 
+                    "感染防御", 
+                    "119番", 
+                    "AED", 
+                    "胸骨圧迫",
+                    "使えますか",
+                    "装着",
+                    "離れて"
+                ],
+                # 評価対象の言いよどみや反復を消さない逐語モード。
+                "mode": {"type": "verbatim"},
+            }
+        },
