@@ -1,0 +1,9 @@
+generation_config = {
+            "transcription_config": {
+                "mode": {
+                    "type": "verbatim",
+                    "diarization_mode": "speaker",
+                    "timestamp_granularities": ["word"],
+                },
+            }
+        }
